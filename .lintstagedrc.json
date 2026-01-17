@@ -1,7 +1,7 @@
 {
   "*.{js,jsx,ts,tsx}": [
-    "prettier --check",
-    "eslint --ext .ts,.tsx --max-warnings=0"
+    "prettier --write",
+    "eslint ./"
   ],
   "*.{json,css,md}": [
     "prettier --check"
