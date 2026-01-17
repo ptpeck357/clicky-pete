@@ -1,0 +1,2 @@
+# Run lint-staged (Prettier check + ESLint) on staged files
+npm run pre-commit
