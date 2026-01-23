@@ -19,3 +19,5 @@ pnpm-lock.yaml
 package.json
 tsconfig.json
 tsconfig.node.json
+**/appsettings.json
+**/appsettings.Development.json
