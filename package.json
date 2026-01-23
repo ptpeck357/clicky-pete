@@ -10,7 +10,7 @@
     "lint:check": "eslint . --ext .ts,.tsx --max-warnings=0",
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "pre-commit": "lint-staged",
-    "prepare": "npx husky install",
+    "prepare": "husky",
     "preview": "vite preview"
   },
   "dependencies": {
