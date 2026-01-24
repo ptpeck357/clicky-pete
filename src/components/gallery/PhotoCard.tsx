@@ -53,7 +53,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick }) => {
 				) : (
 					<img
 						src={photo.preSignedUrl}
-						alt={photo.tags.category || 'Photo'}
+						alt={(photo.tags.category as string) || 'Photo'}
 						className={`w-full h-full object-cover transition-opacity duration-200 ${
 							imageLoaded ? 'opacity-100' : 'opacity-0'
 						}`}

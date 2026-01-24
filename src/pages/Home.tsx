@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { usePhotos } from '../hooks/usePhotos';
+import { PhotoViewerModal } from '../components/gallery/PhotoViewerModal';
+import { getFeaturedPhotos } from '../data/mockPhotos';
+import type { Photo } from '../types/photo';
 
 const heroVariants = {
 	hidden: { opacity: 0 },
@@ -42,34 +44,128 @@ const photoItemVariants = {
 };
 
 export const Home: React.FC = () => {
-	const { photos, loading } = usePhotos();
-	const featuredPhoto = photos[0]; // First photo as hero
-	const recentPhotos = photos.slice(1, 9); // Next 8 photos
+	const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
+	const [isModalOpen, setIsModalOpen] = useState(false);
+
+	// Get featured photos
+	const featuredPhotos = useMemo(() => getFeaturedPhotos(), []);
+
+	// Initialize displayed photos using lazy initial state
+	const [displayedPhotos, setDisplayedPhotos] = useState<Photo[]>(() => featuredPhotos.slice(0, 8));
+	const [photosPerPage] = useState(8);
+	const [currentPage, setCurrentPage] = useState(1);
+	const [hasMorePhotos, setHasMorePhotos] = useState(() => featuredPhotos.length > 8);
+	const [showViewCollections, setShowViewCollections] = useState(false);
+
+	// Infinite scroll handler
+	const loadMorePhotos = useCallback(() => {
+		const startIndex = currentPage * photosPerPage;
+		const endIndex = startIndex + photosPerPage;
+		const newPhotos = featuredPhotos.slice(startIndex, endIndex);
+
+		if (newPhotos.length > 0) {
+			setDisplayedPhotos((prev) => [...prev, ...newPhotos]);
+			setCurrentPage((prev) => prev + 1);
+
+			// Check if we've loaded all featured photos
+			if (endIndex >= featuredPhotos.length) {
+				setHasMorePhotos(false);
+				setShowViewCollections(true);
+			}
+		} else {
+			setHasMorePhotos(false);
+			setShowViewCollections(true);
+		}
+	}, [currentPage, photosPerPage, featuredPhotos]);
+
+	// Scroll event listener for infinite scroll
+	useEffect(() => {
+		const handleScroll = () => {
+			if (
+				hasMorePhotos &&
+				window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 1000 // Load when 1000px from bottom
+			) {
+				loadMorePhotos();
+			}
+		};
+
+		window.addEventListener('scroll', handleScroll);
+		return () => window.removeEventListener('scroll', handleScroll);
+	}, [hasMorePhotos, loadMorePhotos]);
+
+	const featuredPhoto = displayedPhotos[0]; // First photo as hero
+	const recentPhotos = displayedPhotos.slice(1); // Rest of photos
+
+	const handlePhotoClick = (photo: Photo) => {
+		setSelectedPhoto(photo);
+		setIsModalOpen(true);
+	};
+
+	const handleModalClose = () => {
+		setIsModalOpen(false);
+		setSelectedPhoto(null);
+	};
+
+	const getCurrentPhotoIndex = () => {
+		if (!selectedPhoto) return -1;
+		return displayedPhotos.findIndex((p) => p.key === selectedPhoto.key);
+	};
+
+	const handleNextPhoto = () => {
+		const currentIndex = getCurrentPhotoIndex();
+		if (currentIndex < displayedPhotos.length - 1) {
+			setSelectedPhoto(displayedPhotos[currentIndex + 1]);
+		}
+	};
+
+	const handlePreviousPhoto = () => {
+		const currentIndex = getCurrentPhotoIndex();
+		if (currentIndex > 0) {
+			setSelectedPhoto(displayedPhotos[currentIndex - 1]);
+		}
+	};
 
 	return (
 		<div className="min-h-screen bg-gray-900 text-white">
 			{/* Hero Section */}
 			<section className="relative h-screen flex items-center justify-center overflow-hidden">
-				{featuredPhoto && !loading && (
+				{featuredPhoto && (
 					<>
 						<motion.div
-							className="absolute inset-0 bg-cover bg-center"
+							className="absolute inset-0 bg-cover bg-center cursor-pointer group"
 							style={{ backgroundImage: `url(${featuredPhoto.preSignedUrl})` }}
 							initial={{ scale: 1.1, opacity: 0 }}
 							animate={{ scale: 1, opacity: 1 }}
 							transition={{ duration: 1.5, ease: 'easeOut' }}
+							onClick={() => handlePhotoClick(featuredPhoto)}
 						/>
 						<motion.div
-							className="absolute inset-0 bg-black bg-opacity-40"
+							className="absolute inset-0 bg-black bg-opacity-40 group-hover:bg-opacity-30 transition-all duration-300"
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
 							transition={{ duration: 1, delay: 0.5 }}
 						/>
+
+						{/* Click indicator for hero image */}
+						<motion.div
+							className="absolute top-8 right-8 bg-black bg-opacity-50 rounded-full p-3 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-20"
+							whileHover={{ scale: 1.1 }}
+							onClick={() => handlePhotoClick(featuredPhoto)}
+						>
+							<svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+								/>
+							</svg>
+						</motion.div>
 					</>
 				)}
 
 				{/* Loading state for hero */}
-				{loading && (
+				{displayedPhotos.length === 0 && (
 					<motion.div
 						className="absolute inset-0 bg-gray-800"
 						initial={{ opacity: 0 }}
@@ -145,11 +241,23 @@ export const Home: React.FC = () => {
 				</motion.div>
 
 				{/* Scroll indicator */}
-				<motion.div
-					className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+				<motion.button
+					className="absolute bottom-8 left-1/2 transform -translate-x-1/2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 rounded-full p-2"
 					initial={{ opacity: 0, y: -20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ delay: 2, duration: 0.8 }}
+					onClick={() => {
+						const photoSection = document.querySelector('#photo-section');
+						if (photoSection) {
+							photoSection.scrollIntoView({
+								behavior: 'smooth',
+								block: 'start',
+							});
+						}
+					}}
+					whileHover={{ scale: 1.1 }}
+					whileTap={{ scale: 0.9 }}
+					aria-label="Scroll to photo gallery"
 				>
 					<motion.div animate={{ y: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
 						<svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -161,58 +269,12 @@ export const Home: React.FC = () => {
 							/>
 						</svg>
 					</motion.div>
-				</motion.div>
+				</motion.button>
 			</section>
-
-			{/* Category Filters */}
-			<motion.section
-				className="py-12 bg-gray-900"
-				initial={{ opacity: 0, y: 50 }}
-				whileInView={{ opacity: 1, y: 0 }}
-				transition={{ duration: 0.8 }}
-				viewport={{ once: true }}
-			>
-				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-					<motion.div
-						className="flex flex-wrap justify-center gap-2 sm:gap-4 mb-12"
-						variants={photoGridVariants}
-						initial="hidden"
-						whileInView="visible"
-						viewport={{ once: true }}
-					>
-						{[
-							{ to: '/gallery', label: 'All', active: true },
-							{ to: '/category/landscape', label: 'Landscape' },
-							{ to: '/category/portrait', label: 'Portrait' },
-							{ to: '/category/street', label: 'Street' },
-							{ to: '/category/nature', label: 'Nature' },
-						].map((item) => (
-							<motion.div
-								key={item.label}
-								variants={photoItemVariants}
-								transition={{ duration: 0.6, ease: 'easeOut' }}
-							>
-								<Link to={item.to}>
-									<motion.button
-										className={`px-4 py-2 sm:px-6 sm:py-3 rounded-full font-medium transition-colors text-sm sm:text-base ${
-											item.active
-												? 'bg-blue-600 text-white'
-												: 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-										}`}
-										whileHover={{ scale: 1.05 }}
-										whileTap={{ scale: 0.95 }}
-									>
-										{item.label}
-									</motion.button>
-								</Link>
-							</motion.div>
-						))}
-					</motion.div>
-				</div>
-			</motion.section>
 
 			{/* Photo Grid */}
 			<motion.section
+				id="photo-section"
 				className="py-16 bg-gray-900"
 				initial={{ opacity: 0 }}
 				whileInView={{ opacity: 1 }}
@@ -220,7 +282,7 @@ export const Home: React.FC = () => {
 				viewport={{ once: true }}
 			>
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-					{loading ? (
+					{displayedPhotos.length === 0 ? (
 						<motion.div
 							className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
 							variants={photoGridVariants}
@@ -253,9 +315,9 @@ export const Home: React.FC = () => {
 									whileHover={{ scale: 1.05 }}
 									whileTap={{ scale: 0.95 }}
 								>
-									<Link
-										to="/gallery"
-										className={`group relative overflow-hidden rounded-lg block transition-transform duration-300 ${
+									<div
+										onClick={() => handlePhotoClick(photo)}
+										className={`group relative overflow-hidden rounded-lg cursor-pointer transition-transform duration-300 ${
 											index === 0 ? 'md:col-span-2 md:row-span-2' : ''
 										} ${index === 3 ? 'lg:row-span-2' : ''}`}
 									>
@@ -264,7 +326,7 @@ export const Home: React.FC = () => {
 										>
 											<motion.img
 												src={photo.preSignedUrl}
-												alt={photo.tags.category || 'Photo'}
+												alt={(photo.tags.category as string) || 'Photo'}
 												className="w-full h-full object-cover"
 												initial={{ opacity: 0, scale: 1.1 }}
 												animate={{ opacity: 1, scale: 1 }}
@@ -285,43 +347,82 @@ export const Home: React.FC = () => {
 											>
 												{photo.tags.category && (
 													<span className="inline-block bg-blue-600 text-xs px-3 py-1 rounded-full mb-2 font-medium">
-														{photo.tags.category}
+														{photo.tags.category as string}
 													</span>
 												)}
 												{photo.tags.location && (
-													<p className="text-sm font-medium">{photo.tags.location}</p>
+													<p className="text-sm font-medium">
+														{photo.tags.location as string}
+													</p>
 												)}
 											</motion.div>
 										</motion.div>
-									</Link>
+
+										{/* Click indicator */}
+										<motion.div
+											className="absolute top-4 right-4 bg-black bg-opacity-50 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity"
+											whileHover={{ scale: 1.1 }}
+										>
+											<svg
+												className="w-4 h-4 text-white"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth={2}
+													d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+												/>
+											</svg>
+										</motion.div>
+									</div>
 								</motion.div>
 							))}
 						</motion.div>
 					)}
 
-					<motion.div
-						className="text-center mt-12"
-						initial={{ opacity: 0, y: 20 }}
-						whileInView={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.6, delay: 0.3 }}
-						viewport={{ once: true }}
-					>
-						<Link to="/gallery">
-							<motion.button
-								className="px-8 py-3 border border-gray-600 text-white rounded-full font-medium hover:bg-white hover:text-gray-900 transition-all duration-300"
-								whileHover={{ scale: 1.05 }}
-								whileTap={{ scale: 0.95 }}
-							>
-								Load More Memories
-							</motion.button>
-						</Link>
-					</motion.div>
+					{/* Loading more photos indicator */}
+					{hasMorePhotos && (
+						<motion.div
+							className="text-center mt-8"
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 }}
+							transition={{ duration: 0.5 }}
+						>
+							<div className="inline-flex items-center text-gray-400">
+								<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-400 mr-2" />
+								Loading more featured photos...
+							</div>
+						</motion.div>
+					)}
+
+					{/* View Collections Button - Show when all featured photos are loaded */}
+					{showViewCollections && (
+						<motion.div
+							className="text-center mt-12"
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.6, delay: 0.3 }}
+						>
+							<Link to="/gallery">
+								<motion.button
+									className="px-8 py-3 border border-gray-600 text-white rounded-full font-medium hover:bg-white hover:text-gray-900 transition-all duration-300"
+									whileHover={{ scale: 1.05 }}
+									whileTap={{ scale: 0.95 }}
+								>
+									View Collections
+								</motion.button>
+							</Link>
+						</motion.div>
+					)}
 				</div>
 			</motion.section>
 
 			{/* Quote Section */}
 			<motion.section
-				className="py-20 bg-gray-800"
+				className="py-20 bg-gray-800 mb-12"
 				initial={{ opacity: 0 }}
 				whileInView={{ opacity: 1 }}
 				transition={{ duration: 1 }}
@@ -349,6 +450,15 @@ export const Home: React.FC = () => {
 					</motion.cite>
 				</div>
 			</motion.section>
+
+			{/* Photo Modal */}
+			<PhotoViewerModal
+				photo={selectedPhoto}
+				isOpen={isModalOpen}
+				onClose={handleModalClose}
+				onNext={getCurrentPhotoIndex() < displayedPhotos.length - 1 ? handleNextPhoto : undefined}
+				onPrevious={getCurrentPhotoIndex() > 0 ? handlePreviousPhoto : undefined}
+			/>
 		</div>
 	);
 };

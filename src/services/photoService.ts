@@ -8,7 +8,10 @@ const USE_MOCK_DATA = import.meta.env?.VITE_USE_MOCK_DATA === 'true' || true; //
 export const photoService = {
 	// Get all photos
 	async getPhotos(prefix?: string): Promise<Photo[]> {
+		console.log('photoService: getPhotos called with USE_MOCK_DATA:', USE_MOCK_DATA);
+
 		if (USE_MOCK_DATA) {
+			console.log('photoService: Using mock data');
 			return mockPhotoService.getPhotos(prefix);
 		}
 
@@ -52,17 +55,17 @@ export const photoService = {
 	},
 
 	// Get photo tags
-	async getPhotoTags(key: string): Promise<Record<string, string>> {
+	async getPhotoTags(key: string): Promise<Record<string, string | boolean>> {
 		if (USE_MOCK_DATA) {
 			return mockPhotoService.getPhotoTags(key);
 		}
 
-		const response = await apiClient.get<{ tags: Record<string, string> }>(`/images/${key}/tags`);
+		const response = await apiClient.get<{ tags: Record<string, string | boolean> }>(`/images/${key}/tags`);
 		return response.tags;
 	},
 
 	// Update photo tags
-	async updatePhotoTags(key: string, tags: Record<string, string>): Promise<void> {
+	async updatePhotoTags(key: string, tags: Record<string, string | boolean>): Promise<void> {
 		if (USE_MOCK_DATA) {
 			return mockPhotoService.updatePhotoTags(key, tags);
 		}
@@ -87,6 +90,16 @@ export const photoService = {
 
 		const response = await apiClient.get<CategoriesResponse>('/images/categories');
 		return response.categories;
+	},
+
+	// Get all collections
+	async getCollections(): Promise<string[]> {
+		if (USE_MOCK_DATA) {
+			return mockPhotoService.getCollections();
+		}
+
+		const response = await apiClient.get<{ collections: string[] }>('/images/collections');
+		return response.collections;
 	},
 
 	// Search photos
