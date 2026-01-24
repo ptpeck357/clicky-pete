@@ -1,5 +1,12 @@
 import type { Photo } from '../types/photo';
-import { mockPhotos, getPhotosByCategory, getCategories, searchPhotos } from '../data/mockPhotos';
+import {
+	mockPhotos,
+	getPhotosByCategory,
+	getPhotosByCollection,
+	getCategories,
+	getCollections,
+	searchPhotos,
+} from '../data/mockPhotos';
 
 // Simulate API delay
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -7,13 +14,19 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 export const mockPhotoService = {
 	// Get all photos
 	async getPhotos(prefix?: string): Promise<Photo[]> {
+		console.log('mockPhotoService: getPhotos called with prefix:', prefix);
+		console.log('mockPhotoService: mockPhotos length:', mockPhotos.length);
+
 		await delay(500); // Simulate network delay
 
 		// If prefix is provided, filter photos by key prefix
 		if (prefix) {
-			return mockPhotos.filter((photo) => photo.key.startsWith(prefix));
+			const filtered = mockPhotos.filter((photo) => photo.key.startsWith(prefix));
+			console.log('mockPhotoService: filtered photos:', filtered.length);
+			return filtered;
 		}
 
+		console.log('mockPhotoService: returning all photos:', mockPhotos.length);
 		return mockPhotos;
 	},
 
@@ -25,10 +38,18 @@ export const mockPhotoService = {
 			return getPhotosByCategory(tagValue);
 		}
 
+		if (tagKey === 'collection' && tagValue) {
+			return getPhotosByCollection(tagValue);
+		}
+
 		return mockPhotos.filter((photo) => {
 			if (!photo.tags[tagKey]) return false;
 			if (!tagValue) return true;
-			return photo.tags[tagKey].toLowerCase() === tagValue.toLowerCase();
+			const tagVal = photo.tags[tagKey];
+			if (typeof tagVal === 'string') {
+				return tagVal.toLowerCase() === tagValue.toLowerCase();
+			}
+			return false;
 		});
 	},
 
@@ -54,7 +75,7 @@ export const mockPhotoService = {
 	},
 
 	// Get photo tags
-	async getPhotoTags(key: string): Promise<Record<string, string>> {
+	async getPhotoTags(key: string): Promise<Record<string, string | boolean>> {
 		await delay(100);
 		const photo = mockPhotos.find((p) => p.key === key);
 		if (!photo) throw new Error('Photo not found');
@@ -62,7 +83,7 @@ export const mockPhotoService = {
 	},
 
 	// Update photo tags (mock - doesn't actually update)
-	async updatePhotoTags(key: string, tags: Record<string, string>): Promise<void> {
+	async updatePhotoTags(key: string, tags: Record<string, string | boolean>): Promise<void> {
 		await delay(200);
 		console.log(`Mock: Updated tags for ${key}:`, tags);
 	},
@@ -77,6 +98,12 @@ export const mockPhotoService = {
 	async getCategories(): Promise<string[]> {
 		await delay(200);
 		return getCategories();
+	},
+
+	// Get all collections
+	async getCollections(): Promise<string[]> {
+		await delay(200);
+		return getCollections();
 	},
 
 	// Search photos

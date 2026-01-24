@@ -54,7 +54,7 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({ photo, isOpen, onClose, 
 						)}
 						<img
 							src={photo.preSignedUrl}
-							alt={photo.tags.category || 'Photo'}
+							alt={(photo.tags.category as string) || 'Photo'}
 							className={`w-full h-auto max-h-[50vh] lg:max-h-[70vh] object-contain transition-opacity duration-200 ${
 								imageLoaded ? 'opacity-100' : 'opacity-0'
 							}`}

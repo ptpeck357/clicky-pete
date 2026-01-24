@@ -16,6 +16,8 @@ export const usePhotos = (filter?: PhotoFilter) => {
 
 			if (filter?.category) {
 				fetchedPhotos = await photoService.getPhotosByTag('category', filter.category);
+			} else if (filter?.collection) {
+				fetchedPhotos = await photoService.getPhotosByTag('collection', filter.collection);
 			} else if (filter?.location) {
 				fetchedPhotos = await photoService.getPhotosByTag('location', filter.location);
 			} else {
@@ -27,8 +29,12 @@ export const usePhotos = (filter?: PhotoFilter) => {
 				const searchTerm = filter.search.toLowerCase();
 				fetchedPhotos = fetchedPhotos.filter(
 					(photo) =>
-						Object.values(photo.tags).some((tag) => tag.toLowerCase().includes(searchTerm)) ||
-						photo.key.toLowerCase().includes(searchTerm),
+						Object.values(photo.tags).some((tag) => {
+							if (typeof tag === 'string') {
+								return tag.toLowerCase().includes(searchTerm);
+							}
+							return false;
+						}) || photo.key.toLowerCase().includes(searchTerm),
 				);
 			}
 
@@ -38,7 +44,7 @@ export const usePhotos = (filter?: PhotoFilter) => {
 		} finally {
 			setLoading(false);
 		}
-	}, [filter?.category, filter?.location, filter?.search]);
+	}, [filter?.category, filter?.collection, filter?.location, filter?.search]);
 
 	useEffect(() => {
 		fetchPhotos();

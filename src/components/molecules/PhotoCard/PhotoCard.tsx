@@ -77,7 +77,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick, className 
 				) : (
 					<motion.img
 						src={photo.preSignedUrl}
-						alt={photo.tags.category || 'Photo'}
+						alt={(photo.tags.category as string) || 'Photo'}
 						className="w-full h-full object-cover"
 						initial={{ opacity: 0, scale: 1.1 }}
 						animate={{

@@ -2,7 +2,7 @@ export interface Photo {
 	key: string;
 	lastModified: string;
 	size: number;
-	tags: Record<string, string>;
+	tags: Record<string, string | boolean>;
 	preSignedUrl?: string;
 }
 
@@ -16,5 +16,6 @@ export interface PhotoUpload {
 export interface PhotoFilter {
 	category?: string;
 	location?: string;
+	collection?: string;
 	search?: string;
 }
