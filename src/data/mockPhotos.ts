@@ -1,8 +1,6 @@
 import type { Photo } from '../types/photo';
 
-// Using Unsplash for high-quality placeholder photos
 export const mockPhotos: Photo[] = [
-	// Idaho Collection
 	{
 		key: 'idaho-sawtooth-1',
 		lastModified: '2024-01-15T10:30:00Z',
@@ -45,7 +43,6 @@ export const mockPhotos: Photo[] = [
 		preSignedUrl: 'https://images.unsplash.com/photo-1464822759844-d150baec3e5e?w=800&h=800&fit=crop',
 	},
 
-	// Montana Collection
 	{
 		key: 'montana-glacier-1',
 		lastModified: '2024-01-12T08:15:00Z',
@@ -87,7 +84,6 @@ export const mockPhotos: Photo[] = [
 		preSignedUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=800&fit=crop',
 	},
 
-	// Drone Collection
 	{
 		key: 'drone-aerial-forest-1',
 		lastModified: '2024-01-09T12:20:00Z',
@@ -129,7 +125,6 @@ export const mockPhotos: Photo[] = [
 		preSignedUrl: 'https://images.unsplash.com/photo-1464822759844-d150baec3e5e?w=800&h=800&fit=crop',
 	},
 
-	// Street Photography Collection
 	{
 		key: 'street-tokyo-1',
 		lastModified: '2024-01-06T15:45:00Z',
@@ -158,7 +153,6 @@ export const mockPhotos: Photo[] = [
 		preSignedUrl: 'https://images.unsplash.com/photo-1502602898536-47ad22581b52?w=800&h=800&fit=crop',
 	},
 
-	// Portrait Collection
 	{
 		key: 'portrait-studio-1',
 		lastModified: '2024-01-04T13:15:00Z',
@@ -188,22 +182,18 @@ export const mockPhotos: Photo[] = [
 	},
 ];
 
-// Helper function to get featured photos
 export const getFeaturedPhotos = (): Photo[] => {
 	return mockPhotos.filter((photo) => photo.tags.featured === true);
 };
 
-// Helper function to get photos by category
 export const getPhotosByCategory = (category: string): Photo[] => {
 	return mockPhotos.filter((photo) => photo.tags.category === category);
 };
 
-// Helper function to get photos by collection
 export const getPhotosByCollection = (collection: string): Photo[] => {
 	return mockPhotos.filter((photo) => photo.tags.collection === collection);
 };
 
-// Helper function to get unique categories
 export const getCategories = (): string[] => {
 	const categories = mockPhotos
 		.map((photo) => photo.tags.category)
@@ -211,7 +201,6 @@ export const getCategories = (): string[] => {
 	return [...new Set(categories)].sort();
 };
 
-// Helper function to get unique collections
 export const getCollections = (): string[] => {
 	const collections = mockPhotos
 		.map((photo) => photo.tags.collection)
@@ -219,7 +208,6 @@ export const getCollections = (): string[] => {
 	return [...new Set(collections)].sort();
 };
 
-// Helper function to get collection stats
 export const getCollectionStats = () => {
 	const collections = getCollections();
 	return collections.map((collection) => ({
@@ -229,7 +217,6 @@ export const getCollectionStats = () => {
 	}));
 };
 
-// Helper function to search photos
 export const searchPhotos = (query: string): Photo[] => {
 	const lowercaseQuery = query.toLowerCase();
 	return mockPhotos.filter(

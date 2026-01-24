@@ -9,13 +9,10 @@ export const Upload: React.FC = () => {
 	const { isAdmin } = useAuth();
 
 	const handleUploadComplete = () => {
-		// Navigate to gallery after successful upload
 		navigate('/gallery');
 	};
 
-	const handleLoginSuccess = () => {
-		// Stay on upload page after successful login
-	};
+	const handleLoginSuccess = () => {};
 
 	if (!isAdmin) {
 		return <AdminLogin onLoginSuccess={handleLoginSuccess} />;
@@ -33,7 +30,6 @@ export const Upload: React.FC = () => {
 
 				<PhotoUpload onUploadComplete={handleUploadComplete} />
 
-				{/* Upload Tips */}
 				<div className="mt-6 sm:mt-8 bg-gray-800 border border-gray-700 rounded-lg p-4 sm:p-6">
 					<h3 className="text-base sm:text-lg font-medium text-white mb-4">Upload Tips</h3>
 					<ul className="space-y-2 text-gray-300 text-sm sm:text-base">

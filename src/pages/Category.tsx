@@ -61,7 +61,6 @@ export const Category: React.FC = () => {
 	return (
 		<div className="min-h-screen bg-gray-900">
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-				{/* Breadcrumb */}
 				<nav className="flex mb-6" aria-label="Breadcrumb">
 					<ol className="flex items-center space-x-4">
 						<li>
@@ -104,7 +103,6 @@ export const Category: React.FC = () => {
 					</ol>
 				</nav>
 
-				{/* Header */}
 				<div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
 					<div>
 						<h1 className="text-3xl font-bold text-gray-900 mb-2 capitalize">{category} Photography</h1>
@@ -118,7 +116,6 @@ export const Category: React.FC = () => {
 					</div>
 				</div>
 
-				{/* Back to Gallery Link */}
 				<div className="mb-6">
 					<Link to="/gallery">
 						<Button variant="secondary" size="sm">
@@ -127,10 +124,8 @@ export const Category: React.FC = () => {
 					</Link>
 				</div>
 
-				{/* Photo Grid */}
 				<PhotoGrid photos={photos} loading={loading} onPhotoClick={handlePhotoClick} />
 
-				{/* Empty State */}
 				{!loading && photos.length === 0 && (
 					<div className="text-center py-12">
 						<svg
@@ -159,7 +154,6 @@ export const Category: React.FC = () => {
 				)}
 			</div>
 
-			{/* Photo Modal */}
 			<PhotoModal
 				photo={selectedPhoto}
 				isOpen={isModalOpen}

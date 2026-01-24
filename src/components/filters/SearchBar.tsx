@@ -11,7 +11,6 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 }) => {
 	const [query, setQuery] = useState('');
 
-	// Debounce search
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			onSearch(query);

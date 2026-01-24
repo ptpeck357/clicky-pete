@@ -18,7 +18,6 @@ class ApiClient {
 			...options,
 		};
 
-		// Remove Content-Type for FormData
 		if (options.body instanceof FormData) {
 			delete (config.headers as Record<string, string>)['Content-Type'];
 		}

@@ -34,7 +34,6 @@ export const CollectionsGrid: React.FC<CollectionsGridProps> = ({ onCollectionSe
 		const fetchCollections = async () => {
 			try {
 				setLoading(true);
-				// For mock data, we can use the helper function
 				const collectionStats = getCollectionStats();
 				setCollections(collectionStats);
 			} catch (error) {

@@ -41,7 +41,6 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 		};
 	}, [isOpen, onClose, onNext, onPrevious]);
 
-	// Reset image loaded state when photo changes
 	const currentPhotoKey = photo?.key;
 	const [lastPhotoKey, setLastPhotoKey] = useState<string | undefined>();
 
@@ -62,7 +61,6 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 					exit={{ opacity: 0 }}
 					transition={{ duration: 0.3 }}
 				>
-					{/* Blurred and darkened background */}
 					<motion.div
 						className="absolute inset-0 bg-black/80 backdrop-blur-md"
 						initial={{ opacity: 0 }}
@@ -71,7 +69,6 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 						onClick={onClose}
 					/>
 
-					{/* Close button */}
 					<motion.button
 						className="absolute top-6 right-6 z-10 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
 						onClick={onClose}
@@ -91,7 +88,6 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 						</svg>
 					</motion.button>
 
-					{/* Previous button */}
 					{onPrevious && (
 						<motion.button
 							className="absolute left-6 top-1/2 transform -translate-y-1/2 z-10 p-3 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
@@ -113,7 +109,6 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 						</motion.button>
 					)}
 
-					{/* Next button */}
 					{onNext && (
 						<motion.button
 							className="absolute right-6 top-1/2 transform -translate-y-1/2 z-10 p-3 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
@@ -130,7 +125,6 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 						</motion.button>
 					)}
 
-					{/* Centered photo */}
 					<motion.div
 						className="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center"
 						initial={{ opacity: 0, scale: 0.8 }}
@@ -138,7 +132,6 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 						exit={{ opacity: 0, scale: 0.8 }}
 						transition={{ duration: 0.4, ease: 'easeOut' }}
 					>
-						{/* Loading spinner */}
 						{!imageLoaded && (
 							<motion.div
 								className="absolute inset-0 flex items-center justify-center"
@@ -150,7 +143,6 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 							</motion.div>
 						)}
 
-						{/* Main photo */}
 						<motion.img
 							src={photo.preSignedUrl}
 							alt={(photo.tags.category as string) || 'Photo'}
@@ -163,7 +155,6 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 							transition={{ duration: 0.3 }}
 						/>
 
-						{/* Photo info overlay */}
 						<motion.div
 							className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 rounded-b-lg"
 							initial={{ opacity: 0, y: 20 }}
@@ -186,7 +177,6 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 						</motion.div>
 					</motion.div>
 
-					{/* Navigation hints */}
 					<motion.div
 						className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex items-center gap-4 text-white/70 text-sm"
 						initial={{ opacity: 0, y: 20 }}

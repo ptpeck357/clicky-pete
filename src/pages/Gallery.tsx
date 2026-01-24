@@ -51,7 +51,6 @@ export const Gallery: React.FC = () => {
 
 	const { photos, loading, error, refetch } = usePhotos(filter);
 
-	// Debug logging
 	console.log('Gallery Debug:', { photos: photos.length, loading, error, viewMode, filter });
 
 	const handleCategoryChange = (category: string | undefined) => {
@@ -140,9 +139,7 @@ export const Gallery: React.FC = () => {
 
 	return (
 		<div className="min-h-screen bg-gray-900">
-			{/* Main Content - Full Width */}
 			<main className="p-4 sm:p-6 bg-gray-900">
-				{/* Header */}
 				<motion.div className="mb-6 sm:mb-8" variants={headerVariants} initial="hidden" animate="visible">
 					<div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-4 sm:mb-6">
 						<div>

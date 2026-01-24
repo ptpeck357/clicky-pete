@@ -2,11 +2,9 @@ import { apiClient } from './api';
 import { mockPhotoService } from './mockPhotoService';
 import type { Photo, PhotosResponse, CategoriesResponse } from '../types/api';
 
-// Toggle between mock and real API
-const USE_MOCK_DATA = import.meta.env?.VITE_USE_MOCK_DATA === 'true' || true; // Default to mock for development
+const USE_MOCK_DATA = import.meta.env?.VITE_USE_MOCK_DATA === 'true' || true;
 
 export const photoService = {
-	// Get all photos
 	async getPhotos(prefix?: string): Promise<Photo[]> {
 		console.log('photoService: getPhotos called with USE_MOCK_DATA:', USE_MOCK_DATA);
 
@@ -20,7 +18,6 @@ export const photoService = {
 		return response.images;
 	},
 
-	// Get photos by tag
 	async getPhotosByTag(tagKey: string, tagValue?: string): Promise<Photo[]> {
 		if (USE_MOCK_DATA) {
 			return mockPhotoService.getPhotosByTag(tagKey, tagValue);
@@ -31,7 +28,6 @@ export const photoService = {
 		return response.images;
 	},
 
-	// Get photo by key
 	async getPhoto(key: string): Promise<Blob> {
 		if (USE_MOCK_DATA) {
 			return mockPhotoService.getPhoto(key);
@@ -44,7 +40,6 @@ export const photoService = {
 		return response.blob();
 	},
 
-	// Get photo URL
 	async getPhotoUrl(key: string, expirationHours = 1): Promise<string> {
 		if (USE_MOCK_DATA) {
 			return mockPhotoService.getPhotoUrl(key, expirationHours);
@@ -54,7 +49,6 @@ export const photoService = {
 		return response.url;
 	},
 
-	// Get photo tags
 	async getPhotoTags(key: string): Promise<Record<string, string | boolean>> {
 		if (USE_MOCK_DATA) {
 			return mockPhotoService.getPhotoTags(key);
@@ -64,7 +58,6 @@ export const photoService = {
 		return response.tags;
 	},
 
-	// Update photo tags
 	async updatePhotoTags(key: string, tags: Record<string, string | boolean>): Promise<void> {
 		if (USE_MOCK_DATA) {
 			return mockPhotoService.updatePhotoTags(key, tags);
@@ -73,7 +66,6 @@ export const photoService = {
 		await apiClient.put(`/images/${key}/tags`, tags);
 	},
 
-	// Delete photo
 	async deletePhoto(key: string): Promise<void> {
 		if (USE_MOCK_DATA) {
 			return mockPhotoService.deletePhoto(key);
@@ -82,7 +74,6 @@ export const photoService = {
 		await apiClient.delete(`/images/${key}`);
 	},
 
-	// Get all categories
 	async getCategories(): Promise<string[]> {
 		if (USE_MOCK_DATA) {
 			return mockPhotoService.getCategories();
@@ -92,7 +83,6 @@ export const photoService = {
 		return response.categories;
 	},
 
-	// Get all collections
 	async getCollections(): Promise<string[]> {
 		if (USE_MOCK_DATA) {
 			return mockPhotoService.getCollections();
@@ -102,13 +92,11 @@ export const photoService = {
 		return response.collections;
 	},
 
-	// Search photos
 	async searchPhotos(query: string): Promise<Photo[]> {
 		if (USE_MOCK_DATA) {
 			return mockPhotoService.searchPhotos(query);
 		}
 
-		// For real API, we'd implement search on the backend
 		const allPhotos = await this.getPhotos();
 		return allPhotos.filter(
 			(photo) =>

@@ -11,8 +11,6 @@ export default function App() {
 				<div className="min-h-screen bg-gray-900">
 					<Header />
 					<main className="pt-16">
-						{' '}
-						{/* Add padding-top for fixed header */}
 						<Router />
 					</main>
 					<Footer />

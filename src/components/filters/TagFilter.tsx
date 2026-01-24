@@ -21,7 +21,6 @@ export const TagFilter: React.FC<TagFilterProps> = ({ onFilterChange }) => {
 				photos.forEach((photo) => {
 					Object.entries(photo.tags).forEach(([key, value]) => {
 						if (key !== 'uploaded' && typeof value === 'string') {
-							// Skip upload date and non-string values
 							if (!tagsByKey[key]) {
 								tagsByKey[key] = new Set();
 							}
@@ -30,7 +29,6 @@ export const TagFilter: React.FC<TagFilterProps> = ({ onFilterChange }) => {
 					});
 				});
 
-				// Convert Sets to sorted arrays
 				const sortedTags: { [key: string]: string[] } = {};
 				Object.entries(tagsByKey).forEach(([key, valueSet]) => {
 					sortedTags[key] = Array.from(valueSet).sort();
@@ -51,10 +49,8 @@ export const TagFilter: React.FC<TagFilterProps> = ({ onFilterChange }) => {
 		const newFilters = { ...selectedFilters };
 
 		if (newFilters[tagKey] === tagValue) {
-			// Remove filter if clicking the same value
 			delete newFilters[tagKey];
 		} else {
-			// Set new filter
 			newFilters[tagKey] = tagValue;
 		}
 

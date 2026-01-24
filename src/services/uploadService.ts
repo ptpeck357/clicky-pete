@@ -7,7 +7,6 @@ export const uploadService = {
 		const formData = new FormData();
 		formData.append('file', upload.file);
 
-		// Build query parameters
 		const params = new URLSearchParams();
 		if (upload.customKey) params.append('customKey', upload.customKey);
 		if (upload.category) params.append('category', upload.category);
