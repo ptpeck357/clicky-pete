@@ -22,22 +22,24 @@ export const Upload: React.FC = () => {
 	}
 
 	return (
-		<div className="min-h-screen bg-gray-900 py-8">
+		<div className="min-h-screen bg-gray-900 py-6 sm:py-8">
 			<div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-				<div className="mb-8">
-					<h1 className="text-3xl font-bold text-white mb-2">Upload Photos</h1>
-					<p className="text-gray-400">Add new photos to your portfolio with tags for easy organization</p>
+				<div className="mb-6 sm:mb-8">
+					<h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Upload Photos</h1>
+					<p className="text-gray-400 text-sm sm:text-base">
+						Add new photos to your portfolio with tags for easy organization
+					</p>
 				</div>
 
 				<PhotoUpload onUploadComplete={handleUploadComplete} />
 
 				{/* Upload Tips */}
-				<div className="mt-8 bg-gray-800 border border-gray-700 rounded-lg p-6">
-					<h3 className="text-lg font-medium text-white mb-4">Upload Tips</h3>
-					<ul className="space-y-2 text-gray-300">
+				<div className="mt-6 sm:mt-8 bg-gray-800 border border-gray-700 rounded-lg p-4 sm:p-6">
+					<h3 className="text-base sm:text-lg font-medium text-white mb-4">Upload Tips</h3>
+					<ul className="space-y-2 text-gray-300 text-sm sm:text-base">
 						<li className="flex items-start">
 							<svg
-								className="w-5 h-5 text-blue-400 mt-0.5 mr-2 flex-shrink-0"
+								className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 mt-0.5 mr-2 flex-shrink-0"
 								fill="currentColor"
 								viewBox="0 0 20 20"
 							>
@@ -51,7 +53,7 @@ export const Upload: React.FC = () => {
 						</li>
 						<li className="flex items-start">
 							<svg
-								className="w-5 h-5 text-blue-400 mt-0.5 mr-2 flex-shrink-0"
+								className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 mt-0.5 mr-2 flex-shrink-0"
 								fill="currentColor"
 								viewBox="0 0 20 20"
 							>
@@ -65,7 +67,7 @@ export const Upload: React.FC = () => {
 						</li>
 						<li className="flex items-start">
 							<svg
-								className="w-5 h-5 text-blue-400 mt-0.5 mr-2 flex-shrink-0"
+								className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 mt-0.5 mr-2 flex-shrink-0"
 								fill="currentColor"
 								viewBox="0 0 20 20"
 							>
@@ -79,7 +81,7 @@ export const Upload: React.FC = () => {
 						</li>
 						<li className="flex items-start">
 							<svg
-								className="w-5 h-5 text-blue-400 mt-0.5 mr-2 flex-shrink-0"
+								className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 mt-0.5 mr-2 flex-shrink-0"
 								fill="currentColor"
 								viewBox="0 0 20 20"
 							>

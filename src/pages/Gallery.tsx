@@ -29,7 +29,7 @@ const headerVariants = {
 	visible: {
 		opacity: 1,
 		y: 0,
-		transition: { duration: 0.6, ease: 'easeOut' },
+		transition: { duration: 0.6 },
 	},
 };
 
@@ -38,7 +38,7 @@ const filterSectionVariants = {
 	visible: {
 		opacity: 1,
 		y: 0,
-		transition: { duration: 0.5, delay: 0.2, ease: 'easeOut' },
+		transition: { duration: 0.5, delay: 0.2 },
 	},
 };
 
@@ -139,13 +139,13 @@ export const Gallery: React.FC = () => {
 	return (
 		<div className="min-h-screen bg-gray-900">
 			{/* Main Content - Full Width */}
-			<main className="p-6 bg-gray-900">
+			<main className="p-4 sm:p-6 bg-gray-900">
 				{/* Header */}
-				<motion.div className="mb-8" variants={headerVariants} initial="hidden" animate="visible">
-					<div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
+				<motion.div className="mb-6 sm:mb-8" variants={headerVariants} initial="hidden" animate="visible">
+					<div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-4 sm:mb-6">
 						<div>
 							<motion.h1
-								className="text-3xl font-bold text-white mb-2"
+								className="text-2xl sm:text-3xl font-bold text-white mb-2"
 								initial={{ opacity: 0, x: -20 }}
 								animate={{ opacity: 1, x: 0 }}
 								transition={{ duration: 0.6, delay: 0.1 }}
@@ -153,7 +153,7 @@ export const Gallery: React.FC = () => {
 								Gallery
 							</motion.h1>
 							<motion.p
-								className="text-gray-400"
+								className="text-gray-400 text-sm sm:text-base"
 								initial={{ opacity: 0, x: -20 }}
 								animate={{ opacity: 1, x: 0 }}
 								transition={{ duration: 0.6, delay: 0.2 }}
@@ -164,7 +164,7 @@ export const Gallery: React.FC = () => {
 						</div>
 
 						<motion.div
-							className="mt-4 lg:mt-0 lg:w-96"
+							className="mt-4 lg:mt-0 w-full lg:w-96"
 							initial={{ opacity: 0, x: 20 }}
 							animate={{ opacity: 1, x: 0 }}
 							transition={{ duration: 0.6, delay: 0.3 }}
@@ -175,9 +175,14 @@ export const Gallery: React.FC = () => {
 				</motion.div>
 
 				{/* Category Filters - Top Bar */}
-				<motion.div className="mb-6" variants={filterSectionVariants} initial="hidden" animate="visible">
+				<motion.div
+					className="mb-4 sm:mb-6"
+					variants={filterSectionVariants}
+					initial="hidden"
+					animate="visible"
+				>
 					<motion.h3
-						className="text-lg font-medium text-white mb-3"
+						className="text-base sm:text-lg font-medium text-white mb-3"
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						transition={{ delay: 0.1 }}
@@ -197,7 +202,7 @@ export const Gallery: React.FC = () => {
 							animate={!filter.category ? 'active' : 'inactive'}
 							whileHover="hover"
 							whileTap={{ scale: 0.98 }}
-							className="px-4 py-2 rounded-full text-sm font-medium transition-colors"
+							className="px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors"
 						>
 							All
 						</motion.button>
@@ -210,7 +215,7 @@ export const Gallery: React.FC = () => {
 								animate={filter.category === category ? 'active' : 'inactive'}
 								whileHover="hover"
 								whileTap={{ scale: 0.98 }}
-								className="px-4 py-2 rounded-full text-sm font-medium transition-colors capitalize"
+								className="px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors capitalize"
 								style={{ animationDelay: `${index * 0.05}s` }}
 							>
 								{category}
@@ -221,14 +226,14 @@ export const Gallery: React.FC = () => {
 
 				{/* Location Filters - Top Bar */}
 				<motion.div
-					className="mb-6"
+					className="mb-4 sm:mb-6"
 					variants={filterSectionVariants}
 					initial="hidden"
 					animate="visible"
 					transition={{ delay: 0.1 }}
 				>
 					<motion.h3
-						className="text-lg font-medium text-white mb-3"
+						className="text-base sm:text-lg font-medium text-white mb-3"
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						transition={{ delay: 0.2 }}
@@ -248,7 +253,7 @@ export const Gallery: React.FC = () => {
 							animate={!filter.location ? 'active' : 'inactive'}
 							whileHover="hover"
 							whileTap={{ scale: 0.98 }}
-							className="px-4 py-2 rounded-full text-sm font-medium transition-colors"
+							className="px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors"
 						>
 							All Locations
 						</motion.button>
@@ -261,7 +266,7 @@ export const Gallery: React.FC = () => {
 								animate={filter.location === location ? 'active' : 'inactive'}
 								whileHover="hover"
 								whileTap={{ scale: 0.98 }}
-								className="px-4 py-2 rounded-full text-sm font-medium transition-colors"
+								className="px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors"
 								style={{ animationDelay: `${index * 0.05}s` }}
 							>
 								{location}

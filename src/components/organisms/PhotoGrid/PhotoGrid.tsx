@@ -34,7 +34,6 @@ const itemVariants = {
 		scale: 1,
 		transition: {
 			duration: 0.5,
-			ease: 'easeOut',
 		},
 	},
 };
@@ -84,7 +83,9 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ photos, loading = false, o
 	}
 
 	const gridClasses =
-		layout === 'masonry' ? 'masonry-grid' : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6';
+		layout === 'masonry'
+			? 'masonry-grid'
+			: 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6';
 
 	return (
 		<motion.div className={gridClasses} variants={containerVariants} initial="hidden" animate="visible">

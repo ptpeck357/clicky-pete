@@ -41,7 +41,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 				type="text"
 				value={query}
 				onChange={(e) => setQuery(e.target.value)}
-				className="block w-full pl-10 pr-10 py-2 border border-gray-600 rounded-md leading-5 bg-gray-800 placeholder-gray-400 text-white focus:outline-none focus:placeholder-gray-500 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+				className="block w-full pl-10 pr-10 py-2 sm:py-3 border border-gray-600 rounded-md leading-5 bg-gray-800 placeholder-gray-400 text-white focus:outline-none focus:placeholder-gray-500 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
 				placeholder={placeholder}
 			/>
 

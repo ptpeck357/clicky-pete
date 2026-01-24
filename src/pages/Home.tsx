@@ -98,7 +98,7 @@ export const Home: React.FC = () => {
 					</motion.div>
 
 					<motion.h1
-						className="text-5xl md:text-7xl font-bold mb-6 leading-tight"
+						className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 leading-tight"
 						variants={textVariants}
 						transition={{ duration: 0.8, ease: 'easeOut' }}
 					>
@@ -106,7 +106,7 @@ export const Home: React.FC = () => {
 					</motion.h1>
 
 					<motion.p
-						className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed"
+						className="text-lg sm:text-xl text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed px-4"
 						variants={textVariants}
 						transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
 					>
@@ -174,7 +174,7 @@ export const Home: React.FC = () => {
 			>
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 					<motion.div
-						className="flex justify-center space-x-4 mb-12"
+						className="flex flex-wrap justify-center gap-2 sm:gap-4 mb-12"
 						variants={photoGridVariants}
 						initial="hidden"
 						whileInView="visible"
@@ -194,7 +194,7 @@ export const Home: React.FC = () => {
 							>
 								<Link to={item.to}>
 									<motion.button
-										className={`px-6 py-3 rounded-full font-medium transition-colors ${
+										className={`px-4 py-2 sm:px-6 sm:py-3 rounded-full font-medium transition-colors text-sm sm:text-base ${
 											item.active
 												? 'bg-blue-600 text-white'
 												: 'bg-gray-800 text-gray-300 hover:bg-gray-700'

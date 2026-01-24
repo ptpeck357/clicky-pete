@@ -31,11 +31,11 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
 	};
 
 	return (
-		<div className="min-h-screen bg-gray-900 flex items-center justify-center">
-			<div className="max-w-md w-full bg-gray-800 rounded-lg shadow-lg p-8">
-				<div className="text-center mb-8">
-					<h2 className="text-2xl font-bold text-white mb-2">Admin Access</h2>
-					<p className="text-gray-400">Enter password to access upload functionality</p>
+		<div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
+			<div className="max-w-md w-full bg-gray-800 rounded-lg shadow-lg p-6 sm:p-8">
+				<div className="text-center mb-6 sm:mb-8">
+					<h2 className="text-xl sm:text-2xl font-bold text-white mb-2">Admin Access</h2>
+					<p className="text-gray-400 text-sm sm:text-base">Enter password to access upload functionality</p>
 				</div>
 
 				<form onSubmit={handleSubmit} className="space-y-6">
