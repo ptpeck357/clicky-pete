@@ -2,10 +2,10 @@ import React from 'react';
 
 export const Footer: React.FC = () => {
 	return (
-		<footer className="bg-gray-50 border-t border-gray-200">
-			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-				<div className="flex flex-col md:flex-row justify-between items-center">
-					<div className="flex items-center space-x-2 mb-4 md:mb-0">
+		<footer className="bg-gray-800 border-t border-gray-700">
+			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+				<div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+					<div className="flex items-center space-x-2">
 						<div className="w-6 h-6 bg-blue-600 rounded flex items-center justify-center">
 							<svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
 								<path
@@ -15,19 +15,19 @@ export const Footer: React.FC = () => {
 								/>
 							</svg>
 						</div>
-						<span className="text-gray-900 font-medium">PhotoPortfolio</span>
+						<span className="text-white font-medium">Clicky Pete</span>
 					</div>
 
-					<div className="flex items-center space-x-6 text-sm text-gray-600">
+					<div className="text-sm text-gray-400">
 						<span>© 2026 Clicky Pete</span>
 					</div>
 
-					<div className="flex items-center space-x-4 mt-4 md:mt-0">
+					<div className="flex items-center space-x-4">
 						<a
 							href="https://github.com"
 							target="_blank"
 							rel="noopener noreferrer"
-							className="text-gray-400 hover:text-gray-600 transition-colors"
+							className="text-gray-400 hover:text-white transition-colors"
 						>
 							<svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
 								<path
@@ -41,7 +41,7 @@ export const Footer: React.FC = () => {
 							href="https://twitter.com"
 							target="_blank"
 							rel="noopener noreferrer"
-							className="text-gray-400 hover:text-gray-600 transition-colors"
+							className="text-gray-400 hover:text-white transition-colors"
 						>
 							<svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
 								<path d="M6.29 18.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0020 3.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.073 4.073 0 01.8 7.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 010 16.407a11.616 11.616 0 006.29 1.84" />

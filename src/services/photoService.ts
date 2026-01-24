@@ -3,7 +3,7 @@ import { mockPhotoService } from './mockPhotoService';
 import type { Photo, PhotosResponse, CategoriesResponse } from '../types/api';
 
 // Toggle between mock and real API
-const USE_MOCK_DATA = import.meta.env.VITE_USE_MOCK_DATA === 'true' || true; // Default to mock for development
+const USE_MOCK_DATA = import.meta.env?.VITE_USE_MOCK_DATA === 'true' || true; // Default to mock for development
 
 export const photoService = {
 	// Get all photos
@@ -34,7 +34,7 @@ export const photoService = {
 			return mockPhotoService.getPhoto(key);
 		}
 
-		const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://localhost:7000/api'}/images/${key}`);
+		const response = await fetch(`${import.meta.env?.VITE_API_URL || 'https://localhost:7000/api'}/images/${key}`);
 		if (!response.ok) {
 			throw new Error('Failed to fetch photo');
 		}
@@ -99,8 +99,9 @@ export const photoService = {
 		const allPhotos = await this.getPhotos();
 		return allPhotos.filter(
 			(photo) =>
-				Object.values(photo.tags).some((tag) => tag.toLowerCase().includes(query.toLowerCase())) ||
-				photo.key.toLowerCase().includes(query.toLowerCase()),
+				Object.values(photo.tags).some(
+					(tag) => typeof tag === 'string' && tag.toLowerCase().includes(query.toLowerCase()),
+				) || photo.key.toLowerCase().includes(query.toLowerCase()),
 		);
 	},
 };
