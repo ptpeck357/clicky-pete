@@ -1,41 +1,21 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { Home } from '../pages/Home';
+import { Gallery } from '../pages/Gallery';
+import { Category } from '../pages/Category';
+import { Upload } from '../pages/Upload';
+import { About } from '../pages/About';
+import { AdminLogin } from '../components/auth/AdminLogin';
 
-// Temporary placeholder pages (replace with real pages later)
-function HomePage() {
-	return <div className="p-6">Home</div>;
-}
-function GalleryPage() {
-	return <div className="p-6">Gallery</div>;
-}
-function AboutPage() {
-	return <div className="p-6">About</div>;
-}
-function ContactPage() {
-	return <div className="p-6">Contact</div>;
-}
-function PhotoPage() {
-	return <div className="p-6">Photo detail</div>;
-}
-function AdminPage() {
-	return <div className="p-6">Admin</div>;
-}
-
-export function AppRouter() {
+export const Router: React.FC = () => {
 	return (
-		<BrowserRouter>
-			<Routes>
-				<Route path="/" element={<HomePage />} />
-				<Route path="/gallery" element={<GalleryPage />} />
-				<Route path="/about" element={<AboutPage />} />
-				<Route path="/contact" element={<ContactPage />} />
-
-				{/* future */}
-				<Route path="/photo/:id" element={<PhotoPage />} />
-				<Route path="/admin" element={<AdminPage />} />
-
-				{/* fallback */}
-				<Route path="*" element={<Navigate to="/" replace />} />
-			</Routes>
-		</BrowserRouter>
+		<Routes>
+			<Route path="/" element={<Home />} />
+			<Route path="/gallery" element={<Gallery />} />
+			<Route path="/category/:category" element={<Category />} />
+			<Route path="/upload" element={<Upload />} />
+			<Route path="/about" element={<About />} />
+			<Route path="/admin" element={<AdminLogin />} />
+		</Routes>
 	);
-}
+};

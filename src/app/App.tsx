@@ -1,5 +1,23 @@
-import { AppRouter } from './Router';
+import { BrowserRouter } from 'react-router-dom';
+import { Router } from './Router';
+import { Header } from '../components/layout/Header';
+import { Footer } from '../components/layout/Footer';
+import { AuthProvider } from '../components/providers/AuthProvider';
 
 export default function App() {
-	return <AppRouter />;
+	return (
+		<AuthProvider>
+			<BrowserRouter>
+				<div className="min-h-screen bg-gray-900">
+					<Header />
+					<main className="pt-16">
+						{' '}
+						{/* Add padding-top for fixed header */}
+						<Router />
+					</main>
+					<Footer />
+				</div>
+			</BrowserRouter>
+		</AuthProvider>
+	);
 }

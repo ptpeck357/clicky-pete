@@ -6,14 +6,17 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint . --ext .ts,.tsx --max-warnings=0",
-    "lint:check": "eslint . --ext .ts,.tsx --max-warnings=0",
-    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
+    "lint:eslint": "eslint . --max-warnings=0",
+    "lint:eslint:fix": "eslint . --max-warnings=0 --fix",
+    "lint:prettier": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
+    "lint:prettier:fix": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
+    "fix": "npm run lint:eslint:fix && npm run lint:prettier:fix",
     "pre-commit": "lint-staged",
     "prepare": "husky",
     "preview": "vite preview"
   },
   "dependencies": {
+    "framer-motion": "^12.29.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.12.0"

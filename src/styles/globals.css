@@ -1,113 +1,172 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
-#root {
-	max-width: 1280px;
-	margin: 0 auto;
-	padding: 2rem;
-	text-align: center;
+/* Custom styles for the photography portfolio */
+
+@layer base {
+	html {
+		scroll-behavior: smooth;
+	}
+
+	body {
+		@apply bg-gray-900 text-white m-0 min-h-screen;
+		font-family:
+			system-ui,
+			-apple-system,
+			BlinkMacSystemFont,
+			'Segoe UI',
+			Roboto,
+			sans-serif;
+	}
+
+	#root {
+		@apply min-h-screen bg-gray-900;
+		max-width: none;
+		margin: 0;
+		padding: 0;
+		text-align: left;
+	}
 }
 
-.logo {
-	height: 6em;
-	padding: 1.5em;
-	will-change: filter;
-	transition: filter 300ms;
-}
-.logo:hover {
-	filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-	filter: drop-shadow(0 0 2em #61dafbaa);
+@layer components {
+	/* Photo grid animations */
+	.photo-grid-item {
+		@apply transition-all duration-300 ease-in-out;
+	}
+
+	.photo-grid-item:hover {
+		@apply transform scale-105 shadow-2xl;
+	}
+
+	/* Custom scrollbar for dark theme */
+	.custom-scrollbar::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	.custom-scrollbar::-webkit-scrollbar-track {
+		@apply bg-gray-800 rounded-full;
+	}
+
+	.custom-scrollbar::-webkit-scrollbar-thumb {
+		@apply bg-gray-600 rounded-full;
+	}
+
+	.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+		@apply bg-gray-500;
+	}
+
+	/* Loading animations */
+	.skeleton {
+		@apply animate-pulse bg-gray-800;
+	}
+
+	/* Photo modal animations */
+	.modal-enter {
+		@apply opacity-0 scale-95;
+	}
+
+	.modal-enter-active {
+		@apply opacity-100 scale-100 transition-all duration-200;
+	}
+
+	.modal-exit {
+		@apply opacity-100 scale-100;
+	}
+
+	.modal-exit-active {
+		@apply opacity-0 scale-95 transition-all duration-200;
+	}
+
+	/* Masonry grid for photos */
+	.masonry-grid {
+		column-count: 1;
+		column-gap: 1rem;
+	}
+
+	@media (min-width: 640px) {
+		.masonry-grid {
+			column-count: 2;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.masonry-grid {
+			column-count: 3;
+		}
+	}
+
+	.masonry-item {
+		@apply break-inside-avoid mb-4 rounded-lg overflow-hidden;
+	}
 }
 
-@keyframes logo-spin {
+@layer utilities {
+	/* Aspect ratio utilities for photos */
+	.aspect-square {
+		aspect-ratio: 1 / 1;
+	}
+
+	.aspect-photo {
+		aspect-ratio: 4 / 3;
+	}
+
+	.aspect-wide {
+		aspect-ratio: 16 / 9;
+	}
+
+	/* Animation utilities */
+	.animate-fade-in {
+		animation: fadeIn 0.5s ease-in-out;
+	}
+
+	.animate-slide-up {
+		animation: slideUp 0.3s ease-out;
+	}
+
+	/* Gradient overlays */
+	.gradient-overlay {
+		background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0.8) 100%);
+	}
+}
+
+/* Keyframe animations */
+@keyframes fadeIn {
 	from {
-		transform: rotate(0deg);
+		opacity: 0;
 	}
 	to {
-		transform: rotate(360deg);
+		opacity: 1;
 	}
 }
 
-@media (prefers-reduced-motion: no-preference) {
-	a:nth-of-type(2) .logo {
-		animation: logo-spin infinite 20s linear;
+@keyframes slideUp {
+	from {
+		transform: translateY(20px);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
 	}
 }
 
-.card {
-	padding: 2em;
+/* Dark theme photo card styles */
+.photo-card-dark {
+	@apply bg-gray-800 border border-gray-700 hover:border-gray-600 transition-all duration-300;
 }
 
-.read-the-docs {
-	color: #888;
+.photo-card-dark:hover {
+	@apply shadow-2xl shadow-black/50;
 }
 
-:root {
-	font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-	line-height: 1.5;
-	font-weight: 400;
-
-	color-scheme: light dark;
-	color: rgba(255, 255, 255, 0.87);
-	background-color: #242424;
-
-	font-synthesis: none;
-	text-rendering: optimizeLegibility;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
+/* Upload drag and drop styles for dark theme */
+.upload-dropzone-dark {
+	@apply border-2 border-dashed border-gray-600 rounded-lg p-8 text-center transition-colors cursor-pointer bg-gray-800;
 }
 
-a {
-	font-weight: 500;
-	color: #646cff;
-	text-decoration: inherit;
-}
-a:hover {
-	color: #535bf2;
+.upload-dropzone-dark:hover {
+	@apply border-gray-500 bg-gray-700;
 }
 
-body {
-	margin: 0;
-	display: flex;
-	place-items: center;
-	min-width: 320px;
-	min-height: 100vh;
-}
-
-h1 {
-	font-size: 3.2em;
-	line-height: 1.1;
-}
-
-button {
-	border-radius: 8px;
-	border: 1px solid transparent;
-	padding: 0.6em 1.2em;
-	font-size: 1em;
-	font-weight: 500;
-	font-family: inherit;
-	background-color: #1a1a1a;
-	cursor: pointer;
-	transition: border-color 0.25s;
-}
-button:hover {
-	border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-	outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-	:root {
-		color: #213547;
-		background-color: #ffffff;
-	}
-	a:hover {
-		color: #747bff;
-	}
-	button {
-		background-color: #f9f9f9;
-	}
+.upload-dropzone-dark.dragover {
+	@apply border-blue-500 bg-blue-900/20;
 }
