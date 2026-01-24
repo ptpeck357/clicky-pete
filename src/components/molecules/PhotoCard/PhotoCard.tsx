@@ -7,9 +7,10 @@ interface PhotoCardProps {
 	photo: Photo;
 	onClick?: () => void;
 	className?: string;
+	aspectRatio?: 'square' | 'natural';
 }
 
-export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick, className = '' }) => {
+export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick, className = '', aspectRatio = 'square' }) => {
 	const [imageLoaded, setImageLoaded] = useState(false);
 	const [imageError, setImageError] = useState(false);
 
@@ -24,6 +25,15 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick, className 
 		return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + ' ' + sizes[i];
 	};
 
+	const getAspectClass = () => {
+		if (aspectRatio === 'square') return 'aspect-square';
+
+		const photoAspectRatio = (photo.tags.aspectRatio as string) || '3:2';
+		if (photoAspectRatio === '3:4') return 'aspect-[3/4]';
+		if (photoAspectRatio === '3:2') return 'aspect-[3/2]';
+		return 'aspect-square';
+	};
+
 	return (
 		<motion.div
 			className={`bg-gray-800 rounded-lg overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer group ${className}`}
@@ -35,7 +45,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick, className 
 			whileTap={{ scale: 0.98 }}
 			layout
 		>
-			<div className="relative aspect-square bg-gray-700 overflow-hidden">
+			<div className={`relative ${getAspectClass()} bg-gray-700 overflow-hidden`}>
 				{!imageLoaded && !imageError && (
 					<motion.div
 						className="absolute inset-0 flex items-center justify-center"

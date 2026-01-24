@@ -124,7 +124,7 @@ export const Category: React.FC = () => {
 					</Link>
 				</div>
 
-				<PhotoGrid photos={photos} loading={loading} onPhotoClick={handlePhotoClick} />
+				<PhotoGrid photos={photos} loading={loading} onPhotoClick={handlePhotoClick} aspectRatio="natural" />
 
 				{!loading && photos.length === 0 && (
 					<div className="text-center py-12">
