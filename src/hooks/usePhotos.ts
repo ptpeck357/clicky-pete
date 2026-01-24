@@ -24,7 +24,6 @@ export const usePhotos = (filter?: PhotoFilter) => {
 				fetchedPhotos = await photoService.getPhotos();
 			}
 
-			// Apply search filter if provided
 			if (filter?.search) {
 				const searchTerm = filter.search.toLowerCase();
 				fetchedPhotos = fetchedPhotos.filter(

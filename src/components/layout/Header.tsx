@@ -14,7 +14,6 @@ export const Header: React.FC = () => {
 		<header className="bg-gray-900 border-b border-gray-800 fixed w-full top-0 z-50">
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				<div className="flex justify-between items-center h-16">
-					{/* Logo */}
 					<Link to="/" className="flex items-center space-x-2" onClick={() => setIsMobileMenuOpen(false)}>
 						<div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
 							<svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -28,10 +27,8 @@ export const Header: React.FC = () => {
 						<span className="text-xl font-bold text-white">Clicky Pete</span>
 					</Link>
 
-					{/* Desktop Navigation */}
 					<Navigation className="hidden md:flex" />
 
-					{/* Mobile menu button */}
 					<div className="md:hidden">
 						<motion.button
 							className="text-gray-300 hover:text-white focus:outline-none focus:text-white p-2"
@@ -66,7 +63,6 @@ export const Header: React.FC = () => {
 					</div>
 				</div>
 
-				{/* Mobile Navigation Menu */}
 				<AnimatePresence>
 					{isMobileMenuOpen && (
 						<motion.div

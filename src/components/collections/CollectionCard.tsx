@@ -20,7 +20,6 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({ name, count, cov
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.5 }}
 		>
-			{/* Cover Photo */}
 			<div className="aspect-[4/3] relative overflow-hidden">
 				<motion.img
 					src={coverPhoto.preSignedUrl}
@@ -30,7 +29,6 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({ name, count, cov
 					transition={{ duration: 0.3 }}
 				/>
 
-				{/* Overlay */}
 				<motion.div
 					className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-end"
 					initial={{ opacity: 0 }}
@@ -48,7 +46,6 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({ name, count, cov
 				</motion.div>
 			</div>
 
-			{/* Collection Info */}
 			<div className="p-4">
 				<h3 className="text-white font-semibold text-lg mb-1">{name}</h3>
 				<p className="text-gray-400 text-sm">{count} photos</p>

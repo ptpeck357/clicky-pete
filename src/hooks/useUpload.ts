@@ -14,7 +14,6 @@ export const useUpload = () => {
 			setError(null);
 			setProgress(0);
 
-			// Simulate progress for better UX
 			const progressInterval = setInterval(() => {
 				setProgress((prev) => Math.min(prev + 10, 90));
 			}, 200);

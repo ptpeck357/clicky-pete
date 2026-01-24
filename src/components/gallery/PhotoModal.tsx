@@ -44,7 +44,6 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({ photo, isOpen, onClose, 
 	return (
 		<Modal isOpen={isOpen} onClose={onClose} size="xl">
 			<div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
-				{/* Image */}
 				<div className="flex-1">
 					<div className="relative bg-gray-100 rounded-lg overflow-hidden">
 						{!imageLoaded && (
@@ -62,7 +61,6 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({ photo, isOpen, onClose, 
 						/>
 					</div>
 
-					{/* Navigation - Mobile Optimized */}
 					<div className="flex flex-col sm:flex-row justify-between items-center mt-4 gap-3 sm:gap-0">
 						<Button
 							variant="secondary"
@@ -103,7 +101,6 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({ photo, isOpen, onClose, 
 					</div>
 				</div>
 
-				{/* Photo Details */}
 				<div className="lg:w-80 mt-4 lg:mt-0">
 					<h3 className="text-lg font-semibold mb-4">Photo Details</h3>
 
@@ -141,7 +138,6 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({ photo, isOpen, onClose, 
 				</div>
 			</div>
 
-			{/* Delete Confirmation Modal */}
 			{showDeleteConfirm && (
 				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
 					<div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">

@@ -62,7 +62,6 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick }) => {
 					/>
 				)}
 
-				{/* Overlay with tags */}
 				<div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-50 transition-all duration-200 flex items-end">
 					<div className="p-4 text-white opacity-0 hover:opacity-100 transition-opacity duration-200">
 						{photo.tags.category && (
@@ -75,7 +74,6 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick }) => {
 				</div>
 			</div>
 
-			{/* Photo info */}
 			<div className="p-4">
 				<div className="flex items-center justify-between text-sm text-gray-600 mb-2">
 					<span>{formatDate(photo.lastModified)}</span>

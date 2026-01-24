@@ -91,7 +91,6 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick, className 
 					/>
 				)}
 
-				{/* Overlay */}
 				<motion.div
 					className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 flex items-end"
 					initial={{ opacity: 0 }}
@@ -128,7 +127,6 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick, className 
 				</motion.div>
 			</div>
 
-			{/* Photo info */}
 			<motion.div className="p-4" initial={{ opacity: 0.8 }} whileHover={{ opacity: 1 }}>
 				<div className="flex items-center justify-between text-sm text-gray-400 mb-2">
 					<span>{formatDate(photo.lastModified)}</span>

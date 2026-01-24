@@ -65,7 +65,6 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({ onUploadComplete }) =>
 				await uploadMultiplePhotos(uploads);
 			}
 
-			// Reset form
 			setSelectedFiles([]);
 			setCategory('');
 			setLocation('');
@@ -85,7 +84,6 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({ onUploadComplete }) =>
 			</CardHeader>
 			<CardContent>
 				<div className="space-y-6">
-					{/* File Drop Zone */}
 					<div
 						className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
 							dragOver ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
@@ -122,7 +120,6 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({ onUploadComplete }) =>
 						<p className="text-sm text-gray-500">Supports JPEG, PNG, GIF, WebP</p>
 					</div>
 
-					{/* Selected Files */}
 					{selectedFiles.length > 0 && (
 						<div>
 							<h4 className="font-medium mb-3">Selected Files ({selectedFiles.length})</h4>
@@ -171,7 +168,6 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({ onUploadComplete }) =>
 						</div>
 					)}
 
-					{/* Tags Form */}
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div>
 							<label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
@@ -226,7 +222,6 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({ onUploadComplete }) =>
 						</div>
 					</div>
 
-					{/* Upload Progress */}
 					{uploading && (
 						<div>
 							<div className="flex justify-between text-sm text-gray-600 mb-1">
@@ -242,14 +237,12 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({ onUploadComplete }) =>
 						</div>
 					)}
 
-					{/* Error Message */}
 					{error && (
 						<div className="bg-red-50 border border-red-200 rounded-md p-4">
 							<p className="text-red-800">{error}</p>
 						</div>
 					)}
 
-					{/* Upload Button */}
 					<Button
 						onClick={handleUpload}
 						disabled={selectedFiles.length === 0 || uploading}

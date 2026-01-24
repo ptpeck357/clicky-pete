@@ -3,12 +3,10 @@ import React from 'react';
 export const About: React.FC = () => {
 	return (
 		<div className="min-h-screen bg-gray-50">
-			{/* Hero Section */}
 			<section className="bg-white py-12 sm:py-16">
 				<div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="text-center mb-8 sm:mb-12">
 						<div className="w-24 h-24 sm:w-32 sm:h-32 bg-gray-300 rounded-full mx-auto mb-6 overflow-hidden">
-							{/* Replace with actual profile photo */}
 							<div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
 								<svg
 									className="w-12 h-12 sm:w-16 sm:h-16 text-white"
@@ -28,9 +26,7 @@ export const About: React.FC = () => {
 							Passionate photographer capturing life's beautiful moments through my lens
 						</p>
 
-						{/* Social Media Links */}
 						<div className="flex items-center justify-center space-x-6 mt-8">
-							{/* LinkedIn */}
 							<a
 								href="https://linkedin.com/in/clickypete"
 								target="_blank"
@@ -43,7 +39,6 @@ export const About: React.FC = () => {
 								</svg>
 							</a>
 
-							{/* GitHub */}
 							<a
 								href="https://github.com/clickypete"
 								target="_blank"
@@ -56,7 +51,6 @@ export const About: React.FC = () => {
 								</svg>
 							</a>
 
-							{/* Instagram Account 1 - Main Photography */}
 							<a
 								href="https://instagram.com/clickypete_photography"
 								target="_blank"
@@ -69,7 +63,6 @@ export const About: React.FC = () => {
 								</svg>
 							</a>
 
-							{/* Instagram Account 2 - Landscapes */}
 							<a
 								href="https://instagram.com/clickypete_landscapes"
 								target="_blank"
@@ -82,7 +75,6 @@ export const About: React.FC = () => {
 								</svg>
 							</a>
 
-							{/* Instagram Account 3 - Street Photography */}
 							<a
 								href="https://instagram.com/clickypete_street"
 								target="_blank"
@@ -99,7 +91,6 @@ export const About: React.FC = () => {
 				</div>
 			</section>
 
-			{/* Story Section */}
 			<section className="py-12 sm:py-16">
 				<div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="prose prose-lg mx-auto max-w-none">
@@ -122,11 +113,9 @@ export const About: React.FC = () => {
 				</div>
 			</section>
 
-			{/* Skills & Equipment */}
 			<section className="bg-white py-12 sm:py-16">
 				<div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-						{/* Photography Styles */}
 						<div>
 							<h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">Photography Styles</h3>
 							<div className="space-y-3 sm:space-y-4">
@@ -149,7 +138,6 @@ export const About: React.FC = () => {
 							</div>
 						</div>
 
-						{/* Equipment */}
 						<div>
 							<h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">Equipment</h3>
 							<div className="space-y-4">
