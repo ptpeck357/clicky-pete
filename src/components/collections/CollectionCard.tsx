@@ -20,7 +20,7 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({ name, count, cov
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.5 }}
 		>
-			<div className="aspect-[4/3] relative overflow-hidden">
+			<div className="aspect-square relative overflow-hidden">
 				<motion.img
 					src={coverPhoto.preSignedUrl}
 					alt={`${name} collection`}

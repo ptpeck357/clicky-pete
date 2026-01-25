@@ -9,6 +9,7 @@ interface PhotoGridProps {
 	loading?: boolean;
 	onPhotoClick?: (photo: Photo) => void;
 	layout?: 'grid' | 'masonry';
+	aspectRatio?: 'square' | 'natural';
 }
 
 const containerVariants = {
@@ -38,7 +39,13 @@ const itemVariants = {
 	},
 };
 
-export const PhotoGrid: React.FC<PhotoGridProps> = ({ photos, loading = false, onPhotoClick, layout = 'grid' }) => {
+export const PhotoGrid: React.FC<PhotoGridProps> = ({
+	photos,
+	loading = false,
+	onPhotoClick,
+	layout = 'grid',
+	aspectRatio = 'square',
+}) => {
 	if (loading) {
 		return (
 			<motion.div
@@ -82,10 +89,15 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ photos, loading = false, o
 		);
 	}
 
-	const gridClasses =
-		layout === 'masonry'
-			? 'masonry-grid'
-			: 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6';
+	const gridClasses = (() => {
+		if (layout === 'masonry') return 'masonry-grid';
+
+		if (aspectRatio === 'natural') {
+			return 'columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 sm:gap-6 space-y-4';
+		}
+
+		return 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6';
+	})();
 
 	return (
 		<motion.div className={gridClasses} variants={containerVariants} initial="hidden" animate="visible">
@@ -98,11 +110,13 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({ photos, loading = false, o
 						transition: { duration: 0.2 },
 					}}
 					whileTap={{ scale: 0.98 }}
+					className={aspectRatio === 'natural' ? 'break-inside-avoid mb-4' : ''}
 				>
 					<PhotoCard
 						photo={photo}
 						onClick={() => onPhotoClick?.(photo)}
 						className={layout === 'masonry' ? 'masonry-item' : ''}
+						aspectRatio={aspectRatio}
 					/>
 				</motion.div>
 			))}

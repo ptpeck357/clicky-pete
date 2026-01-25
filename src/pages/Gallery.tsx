@@ -309,7 +309,12 @@ export const Gallery: React.FC = () => {
 							)}
 
 							{/* Photo Grid */}
-							<PhotoGrid photos={photos} loading={loading} onPhotoClick={handlePhotoClick} />
+							<PhotoGrid
+								photos={photos}
+								loading={loading}
+								onPhotoClick={handlePhotoClick}
+								aspectRatio="natural"
+							/>
 						</motion.div>
 					)}
 				</AnimatePresence>

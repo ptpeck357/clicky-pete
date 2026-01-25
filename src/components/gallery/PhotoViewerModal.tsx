@@ -12,6 +12,24 @@ interface PhotoViewerModalProps {
 
 export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpen, onClose, onNext, onPrevious }) => {
 	const [imageLoaded, setImageLoaded] = useState(false);
+	const [windowDimensions, setWindowDimensions] = useState({
+		width: typeof window !== 'undefined' ? window.innerWidth : 1920,
+		height: typeof window !== 'undefined' ? window.innerHeight : 1080,
+	});
+
+	useEffect(() => {
+		const handleResize = () => {
+			setWindowDimensions({
+				width: window.innerWidth,
+				height: window.innerHeight,
+			});
+		};
+
+		if (typeof window !== 'undefined') {
+			window.addEventListener('resize', handleResize);
+			return () => window.removeEventListener('resize', handleResize);
+		}
+	}, []);
 
 	useEffect(() => {
 		const handleEscape = (e: KeyboardEvent) => {
@@ -50,6 +68,43 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 	}
 
 	if (!photo) return null;
+
+	const getModalDimensions = () => {
+		const aspectRatio = (photo.tags.aspectRatio as string) || '3:2';
+		const isPortrait = aspectRatio === '3:4';
+
+		const viewportWidth = windowDimensions.width;
+		const viewportHeight = windowDimensions.height;
+
+		let containerWidth: number;
+		let containerHeight: number;
+
+		if (isPortrait) {
+			// For 3:4 portraits, prioritize height
+			containerHeight = Math.min(viewportHeight * 0.85, 800);
+			containerWidth = containerHeight * (3 / 4);
+
+			// Ensure it doesn't exceed viewport width
+			if (containerWidth > viewportWidth * 0.9) {
+				containerWidth = viewportWidth * 0.9;
+				containerHeight = containerWidth * (4 / 3);
+			}
+		} else {
+			// For 3:2 landscapes, prioritize width
+			containerWidth = Math.min(viewportWidth * 0.85, 1200);
+			containerHeight = containerWidth * (2 / 3);
+
+			// Ensure it doesn't exceed viewport height
+			if (containerHeight > viewportHeight * 0.9) {
+				containerHeight = viewportHeight * 0.9;
+				containerWidth = containerHeight * (3 / 2);
+			}
+		}
+
+		return { containerWidth, containerHeight, aspectRatio };
+	};
+
+	const { containerWidth, containerHeight, aspectRatio } = getModalDimensions();
 
 	return (
 		<AnimatePresence>
@@ -126,7 +181,7 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 					)}
 
 					<motion.div
-						className="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center"
+						className="relative flex items-center justify-center"
 						initial={{ opacity: 0, scale: 0.8 }}
 						animate={{ opacity: 1, scale: 1 }}
 						exit={{ opacity: 0, scale: 0.8 }}
@@ -143,38 +198,47 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 							</motion.div>
 						)}
 
-						<motion.img
-							src={photo.preSignedUrl}
-							alt={(photo.tags.category as string) || 'Photo'}
-							className={`max-w-full max-h-full object-contain rounded-lg shadow-2xl transition-opacity duration-300 ${
-								imageLoaded ? 'opacity-100' : 'opacity-0'
-							}`}
-							onLoad={() => setImageLoaded(true)}
-							initial={{ opacity: 0 }}
-							animate={{ opacity: imageLoaded ? 1 : 0 }}
-							transition={{ duration: 0.3 }}
-						/>
-
-						<motion.div
-							className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 rounded-b-lg"
-							initial={{ opacity: 0, y: 20 }}
-							animate={{ opacity: 1, y: 0 }}
-							transition={{ delay: 0.5, duration: 0.3 }}
+						<div
+							className="relative rounded-lg shadow-2xl overflow-hidden"
+							style={{
+								width: `${containerWidth}px`,
+								height: `${containerHeight}px`,
+								aspectRatio: aspectRatio.replace(':', '/'),
+							}}
 						>
-							<div className="text-white">
-								{photo.tags.category && (
-									<span className="inline-block bg-blue-600 text-xs px-3 py-1 rounded-full mb-2 font-medium">
-										{photo.tags.category}
-									</span>
-								)}
-								{photo.tags.location && (
-									<p className="text-sm font-medium mb-1">{photo.tags.location}</p>
-								)}
-								{photo.tags.collection && (
-									<p className="text-xs text-gray-300">{photo.tags.collection} Collection</p>
-								)}
-							</div>
-						</motion.div>
+							<motion.img
+								src={photo.preSignedUrl}
+								alt={(photo.tags.category as string) || 'Photo'}
+								className={`w-full h-full object-cover transition-opacity duration-300 ${
+									imageLoaded ? 'opacity-100' : 'opacity-0'
+								}`}
+								onLoad={() => setImageLoaded(true)}
+								initial={{ opacity: 0 }}
+								animate={{ opacity: imageLoaded ? 1 : 0 }}
+								transition={{ duration: 0.3 }}
+							/>
+
+							<motion.div
+								className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 rounded-b-lg"
+								initial={{ opacity: 0, y: 20 }}
+								animate={{ opacity: 1, y: 0 }}
+								transition={{ delay: 0.5, duration: 0.3 }}
+							>
+								<div className="text-white">
+									{photo.tags.category && (
+										<span className="inline-block bg-blue-600 text-xs px-3 py-1 rounded-full mb-2 font-medium">
+											{photo.tags.category}
+										</span>
+									)}
+									{photo.tags.location && (
+										<p className="text-sm font-medium mb-1">{photo.tags.location}</p>
+									)}
+									{photo.tags.collection && (
+										<p className="text-xs text-gray-300">{photo.tags.collection} Collection</p>
+									)}
+								</div>
+							</motion.div>
+						</div>
 					</motion.div>
 
 					<motion.div

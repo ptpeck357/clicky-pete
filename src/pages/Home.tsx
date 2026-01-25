@@ -266,84 +266,91 @@ export const Home: React.FC = () => {
 						</motion.div>
 					) : (
 						<motion.div
-							className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+							className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4"
 							variants={photoGridVariants}
 							initial="hidden"
 							whileInView="visible"
 							viewport={{ once: true }}
 						>
-							{recentPhotos.map((photo, index) => (
-								<motion.div
-									key={photo.key}
-									variants={photoItemVariants}
-									transition={{ duration: 0.6, ease: 'easeOut' }}
-									whileHover={{ scale: 1.05 }}
-									whileTap={{ scale: 0.95 }}
-								>
-									<div
-										onClick={() => handlePhotoClick(photo)}
-										className={`group relative overflow-hidden rounded-lg cursor-pointer transition-transform duration-300 ${
-											index === 0 ? 'md:col-span-2 md:row-span-2' : ''
-										} ${index === 3 ? 'lg:row-span-2' : ''}`}
+							{recentPhotos.map((photo) => {
+								const aspectRatio = (photo.tags.aspectRatio as string) || '3:2';
+
+								const getAspectClass = (aspectRatio: string) => {
+									if (aspectRatio === '3:4') return 'aspect-[3/4]';
+									if (aspectRatio === '3:2') return 'aspect-[3/2]';
+									return 'aspect-[3/2]';
+								};
+
+								return (
+									<motion.div
+										key={photo.key}
+										variants={photoItemVariants}
+										transition={{ duration: 0.6, ease: 'easeOut' }}
+										whileHover={{ scale: 1.02 }}
+										whileTap={{ scale: 0.98 }}
+										className="break-inside-avoid mb-4"
 									>
 										<div
-											className={`bg-gray-800 ${index === 0 ? 'aspect-[2/1]' : 'aspect-square'}`}
+											onClick={() => handlePhotoClick(photo)}
+											className="group relative overflow-hidden rounded-lg cursor-pointer transition-transform duration-300"
 										>
-											<motion.img
-												src={photo.preSignedUrl}
-												alt={(photo.tags.category as string) || 'Photo'}
-												className="w-full h-full object-cover"
-												initial={{ opacity: 0, scale: 1.1 }}
-												animate={{ opacity: 1, scale: 1 }}
-												transition={{ duration: 0.6 }}
-												whileHover={{ scale: 1.1 }}
-											/>
-										</div>
-										<motion.div
-											className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 flex items-end"
-											initial={{ opacity: 0 }}
-											whileHover={{ opacity: 1 }}
-										>
-											<motion.div
-												className="p-6 text-white"
-												initial={{ y: 20, opacity: 0 }}
-												whileHover={{ y: 0, opacity: 1 }}
-												transition={{ delay: 0.1 }}
-											>
-												{photo.tags.category && (
-													<span className="inline-block bg-blue-600 text-xs px-3 py-1 rounded-full mb-2 font-medium">
-														{photo.tags.category as string}
-													</span>
-												)}
-												{photo.tags.location && (
-													<p className="text-sm font-medium">
-														{photo.tags.location as string}
-													</p>
-												)}
-											</motion.div>
-										</motion.div>
-
-										<motion.div
-											className="absolute top-4 right-4 bg-black bg-opacity-50 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity"
-											whileHover={{ scale: 1.1 }}
-										>
-											<svg
-												className="w-4 h-4 text-white"
-												fill="none"
-												stroke="currentColor"
-												viewBox="0 0 24 24"
-											>
-												<path
-													strokeLinecap="round"
-													strokeLinejoin="round"
-													strokeWidth={2}
-													d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+											<div className={`bg-gray-800 ${getAspectClass(aspectRatio)}`}>
+												<motion.img
+													src={photo.preSignedUrl}
+													alt={(photo.tags.category as string) || 'Photo'}
+													className="w-full h-full object-cover"
+													initial={{ opacity: 0, scale: 1.1 }}
+													animate={{ opacity: 1, scale: 1 }}
+													transition={{ duration: 0.6 }}
+													whileHover={{ scale: 1.1 }}
 												/>
-											</svg>
-										</motion.div>
-									</div>
-								</motion.div>
-							))}
+											</div>
+											<motion.div
+												className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 flex items-end"
+												initial={{ opacity: 0 }}
+												whileHover={{ opacity: 1 }}
+											>
+												<motion.div
+													className="p-6 text-white"
+													initial={{ y: 20, opacity: 0 }}
+													whileHover={{ y: 0, opacity: 1 }}
+													transition={{ delay: 0.1 }}
+												>
+													{photo.tags.category && (
+														<span className="inline-block bg-blue-600 text-xs px-3 py-1 rounded-full mb-2 font-medium">
+															{photo.tags.category as string}
+														</span>
+													)}
+													{photo.tags.location && (
+														<p className="text-sm font-medium">
+															{photo.tags.location as string}
+														</p>
+													)}
+												</motion.div>
+											</motion.div>
+
+											<motion.div
+												className="absolute top-4 right-4 bg-black bg-opacity-50 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity"
+												whileHover={{ scale: 1.1 }}
+											>
+												<svg
+													className="w-4 h-4 text-white"
+													fill="none"
+													stroke="currentColor"
+													viewBox="0 0 24 24"
+												>
+													<path
+														strokeLinecap="round"
+														strokeLinejoin="round"
+														strokeWidth={2}
+														d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+													/>
+												</svg>
+											</motion.div>
+										</div>
+									</motion.div>
+								);
+							})}
 						</motion.div>
 					)}
 
