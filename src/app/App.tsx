@@ -1,8 +1,7 @@
 import { BrowserRouter } from 'react-router-dom';
 import { Router } from './Router';
-import { Header } from '../components/layout/Header';
-import { Footer } from '../components/layout/Footer';
-import { AuthProvider } from '../components/providers/AuthProvider';
+import { Header, Footer } from '../components/organisms';
+import { AuthProvider } from '../contexts';
 
 export default function App() {
 	return (

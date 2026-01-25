@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { CollectionCard } from './CollectionCard';
-import { getCollectionStats } from '../../data/mockPhotos';
-import { Spinner } from '../atoms';
-import type { Collection } from '../../types/photo';
+import { CollectionCard } from '../CollectionCard';
+import { getCollectionStats } from '../../../data/mockPhotos';
+import { Spinner } from '../../atoms';
+import type { Collection } from '../../../types/photo';
 
 interface CollectionsGridProps {
 	onCollectionSelect: (collection: string) => void;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { CategoryFilter } from '../organisms/CategoryFilter';
+import { CategoryFilter } from '../CategoryFilter';
 
 interface SidebarProps {
 	selectedCategory?: string;

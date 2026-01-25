@@ -1,8 +1,8 @@
 import React, { useState, useRef } from 'react';
-import { Button } from '../ui/Button';
-import { Card, CardContent, CardHeader } from '../ui/Card';
-import { useUpload } from '../../hooks/useUpload';
-import type { PhotoUpload as PhotoUploadType } from '../../types/photo';
+import { Button } from '../../atoms';
+import { Card, CardContent, CardHeader } from '../../atoms';
+import { useUpload } from '../../../hooks/useUpload';
+import type { PhotoUpload as PhotoUploadType } from '../../../types/photo';
 
 interface PhotoUploadProps {
 	onUploadComplete?: () => void;

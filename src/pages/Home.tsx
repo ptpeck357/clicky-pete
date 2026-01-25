@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { PhotoViewerModal } from '../components/gallery/PhotoViewerModal';
-import { PhotoGrid } from '../components/organisms/PhotoGrid';
+import { PhotoViewerModal, PhotoGrid } from '../components/organisms';
 import { getFeaturedPhotos } from '../data/mockPhotos';
 import type { Photo } from '../types/photo';
 
