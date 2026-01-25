@@ -6,6 +6,14 @@ export interface Photo {
 	preSignedUrl?: string;
 }
 
+export interface Collection {
+	name: string;
+	count: number;
+	coverPhoto: Photo;
+	photos: Photo[];
+	description?: string;
+}
+
 export interface PhotoUpload {
 	file: File;
 	category?: string;

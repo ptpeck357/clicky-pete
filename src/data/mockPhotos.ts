@@ -218,11 +218,15 @@ export const getCollections = (): string[] => {
 
 export const getCollectionStats = () => {
 	const collections = getCollections();
-	return collections.map((collection) => ({
-		name: collection,
-		count: getPhotosByCollection(collection).length,
-		coverPhoto: getPhotosByCollection(collection)[0],
-	}));
+	return collections.map((collection) => {
+		const photos = getPhotosByCollection(collection);
+		return {
+			name: collection,
+			count: photos.length,
+			coverPhoto: photos[0],
+			photos: photos,
+		};
+	});
 };
 
 export const searchPhotos = (query: string): Photo[] => {

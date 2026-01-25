@@ -28,14 +28,19 @@ export const mockPhotoService = {
 	},
 
 	async getPhotosByTag(tagKey: string, tagValue?: string): Promise<Photo[]> {
+		console.log('mockPhotoService: getPhotosByTag called with:', { tagKey, tagValue });
 		await delay(300);
 
 		if (tagKey === 'category' && tagValue) {
-			return getPhotosByCategory(tagValue);
+			const result = getPhotosByCategory(tagValue);
+			console.log('mockPhotoService: category filter result:', result.length);
+			return result;
 		}
 
 		if (tagKey === 'collection' && tagValue) {
-			return getPhotosByCollection(tagValue);
+			const result = getPhotosByCollection(tagValue);
+			console.log('mockPhotoService: collection filter result:', { tagValue, count: result.length });
+			return result;
 		}
 
 		return mockPhotos.filter((photo) => {
