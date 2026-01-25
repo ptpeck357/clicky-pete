@@ -20,17 +20,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
 }) => {
 	const [imageLoaded, setImageLoaded] = useState(false);
 	const [imageError, setImageError] = useState(false);
-
-	const formatDate = (dateString: string) => {
-		return new Date(dateString).toLocaleDateString();
-	};
-
-	const formatFileSize = (bytes: number) => {
-		const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-		if (bytes === 0) return '0 Bytes';
-		const i = Math.floor(Math.log(bytes) / Math.log(1024));
-		return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + ' ' + sizes[i];
-	};
+	const [tagsExpanded, setTagsExpanded] = useState(false);
 
 	const getAspectClass = () => {
 		if (aspectRatio === 'square') return 'aspect-square';
@@ -146,14 +136,10 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
 
 			{showMetadata && (
 				<motion.div className="p-4" initial={{ opacity: 0.8 }} whileHover={{ opacity: 1 }}>
-					<div className="flex items-center justify-between text-sm text-gray-400 mb-2">
-						<span>{formatDate(photo.lastModified)}</span>
-						<span>{formatFileSize(photo.size)}</span>
-					</div>
-
 					<motion.div className="flex flex-wrap gap-1" initial={{ opacity: 0.7 }} whileHover={{ opacity: 1 }}>
 						{Object.entries(photo.tags)
-							.slice(0, 3)
+							.filter(([key]) => !['uploaded', 'featured', 'aspectRatio', 'equipment'].includes(key))
+							.slice(0, tagsExpanded ? undefined : 3)
 							.map(([key, value], index) => (
 								<motion.div
 									key={key}
@@ -166,18 +152,59 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
 									</Tag>
 								</motion.div>
 							))}
-						{Object.keys(photo.tags).length > 3 && (
+						{Object.entries(photo.tags).filter(
+							([key]) => !['uploaded', 'featured', 'aspectRatio', 'equipment'].includes(key),
+						).length > 3 &&
+							!tagsExpanded && (
+								<motion.button
+									onClick={(e) => {
+										e.stopPropagation();
+										setTagsExpanded(true);
+									}}
+									className="inline-flex items-center"
+									initial={{ opacity: 0, scale: 0.8 }}
+									animate={{ opacity: 1, scale: 1 }}
+									transition={{ delay: 0.3 }}
+									whileHover={{ scale: 1.05 }}
+									whileTap={{ scale: 0.95 }}
+								>
+									<Tag variant="default" size="sm">
+										+
+										{Object.entries(photo.tags).filter(
+											([key]) =>
+												!['uploaded', 'featured', 'aspectRatio', 'equipment'].includes(key),
+										).length - 3}{' '}
+										more
+									</Tag>
+								</motion.button>
+							)}
+					</motion.div>
+
+					{tagsExpanded &&
+						Object.entries(photo.tags).filter(
+							([key]) => !['uploaded', 'featured', 'aspectRatio', 'equipment'].includes(key),
+						).length > 3 && (
 							<motion.div
-								initial={{ opacity: 0, scale: 0.8 }}
-								animate={{ opacity: 1, scale: 1 }}
-								transition={{ delay: 0.3 }}
+								className="flex justify-center mt-2"
+								initial={{ opacity: 0, y: 10 }}
+								animate={{ opacity: 1, y: 0 }}
+								transition={{ delay: 0.2 }}
 							>
-								<Tag variant="default" size="sm">
-									+{Object.keys(photo.tags).length - 3} more
-								</Tag>
+								<motion.button
+									onClick={(e) => {
+										e.stopPropagation();
+										setTagsExpanded(false);
+									}}
+									className="inline-flex items-center"
+									whileHover={{ scale: 1.05 }}
+									whileTap={{ scale: 0.95 }}
+								>
+									<Tag variant="default" size="sm">
+										Show less
+									</Tag>
+								</motion.button>
 							</motion.div>
 						)}
-					</motion.div>
 				</motion.div>
 			)}
 		</motion.div>
