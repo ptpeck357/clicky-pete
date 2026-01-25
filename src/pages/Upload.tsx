@@ -1,8 +1,7 @@
 import React from 'react';
-import { PhotoUpload } from '../components/gallery/PhotoUpload';
+import { PhotoUpload, AdminLogin } from '../components/organisms';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { AdminLogin } from '../components/auth/AdminLogin';
 
 export const Upload: React.FC = () => {
 	const navigate = useNavigate();

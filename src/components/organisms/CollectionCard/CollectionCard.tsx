@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import type { Photo } from '../../types/photo';
+import type { Photo } from '../../../types/photo';
 
 interface CollectionCardProps {
 	name: string;

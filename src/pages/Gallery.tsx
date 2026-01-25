@@ -1,10 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { PhotoGrid } from '../components/organisms/PhotoGrid';
-import { PhotoViewerModal } from '../components/gallery/PhotoViewerModal';
-import { SearchBar } from '../components/filters/SearchBar';
-import { CollectionsGrid } from '../components/collections/CollectionsGrid';
+import { PhotoGrid, PhotoViewerModal, CollectionsGrid } from '../components/organisms';
+import { SearchBar } from '../components/molecules';
 import { usePhotos } from '../hooks/usePhotos';
 import type { Photo, PhotoFilter } from '../types/photo';
 

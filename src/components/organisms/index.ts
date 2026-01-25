@@ -1,3 +1,13 @@
 export { PhotoGrid } from './PhotoGrid';
 export { CategoryFilter } from './CategoryFilter';
 export { Navigation } from './Navigation';
+export { Header } from './Header';
+export { Footer } from './Footer';
+export { Sidebar } from './Sidebar';
+export { PhotoModal } from './PhotoModal';
+export { PhotoUpload } from './PhotoUpload';
+export { PhotoViewerModal } from './PhotoViewerModal';
+export { CollectionCard } from './CollectionCard';
+export { CollectionsGrid } from './CollectionsGrid';
+export { AdminLogin } from './AdminLogin';
+export { TagFilter } from './TagFilter';

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useAuth } from '../../hooks/useAuth';
-import { Button } from '../atoms/Button';
-import { Input } from '../atoms/Input';
+import { useAuth } from '../../../hooks/useAuth';
+import { Button } from '../../atoms';
+import { Input } from '../../atoms';
 
 interface AdminLoginProps {
 	onLoginSuccess?: () => void;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { photoService } from '../../services/photoService';
+import { photoService } from '../../../services/photoService';
 
 interface TagFilterProps {
 	onFilterChange: (filters: { [key: string]: string }) => void;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { Photo } from '../../types/photo';
+import type { Photo } from '../../../types/photo';
 
 interface PhotoViewerModalProps {
 	photo: Photo | null;

@@ -4,7 +4,7 @@ import { Home } from '../pages/Home';
 import { Gallery } from '../pages/Gallery';
 import { Upload } from '../pages/Upload';
 import { About } from '../pages/About';
-import { AdminLogin } from '../components/auth/AdminLogin';
+import { AdminLogin } from '../components/organisms';
 
 export const Router: React.FC = () => {
 	return (

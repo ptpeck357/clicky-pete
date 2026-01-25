@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AuthContext } from '../../contexts/AuthContext';
+import { AuthContext } from './AuthContext';
 
 const ADMIN_PASSWORD = import.meta.env?.VITE_ADMIN_PASSWORD || 'clickypete2026';
 

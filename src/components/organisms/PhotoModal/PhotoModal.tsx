@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import type { Photo } from '../../types/photo';
-import { Modal } from '../ui/Modal';
-import { Button } from '../ui/Button';
+import type { Photo } from '../../../types/photo';
+import { Modal } from '../../atoms';
+import { Button } from '../../atoms';
 
 interface PhotoModalProps {
 	photo: Photo | null;
