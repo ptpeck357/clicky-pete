@@ -92,7 +92,6 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({ collection, onCl
 					/>
 				)}
 
-				{/* Overlay */}
 				<motion.div
 					className="collection-overlay"
 					variants={overlayVariants}
@@ -106,7 +105,6 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({ collection, onCl
 						</motion.h3>
 					</motion.div>
 
-					{/* Shot count badge */}
 					<motion.div
 						className="shot-count-badge"
 						variants={badgeVariants}

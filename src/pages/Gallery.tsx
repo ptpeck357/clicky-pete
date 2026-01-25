@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { PhotoGrid } from '../components/organisms/PhotoGrid';
 import { PhotoViewerModal } from '../components/gallery/PhotoViewerModal';
 import { SearchBar } from '../components/filters/SearchBar';
@@ -10,17 +11,17 @@ import type { Photo, PhotoFilter } from '../types/photo';
 const filterButtonVariants = {
 	inactive: {
 		scale: 1,
-		backgroundColor: 'rgb(55, 65, 81)', // gray-700
-		color: 'rgb(209, 213, 219)', // gray-300
+		backgroundColor: 'rgb(55, 65, 81)',
+		color: 'rgb(209, 213, 219)',
 	},
 	active: {
 		scale: 1.05,
-		backgroundColor: 'rgb(37, 99, 235)', // blue-600
+		backgroundColor: 'rgb(37, 99, 235)',
 		color: 'rgb(255, 255, 255)',
 	},
 	hover: {
 		scale: 1.02,
-		backgroundColor: 'rgb(75, 85, 99)', // gray-600
+		backgroundColor: 'rgb(75, 85, 99)',
 		transition: { duration: 0.2 },
 	},
 };
@@ -44,28 +45,41 @@ const filterSectionVariants = {
 };
 
 export const Gallery: React.FC = () => {
-	const [filter, setFilter] = useState<PhotoFilter>({});
+	const { collection: urlCollection } = useParams<{ collection: string }>();
+	const [searchParams] = useSearchParams();
+	const navigate = useNavigate();
+
+	const showAllPhotos = searchParams.get('view') === 'all';
+
+	const filter = useMemo<PhotoFilter>(() => {
+		if (showAllPhotos) {
+			return {}; // No filter for all photos
+		}
+		return urlCollection ? { collection: urlCollection } : {};
+	}, [urlCollection, showAllPhotos]);
+
+	const viewMode = useMemo<'collections' | 'photos'>(() => {
+		return urlCollection || showAllPhotos ? 'photos' : 'collections';
+	}, [urlCollection, showAllPhotos]);
+
+	const [localFilter, setLocalFilter] = useState<PhotoFilter>({});
 	const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [viewMode, setViewMode] = useState<'collections' | 'photos'>('collections');
 
-	const { photos, loading, error, refetch } = usePhotos(filter);
-
-	console.log('Gallery Debug:', { photos: photos.length, loading, error, viewMode, filter });
+	const finalFilter = { ...filter, ...localFilter };
+	const { photos, loading, error, refetch } = usePhotos(finalFilter);
 
 	const handleCategoryChange = (category: string | undefined) => {
-		setFilter((prev) => ({ ...prev, category, collection: undefined }));
-		setViewMode('photos');
+		setLocalFilter({ category });
+		navigate('/gallery?view=all');
 	};
 
 	const handleCollectionSelect = (collection: string) => {
-		setFilter({ collection });
-		setViewMode('photos');
+		navigate(`/gallery/${collection}`);
 	};
 
 	const handleSearchChange = (search: string) => {
-		setFilter((prev) => ({ ...prev, search: search || undefined }));
-		if (search) setViewMode('photos');
+		setLocalFilter((prev) => ({ ...prev, search: search || undefined }));
 	};
 
 	const handlePhotoClick = (photo: Photo) => {
@@ -98,8 +112,7 @@ export const Gallery: React.FC = () => {
 	};
 
 	const handleBackToCollections = () => {
-		setFilter({});
-		setViewMode('collections');
+		navigate('/gallery');
 	};
 
 	const categories = ['landscape', 'portrait', 'street', 'aerial', 'wildlife'];
@@ -152,9 +165,11 @@ export const Gallery: React.FC = () => {
 								>
 									{viewMode === 'collections'
 										? 'Collections'
-										: filter.collection
-											? `${filter.collection} Collection`
-											: 'Gallery'}
+										: showAllPhotos
+											? 'All Photos'
+											: filter.collection
+												? `${filter.collection} Collection`
+												: 'Gallery'}
 								</motion.h1>
 
 								{viewMode === 'photos' && (
@@ -183,7 +198,7 @@ export const Gallery: React.FC = () => {
 									: loading
 										? 'Loading...'
 										: `${photos.length} photos`}
-								{filter.category && ` in ${filter.category}`}
+								{localFilter.category && ` in ${localFilter.category}`}
 								{filter.collection && ` from ${filter.collection}`}
 							</motion.p>
 						</div>
@@ -201,7 +216,6 @@ export const Gallery: React.FC = () => {
 					</div>
 				</motion.div>
 
-				{/* View Mode Toggle */}
 				<motion.div
 					className="mb-6"
 					initial={{ opacity: 0 }}
@@ -210,7 +224,7 @@ export const Gallery: React.FC = () => {
 				>
 					<div className="flex gap-2">
 						<motion.button
-							onClick={() => setViewMode('collections')}
+							onClick={() => navigate('/gallery')}
 							className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
 								viewMode === 'collections'
 									? 'bg-blue-600 text-white'
@@ -222,11 +236,12 @@ export const Gallery: React.FC = () => {
 							Collections
 						</motion.button>
 						<motion.button
-							onClick={() => setViewMode('photos')}
+							onClick={() => {
+								setLocalFilter({});
+								navigate('/gallery?view=all');
+							}}
 							className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-								viewMode === 'photos'
-									? 'bg-blue-600 text-white'
-									: 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+								showAllPhotos ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
 							}`}
 							whileHover={{ scale: 1.05 }}
 							whileTap={{ scale: 0.95 }}
@@ -236,7 +251,6 @@ export const Gallery: React.FC = () => {
 					</div>
 				</motion.div>
 
-				{/* Content */}
 				<AnimatePresence mode="wait">
 					{viewMode === 'collections' ? (
 						<motion.div
@@ -256,8 +270,7 @@ export const Gallery: React.FC = () => {
 							exit={{ opacity: 0, y: -20 }}
 							transition={{ duration: 0.3 }}
 						>
-							{/* Category Filters - Only show when not in a specific collection */}
-							{!filter.collection && (
+							{showAllPhotos && (
 								<motion.div
 									className="mb-4 sm:mb-6"
 									variants={filterSectionVariants}
@@ -282,7 +295,7 @@ export const Gallery: React.FC = () => {
 											onClick={() => handleCategoryChange(undefined)}
 											variants={filterButtonVariants}
 											initial="inactive"
-											animate={!filter.category ? 'active' : 'inactive'}
+											animate={!localFilter.category ? 'active' : 'inactive'}
 											whileHover="hover"
 											whileTap={{ scale: 0.98 }}
 											className="px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors"
@@ -295,7 +308,7 @@ export const Gallery: React.FC = () => {
 												onClick={() => handleCategoryChange(category)}
 												variants={filterButtonVariants}
 												initial="inactive"
-												animate={filter.category === category ? 'active' : 'inactive'}
+												animate={localFilter.category === category ? 'active' : 'inactive'}
 												whileHover="hover"
 												whileTap={{ scale: 0.98 }}
 												className="px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors capitalize"
@@ -308,7 +321,6 @@ export const Gallery: React.FC = () => {
 								</motion.div>
 							)}
 
-							{/* Photo Grid */}
 							<PhotoGrid
 								photos={photos}
 								loading={loading}
@@ -320,7 +332,6 @@ export const Gallery: React.FC = () => {
 				</AnimatePresence>
 			</main>
 
-			{/* Photo Modal */}
 			<PhotoViewerModal
 				photo={selectedPhoto}
 				isOpen={isModalOpen}

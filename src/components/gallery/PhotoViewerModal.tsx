@@ -80,21 +80,17 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 		let containerHeight: number;
 
 		if (isPortrait) {
-			// For 3:4 portraits, prioritize height
 			containerHeight = Math.min(viewportHeight * 0.85, 800);
 			containerWidth = containerHeight * (3 / 4);
 
-			// Ensure it doesn't exceed viewport width
 			if (containerWidth > viewportWidth * 0.9) {
 				containerWidth = viewportWidth * 0.9;
 				containerHeight = containerWidth * (4 / 3);
 			}
 		} else {
-			// For 3:2 landscapes, prioritize width
 			containerWidth = Math.min(viewportWidth * 0.85, 1200);
 			containerHeight = containerWidth * (2 / 3);
 
-			// Ensure it doesn't exceed viewport height
 			if (containerHeight > viewportHeight * 0.9) {
 				containerHeight = viewportHeight * 0.9;
 				containerWidth = containerHeight * (3 / 2);
