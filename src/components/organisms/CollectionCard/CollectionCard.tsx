@@ -29,7 +29,6 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({ name, count, cov
 					transition={{ duration: 0.3 }}
 				/>
 
-				{/* Photo Count - Top Right */}
 				<motion.div
 					className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1.5"
 					initial={{ opacity: 0, scale: 0.8 }}
@@ -47,7 +46,6 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({ name, count, cov
 					<span className="text-white text-sm font-medium">{count}</span>
 				</motion.div>
 
-				{/* Collection Title - Bottom Left */}
 				<motion.div
 					className="absolute bottom-4 left-4"
 					initial={{ opacity: 0, y: 10 }}

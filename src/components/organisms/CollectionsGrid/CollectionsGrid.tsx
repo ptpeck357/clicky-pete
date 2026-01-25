@@ -28,7 +28,6 @@ export const CollectionsGrid: React.FC<CollectionsGridProps> = ({ onCollectionSe
 		const fetchCollections = async () => {
 			try {
 				setLoading(true);
-				// Add a small delay to show loading state
 				await new Promise((resolve) => setTimeout(resolve, 200));
 				const collectionStats = getCollectionStats();
 				setCollections(collectionStats);
