@@ -12,6 +12,7 @@ interface PhotoViewerModalProps {
 
 export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpen, onClose, onNext, onPrevious }) => {
 	const [imageLoaded, setImageLoaded] = useState(false);
+	const [imageError, setImageError] = useState(false);
 	const [windowDimensions, setWindowDimensions] = useState({
 		width: typeof window !== 'undefined' ? window.innerWidth : 1920,
 		height: typeof window !== 'undefined' ? window.innerHeight : 1080,
@@ -64,6 +65,7 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 
 	if (currentPhotoKey !== lastPhotoKey) {
 		setImageLoaded(false);
+		setImageError(false);
 		setLastPhotoKey(currentPhotoKey);
 	}
 
@@ -183,7 +185,7 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 						exit={{ opacity: 0, scale: 0.8 }}
 						transition={{ duration: 0.4, ease: 'easeOut' }}
 					>
-						{!imageLoaded && (
+						{!imageLoaded && !imageError && (
 							<motion.div
 								className="absolute inset-0 flex items-center justify-center"
 								initial={{ opacity: 0 }}
@@ -191,6 +193,36 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 								exit={{ opacity: 0 }}
 							>
 								<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white" />
+							</motion.div>
+						)}
+
+						{imageError && (
+							<motion.div
+								className="absolute inset-0 flex items-center justify-center bg-gray-800 rounded-lg"
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								exit={{ opacity: 0 }}
+							>
+								<div className="text-center text-gray-400">
+									<motion.svg
+										className="mx-auto h-16 w-16 mb-4"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke="currentColor"
+										initial={{ scale: 0 }}
+										animate={{ scale: 1 }}
+										transition={{ type: 'spring', stiffness: 200 }}
+									>
+										<path
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											strokeWidth={2}
+											d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+										/>
+									</motion.svg>
+									<p className="text-lg font-medium">Failed to load image</p>
+									<p className="text-sm text-gray-500 mt-1">The image could not be displayed</p>
+								</div>
 							</motion.div>
 						)}
 
@@ -209,31 +241,34 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 									imageLoaded ? 'opacity-100' : 'opacity-0'
 								}`}
 								onLoad={() => setImageLoaded(true)}
+								onError={() => setImageError(true)}
 								initial={{ opacity: 0 }}
 								animate={{ opacity: imageLoaded ? 1 : 0 }}
 								transition={{ duration: 0.3 }}
 							/>
 
-							<motion.div
-								className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 rounded-b-lg"
-								initial={{ opacity: 0, y: 20 }}
-								animate={{ opacity: 1, y: 0 }}
-								transition={{ delay: 0.5, duration: 0.3 }}
-							>
-								<div className="text-white">
-									{photo.tags.category && (
-										<span className="inline-block bg-blue-600 text-xs px-3 py-1 rounded-full mb-2 font-medium">
-											{photo.tags.category}
-										</span>
-									)}
-									{photo.tags.location && (
-										<p className="text-sm font-medium mb-1">{photo.tags.location}</p>
-									)}
-									{photo.tags.collection && (
-										<p className="text-xs text-gray-300">{photo.tags.collection} Collection</p>
-									)}
-								</div>
-							</motion.div>
+							{imageLoaded && !imageError && (
+								<motion.div
+									className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 rounded-b-lg"
+									initial={{ opacity: 0, y: 20 }}
+									animate={{ opacity: 1, y: 0 }}
+									transition={{ delay: 0.5, duration: 0.3 }}
+								>
+									<div className="text-white">
+										{photo.tags.category && (
+											<span className="inline-block bg-blue-600 text-xs px-3 py-1 rounded-full mb-2 font-medium">
+												{photo.tags.category}
+											</span>
+										)}
+										{photo.tags.location && (
+											<p className="text-sm font-medium mb-1">{photo.tags.location}</p>
+										)}
+										{photo.tags.collection && (
+											<p className="text-xs text-gray-300">{photo.tags.collection} Collection</p>
+										)}
+									</div>
+								</motion.div>
+							)}
 						</div>
 					</motion.div>
 

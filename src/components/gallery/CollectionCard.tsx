@@ -11,6 +11,11 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({ collection, onCl
 	const [imageLoaded, setImageLoaded] = useState(false);
 	const [imageError, setImageError] = useState(false);
 
+	// Safety checks
+	if (!collection || !collection.coverPhoto) {
+		return null;
+	}
+
 	const overlayVariants = {
 		hidden: { opacity: 0 },
 		visible: { opacity: 1 },
@@ -110,14 +115,7 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({ collection, onCl
 						variants={badgeVariants}
 						transition={{ delay: 0.4, type: 'spring', stiffness: 200 }}
 					>
-						<svg className="camera-icon" fill="currentColor" viewBox="0 0 20 20">
-							<path
-								fillRule="evenodd"
-								d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z"
-								clipRule="evenodd"
-							/>
-						</svg>
-						<span>{collection.photos.length} Shots</span>
+						<span>{collection.photos?.length || collection.count || 0} Photos</span>
 					</motion.div>
 				</motion.div>
 			</div>

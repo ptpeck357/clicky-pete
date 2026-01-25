@@ -1,18 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { CollectionCard } from './CollectionCard';
+import { CollectionCard } from '../gallery/CollectionCard';
 import { getCollectionStats } from '../../data/mockPhotos';
 import { Spinner } from '../atoms';
-import type { Photo } from '../../types/photo';
+import type { Collection } from '../../types/photo';
 
 interface CollectionsGridProps {
 	onCollectionSelect: (collection: string) => void;
-}
-
-interface CollectionStat {
-	name: string;
-	count: number;
-	coverPhoto: Photo;
 }
 
 const containerVariants = {
@@ -27,13 +21,15 @@ const containerVariants = {
 };
 
 export const CollectionsGrid: React.FC<CollectionsGridProps> = ({ onCollectionSelect }) => {
-	const [collections, setCollections] = useState<CollectionStat[]>([]);
+	const [collections, setCollections] = useState<Collection[]>([]);
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
 		const fetchCollections = async () => {
 			try {
 				setLoading(true);
+				// Add a small delay to show loading state
+				await new Promise((resolve) => setTimeout(resolve, 500));
 				const collectionStats = getCollectionStats();
 				setCollections(collectionStats);
 			} catch (error) {
@@ -48,9 +44,22 @@ export const CollectionsGrid: React.FC<CollectionsGridProps> = ({ onCollectionSe
 
 	if (loading) {
 		return (
-			<div className="flex justify-center items-center py-12">
+			<motion.div
+				className="flex flex-col justify-center items-center py-16"
+				initial={{ opacity: 0 }}
+				animate={{ opacity: 1 }}
+				transition={{ duration: 0.3 }}
+			>
 				<Spinner size="lg" color="blue" />
-			</div>
+				<motion.p
+					className="text-gray-400 mt-4 text-sm"
+					initial={{ opacity: 0, y: 10 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ delay: 0.2 }}
+				>
+					Loading collections...
+				</motion.p>
+			</motion.div>
 		);
 	}
 
@@ -72,9 +81,7 @@ export const CollectionsGrid: React.FC<CollectionsGridProps> = ({ onCollectionSe
 			{collections.map((collection) => (
 				<CollectionCard
 					key={collection.name}
-					name={collection.name}
-					count={collection.count}
-					coverPhoto={collection.coverPhoto}
+					collection={collection}
 					onClick={() => onCollectionSelect(collection.name)}
 				/>
 			))}
