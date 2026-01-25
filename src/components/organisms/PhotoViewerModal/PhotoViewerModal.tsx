@@ -115,7 +115,7 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 					transition={{ duration: 0.3 }}
 				>
 					<motion.div
-						className="absolute inset-0 bg-black/80 backdrop-blur-md"
+						className="absolute inset-0 bg-black/40 backdrop-blur-md"
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}
