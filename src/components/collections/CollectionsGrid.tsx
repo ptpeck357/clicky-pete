@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { CollectionCard } from '../gallery/CollectionCard';
+import { CollectionCard } from './CollectionCard';
 import { getCollectionStats } from '../../data/mockPhotos';
 import { Spinner } from '../atoms';
 import type { Collection } from '../../types/photo';
@@ -15,7 +15,7 @@ const containerVariants = {
 		opacity: 1,
 		transition: {
 			staggerChildren: 0.1,
-			delayChildren: 0.2,
+			delayChildren: 0,
 		},
 	},
 };
@@ -29,7 +29,7 @@ export const CollectionsGrid: React.FC<CollectionsGridProps> = ({ onCollectionSe
 			try {
 				setLoading(true);
 				// Add a small delay to show loading state
-				await new Promise((resolve) => setTimeout(resolve, 500));
+				await new Promise((resolve) => setTimeout(resolve, 200));
 				const collectionStats = getCollectionStats();
 				setCollections(collectionStats);
 			} catch (error) {
@@ -81,7 +81,9 @@ export const CollectionsGrid: React.FC<CollectionsGridProps> = ({ onCollectionSe
 			{collections.map((collection) => (
 				<CollectionCard
 					key={collection.name}
-					collection={collection}
+					name={collection.name}
+					count={collection.count}
+					coverPhoto={collection.coverPhoto}
 					onClick={() => onCollectionSelect(collection.name)}
 				/>
 			))}

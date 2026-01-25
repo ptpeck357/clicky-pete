@@ -104,18 +104,22 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({ collection, onCl
 					animate="visible"
 					whileHover="hover"
 				>
-					<motion.div className="collection-content" variants={textVariants}>
-						<motion.h3 className="collection-title" variants={textVariants}>
+					{/* Collection Title - Bottom Left */}
+					<motion.div className="absolute bottom-4 left-4" variants={textVariants}>
+						<motion.h3 className="text-white text-lg font-bold drop-shadow-lg" variants={textVariants}>
 							{collection.name}
 						</motion.h3>
 					</motion.div>
 
+					{/* Photo Count - Top Right */}
 					<motion.div
-						className="shot-count-badge"
+						className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm rounded-full px-3 py-1"
 						variants={badgeVariants}
-						transition={{ delay: 0.4, type: 'spring', stiffness: 200 }}
+						transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
 					>
-						<span>{collection.photos?.length || collection.count || 0} Photos</span>
+						<span className="text-white text-sm font-medium">
+							{collection.photos?.length || collection.count || 0} Photos
+						</span>
 					</motion.div>
 				</motion.div>
 			</div>

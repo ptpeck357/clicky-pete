@@ -29,26 +29,33 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({ name, count, cov
 					transition={{ duration: 0.3 }}
 				/>
 
+				{/* Photo Count - Top Right */}
 				<motion.div
-					className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-end"
-					initial={{ opacity: 0 }}
-					whileHover={{ opacity: 1 }}
+					className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1.5"
+					initial={{ opacity: 0, scale: 0.8 }}
+					animate={{ opacity: 1, scale: 1 }}
+					transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
 				>
-					<motion.div
-						className="p-4 text-white w-full"
-						initial={{ y: 20, opacity: 0 }}
-						whileHover={{ y: 0, opacity: 1 }}
-						transition={{ delay: 0.1 }}
-					>
-						<h3 className="text-lg font-semibold mb-1">{name}</h3>
-						<p className="text-sm text-gray-300">{count} photos</p>
-					</motion.div>
+					<svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							strokeWidth={2}
+							d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+						/>
+					</svg>
+					<span className="text-white text-sm font-medium">{count}</span>
 				</motion.div>
-			</div>
 
-			<div className="p-4">
-				<h3 className="text-white font-semibold text-lg mb-1">{name}</h3>
-				<p className="text-gray-400 text-sm">{count} photos</p>
+				{/* Collection Title - Bottom Left */}
+				<motion.div
+					className="absolute bottom-4 left-4"
+					initial={{ opacity: 0, y: 10 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ delay: 0.1 }}
+				>
+					<h3 className="text-white text-xl font-bold drop-shadow-lg">{name}</h3>
+				</motion.div>
 			</div>
 		</motion.div>
 	);

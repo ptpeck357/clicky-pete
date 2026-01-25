@@ -29,7 +29,6 @@ export const mockPhotoService = {
 
 	async getPhotosByTag(tagKey: string, tagValue?: string): Promise<Photo[]> {
 		console.log('mockPhotoService: getPhotosByTag called with:', { tagKey, tagValue });
-		await delay(300);
 
 		if (tagKey === 'category' && tagValue) {
 			const result = getPhotosByCategory(tagValue);
