@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { AuthContext } from './AuthContext';
 
-const ADMIN_PASSWORD = import.meta.env?.VITE_ADMIN_PASSWORD || 'clickypete2026';
+const ADMIN_PASSWORD = import.meta.env?.VITE_ADMIN_PASSWORD;
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 	const [isAdmin, setIsAdmin] = useState(() => {
