@@ -10,6 +10,8 @@ interface PhotoGridProps {
 	onPhotoClick?: (photo: Photo) => void;
 	layout?: 'grid' | 'masonry';
 	aspectRatio?: 'square' | 'natural';
+	showMetadata?: boolean;
+	columns?: 'default' | 'large';
 }
 
 const containerVariants = {
@@ -45,6 +47,8 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({
 	onPhotoClick,
 	layout = 'grid',
 	aspectRatio = 'square',
+	showMetadata = true,
+	columns = 'default',
 }) => {
 	if (loading) {
 		return (
@@ -93,7 +97,14 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({
 		if (layout === 'masonry') return 'masonry-grid';
 
 		if (aspectRatio === 'natural') {
+			if (columns === 'large') {
+				return 'columns-1 md:columns-2 lg:columns-3 gap-4 sm:gap-6 space-y-4';
+			}
 			return 'columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 sm:gap-6 space-y-4';
+		}
+
+		if (columns === 'large') {
+			return 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6';
 		}
 
 		return 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6';
@@ -117,6 +128,7 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({
 						onClick={() => onPhotoClick?.(photo)}
 						className={layout === 'masonry' ? 'masonry-item' : ''}
 						aspectRatio={aspectRatio}
+						showMetadata={showMetadata}
 					/>
 				</motion.div>
 			))}

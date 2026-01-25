@@ -8,9 +8,16 @@ interface PhotoCardProps {
 	onClick?: () => void;
 	className?: string;
 	aspectRatio?: 'square' | 'natural';
+	showMetadata?: boolean;
 }
 
-export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick, className = '', aspectRatio = 'square' }) => {
+export const PhotoCard: React.FC<PhotoCardProps> = ({
+	photo,
+	onClick,
+	className = '',
+	aspectRatio = 'square',
+	showMetadata = true,
+}) => {
 	const [imageLoaded, setImageLoaded] = useState(false);
 	const [imageError, setImageError] = useState(false);
 
@@ -137,40 +144,42 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick, className 
 				</motion.div>
 			</div>
 
-			<motion.div className="p-4" initial={{ opacity: 0.8 }} whileHover={{ opacity: 1 }}>
-				<div className="flex items-center justify-between text-sm text-gray-400 mb-2">
-					<span>{formatDate(photo.lastModified)}</span>
-					<span>{formatFileSize(photo.size)}</span>
-				</div>
+			{showMetadata && (
+				<motion.div className="p-4" initial={{ opacity: 0.8 }} whileHover={{ opacity: 1 }}>
+					<div className="flex items-center justify-between text-sm text-gray-400 mb-2">
+						<span>{formatDate(photo.lastModified)}</span>
+						<span>{formatFileSize(photo.size)}</span>
+					</div>
 
-				<motion.div className="flex flex-wrap gap-1" initial={{ opacity: 0.7 }} whileHover={{ opacity: 1 }}>
-					{Object.entries(photo.tags)
-						.slice(0, 3)
-						.map(([key, value], index) => (
+					<motion.div className="flex flex-wrap gap-1" initial={{ opacity: 0.7 }} whileHover={{ opacity: 1 }}>
+						{Object.entries(photo.tags)
+							.slice(0, 3)
+							.map(([key, value], index) => (
+								<motion.div
+									key={key}
+									initial={{ opacity: 0, x: -10 }}
+									animate={{ opacity: 1, x: 0 }}
+									transition={{ delay: index * 0.1 }}
+								>
+									<Tag variant="default" size="sm">
+										{key}: {value}
+									</Tag>
+								</motion.div>
+							))}
+						{Object.keys(photo.tags).length > 3 && (
 							<motion.div
-								key={key}
-								initial={{ opacity: 0, x: -10 }}
-								animate={{ opacity: 1, x: 0 }}
-								transition={{ delay: index * 0.1 }}
+								initial={{ opacity: 0, scale: 0.8 }}
+								animate={{ opacity: 1, scale: 1 }}
+								transition={{ delay: 0.3 }}
 							>
 								<Tag variant="default" size="sm">
-									{key}: {value}
+									+{Object.keys(photo.tags).length - 3} more
 								</Tag>
 							</motion.div>
-						))}
-					{Object.keys(photo.tags).length > 3 && (
-						<motion.div
-							initial={{ opacity: 0, scale: 0.8 }}
-							animate={{ opacity: 1, scale: 1 }}
-							transition={{ delay: 0.3 }}
-						>
-							<Tag variant="default" size="sm">
-								+{Object.keys(photo.tags).length - 3} more
-							</Tag>
-						</motion.div>
-					)}
+						)}
+					</motion.div>
 				</motion.div>
-			</motion.div>
+			)}
 		</motion.div>
 	);
 };
