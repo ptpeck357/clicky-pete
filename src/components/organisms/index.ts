@@ -11,3 +11,4 @@ export { CollectionCard } from './CollectionCard';
 export { CollectionsGrid } from './CollectionsGrid';
 export { AdminLogin } from './AdminLogin';
 export { TagFilter } from './TagFilter';
+export { ContactModal } from './ContactModal';
