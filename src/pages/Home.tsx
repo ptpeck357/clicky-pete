@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { PhotoViewerModal, PhotoGrid } from '../components/organisms';
 import { getFeaturedPhotos } from '../data/mockPhotos';
+import { shuffleArray } from '../utils/array';
 import type { Photo } from '../types/photo';
 
 const heroVariants = {
@@ -26,7 +27,7 @@ export const Home: React.FC = () => {
 	const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
-	const featuredPhotos = useMemo(() => getFeaturedPhotos(), []);
+	const featuredPhotos = useMemo(() => shuffleArray(getFeaturedPhotos()), []);
 
 	const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
 	const heroPhotos = useMemo(() => featuredPhotos.slice(0, 3), [featuredPhotos]);

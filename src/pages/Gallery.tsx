@@ -4,6 +4,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { PhotoGrid, PhotoViewerModal, CollectionsGrid } from '../components/organisms';
 import { SearchBar } from '../components/molecules';
 import { usePhotos } from '../hooks/usePhotos';
+import { shuffleArray } from '../utils/array';
 import type { Photo, PhotoFilter } from '../types/photo';
 
 const filterButtonVariants = {
@@ -67,6 +68,8 @@ export const Gallery: React.FC = () => {
 	const finalFilter = { ...filter, ...localFilter };
 	const { photos, loading, error, refetch } = usePhotos(finalFilter);
 
+	const shuffledPhotos = useMemo(() => shuffleArray(photos), [photos]);
+
 	const handleCategoryChange = (category: string | undefined) => {
 		setLocalFilter({ category });
 		navigate('/gallery?view=all');
@@ -92,20 +95,20 @@ export const Gallery: React.FC = () => {
 
 	const getCurrentPhotoIndex = () => {
 		if (!selectedPhoto) return -1;
-		return photos.findIndex((p) => p.key === selectedPhoto.key);
+		return shuffledPhotos.findIndex((p) => p.key === selectedPhoto.key);
 	};
 
 	const handleNextPhoto = () => {
 		const currentIndex = getCurrentPhotoIndex();
-		if (currentIndex < photos.length - 1) {
-			setSelectedPhoto(photos[currentIndex + 1]);
+		if (currentIndex < shuffledPhotos.length - 1) {
+			setSelectedPhoto(shuffledPhotos[currentIndex + 1]);
 		}
 	};
 
 	const handlePreviousPhoto = () => {
 		const currentIndex = getCurrentPhotoIndex();
 		if (currentIndex > 0) {
-			setSelectedPhoto(photos[currentIndex - 1]);
+			setSelectedPhoto(shuffledPhotos[currentIndex - 1]);
 		}
 	};
 
@@ -320,7 +323,7 @@ export const Gallery: React.FC = () => {
 							)}
 
 							<PhotoGrid
-								photos={photos}
+								photos={shuffledPhotos}
 								loading={loading}
 								onPhotoClick={handlePhotoClick}
 								aspectRatio="natural"
@@ -334,7 +337,7 @@ export const Gallery: React.FC = () => {
 				photo={selectedPhoto}
 				isOpen={isModalOpen}
 				onClose={handleModalClose}
-				onNext={getCurrentPhotoIndex() < photos.length - 1 ? handleNextPhoto : undefined}
+				onNext={getCurrentPhotoIndex() < shuffledPhotos.length - 1 ? handleNextPhoto : undefined}
 				onPrevious={getCurrentPhotoIndex() > 0 ? handlePreviousPhoto : undefined}
 			/>
 		</div>
