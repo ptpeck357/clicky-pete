@@ -145,12 +145,12 @@ export const About: React.FC = () => {
 								</div>
 								<div className="bg-gray-800 rounded-lg p-4 text-center hover:bg-purple-600 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300">
 									<span className="text-gray-300 text-sm font-medium hover:text-white transition-colors duration-300">
-										Portrait Photography
+										Astrophotography
 									</span>
 								</div>
 								<div className="bg-gray-800 rounded-lg p-4 text-center hover:bg-purple-600 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300">
 									<span className="text-gray-300 text-sm font-medium hover:text-white transition-colors duration-300">
-										Astrophotography
+										Portrait Photography
 									</span>
 								</div>
 								<div className="bg-gray-800 rounded-lg p-4 text-center hover:bg-purple-600 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300">

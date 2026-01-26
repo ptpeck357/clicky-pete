@@ -1,17 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Navigation } from '../Navigation';
 
 export const Header: React.FC = () => {
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+	const [isVisible, setIsVisible] = useState(true);
+	const [lastScrollY, setLastScrollY] = useState(0);
 
 	const toggleMobileMenu = () => {
 		setIsMobileMenuOpen(!isMobileMenuOpen);
 	};
 
+	useEffect(() => {
+		const controlHeader = () => {
+			const currentScrollY = window.scrollY;
+
+			if (currentScrollY < 10) {
+				// Always show header at the top
+				setIsVisible(true);
+			} else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+				// Scrolling down & past 100px - hide header
+				setIsVisible(false);
+			} else if (currentScrollY < lastScrollY) {
+				// Scrolling up - show header
+				setIsVisible(true);
+			}
+
+			setLastScrollY(currentScrollY);
+		};
+
+		window.addEventListener('scroll', controlHeader);
+		return () => window.removeEventListener('scroll', controlHeader);
+	}, [lastScrollY]);
+
 	return (
-		<header className="bg-gray-800 border-b border-gray-700 fixed w-full top-0 z-50">
+		<motion.header
+			className="bg-gray-800 border-b border-gray-700 fixed w-full top-0 z-50"
+			initial={{ y: 0 }}
+			animate={{ y: isVisible ? 0 : -100 }}
+			transition={{ duration: 0.3, ease: 'easeInOut' }}
+		>
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				<div className="flex justify-between items-center h-16">
 					<Link to="/" className="flex items-center space-x-2" onClick={() => setIsMobileMenuOpen(false)}>
@@ -83,6 +112,6 @@ export const Header: React.FC = () => {
 					)}
 				</AnimatePresence>
 			</div>
-		</header>
+		</motion.header>
 	);
 };
