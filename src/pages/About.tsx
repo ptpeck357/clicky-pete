@@ -70,6 +70,7 @@ export const About: React.FC = () => {
 											Over the years since then, I've expanded out in my photography niches. Even
 											though I've been doing photography for 16 plus years, there's always
 											something new and exciting to learn!
+											<span className="text-blue-400 animate-blink">|</span>
 										</div>
 										<div className="text-gray-300">
 											&lt;/<span className="text-red-400">Bio</span>&gt;
@@ -126,7 +127,12 @@ export const About: React.FC = () => {
 			<section className="bg-gray-900 py-12 sm:py-16">
 				<div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-						<div>
+						<motion.div
+							initial={{ opacity: 0, y: 30 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.6 }}
+							viewport={{ once: true }}
+						>
 							<div className="flex items-center mb-6">
 								<div className="w-3 h-3 bg-purple-500 rounded-full mr-3"></div>
 								<h3 className="text-xl font-bold text-white">SHOOTING STYLES</h3>
@@ -153,9 +159,14 @@ export const About: React.FC = () => {
 									</span>
 								</div>
 							</div>
-						</div>
+						</motion.div>
 
-						<div>
+						<motion.div
+							initial={{ opacity: 0, y: 30 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.6, delay: 0.2 }}
+							viewport={{ once: true }}
+						>
 							<div className="flex items-center mb-6">
 								<div className="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
 								<h3 className="text-xl font-bold text-white">GEAR</h3>
@@ -222,7 +233,7 @@ export const About: React.FC = () => {
 									</div>
 								</div>
 							</div>
-						</div>
+						</motion.div>
 					</div>
 				</div>
 			</section>
