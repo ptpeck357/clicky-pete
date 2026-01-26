@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { ContactModal } from '../components/organisms/ContactModal';
 
 export const About: React.FC = () => {
+	const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+
 	return (
 		<div className="min-h-screen bg-gray-900">
 			<section className="bg-gray-900 py-4 sm:py-8 lg:py-12">
@@ -270,8 +273,8 @@ export const About: React.FC = () => {
 							transition={{ duration: 0.6, delay: 0.4 }}
 							viewport={{ once: true }}
 						>
-							<a
-								href="mailto:hello@clickypete.com"
+							<button
+								onClick={() => setIsContactModalOpen(true)}
 								className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-medium transition-colors duration-200 text-lg"
 							>
 								<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -279,11 +282,23 @@ export const About: React.FC = () => {
 										strokeLinecap="round"
 										strokeLinejoin="round"
 										strokeWidth={2}
-										d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+										d="M7 6h10M7 10h10M7 14h6"
+									/>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth={2}
+										d="M6 3h12a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2z"
+									/>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth={2}
+										d="M6 10H5m1 4H5m1-8H5"
 									/>
 								</svg>
 								GET IN TOUCH
-							</a>
+							</button>
 						</motion.div>
 
 						<motion.div
@@ -371,6 +386,8 @@ export const About: React.FC = () => {
 					</div>
 				</div>
 			</footer>
+
+			<ContactModal isOpen={isContactModalOpen} onClose={() => setIsContactModalOpen(false)} />
 		</div>
 	);
 };
