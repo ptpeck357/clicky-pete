@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Tag, Spinner } from '../../atoms';
 import type { Photo } from '../../../types/photo';
@@ -20,7 +20,19 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
 }) => {
 	const [imageLoaded, setImageLoaded] = useState(false);
 	const [imageError, setImageError] = useState(false);
+	const [retryCount, setRetryCount] = useState(0);
 	const [tagsExpanded, setTagsExpanded] = useState(false);
+
+	const handleImageError = useCallback(() => {
+		if (retryCount < 2) {
+			setRetryCount((prev) => prev + 1);
+			setImageLoaded(false);
+		} else {
+			setImageError(true);
+		}
+	}, [retryCount]);
+
+	const imageUrl = retryCount > 0 ? `${photo.preSignedUrl}&retry=${retryCount}` : photo.preSignedUrl;
 
 	const getAspectClass = () => {
 		if (aspectRatio === 'square') return 'aspect-square';
@@ -83,17 +95,19 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
 					</motion.div>
 				) : (
 					<motion.img
-						src={photo.preSignedUrl}
+						src={imageUrl}
 						alt={(photo.tags.category as string) || 'Photo'}
 						className="w-full h-full object-cover"
-						initial={{ opacity: 0, scale: 1.1 }}
+						loading="lazy"
+						decoding="async"
+						initial={{ opacity: 0, scale: 1.05 }}
 						animate={{
 							opacity: imageLoaded ? 1 : 0,
-							scale: imageLoaded ? 1 : 1.1,
+							scale: imageLoaded ? 1 : 1.05,
 						}}
-						transition={{ duration: 0.6, ease: 'easeOut' }}
+						transition={{ duration: 0.25, ease: 'easeOut' }}
 						onLoad={() => setImageLoaded(true)}
-						onError={() => setImageError(true)}
+						onError={handleImageError}
 						whileHover={{ scale: 1.05 }}
 					/>
 				)}
