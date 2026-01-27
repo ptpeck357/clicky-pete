@@ -111,7 +111,7 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({ photo, isOpen, onClose, 
 						</div>
 
 						<div>
-							<label className="block text-sm font-medium text-gray-700 mb-1">Upload Date</label>
+							<label className="block text-sm font-medium text-gray-700 mb-1">Date Taken</label>
 							<p className="text-sm text-gray-900">{formatDate(photo.lastModified)}</p>
 						</div>
 

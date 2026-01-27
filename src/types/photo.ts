@@ -14,13 +14,6 @@ export interface Collection {
 	description?: string;
 }
 
-export interface PhotoUpload {
-	file: File;
-	category?: string;
-	location?: string;
-	customKey?: string;
-}
-
 export interface PhotoFilter {
 	category?: string;
 	location?: string;

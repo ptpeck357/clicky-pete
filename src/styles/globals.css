@@ -202,16 +202,3 @@
 .photo-card-dark:hover {
 	@apply shadow-2xl shadow-black/50;
 }
-
-/* Upload drag and drop styles for dark theme */
-.upload-dropzone-dark {
-	@apply border-2 border-dashed border-gray-600 rounded-lg p-8 text-center transition-colors cursor-pointer bg-gray-800;
-}
-
-.upload-dropzone-dark:hover {
-	@apply border-gray-500 bg-gray-700;
-}
-
-.upload-dropzone-dark.dragover {
-	@apply border-blue-500 bg-blue-900/20;
-}

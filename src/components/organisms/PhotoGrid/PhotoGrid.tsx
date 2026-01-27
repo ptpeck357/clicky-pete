@@ -88,7 +88,7 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({
 					/>
 				</motion.svg>
 				<h3 className="text-lg font-medium text-gray-300 mb-2">No photos found</h3>
-				<p className="text-gray-500">Try adjusting your filters or upload some photos.</p>
+				<p className="text-gray-500">Try adjusting your filters.</p>
 			</motion.div>
 		);
 	}
