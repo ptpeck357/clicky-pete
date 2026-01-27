@@ -73,7 +73,7 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 
 	const getModalDimensions = () => {
 		const aspectRatio = (photo.tags.aspectRatio as string) || '3:2';
-		const isPortrait = aspectRatio === '3:4';
+		const isPortrait = aspectRatio === '4:5';
 
 		const viewportWidth = windowDimensions.width;
 		const viewportHeight = windowDimensions.height;
