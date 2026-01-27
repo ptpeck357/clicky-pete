@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { PhotoViewerModal, PhotoGrid } from '../components/organisms';
 import { getFeaturedPhotos } from '../data/mockPhotos';
 import { shuffleArray } from '../utils/array';
+import { optimizeImageUrl, preloadImages } from '../utils/imageOptimization';
 import type { Photo } from '../types/photo';
 
 const heroVariants = {
@@ -31,12 +32,60 @@ export const Home: React.FC = () => {
 
 	const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
 	const heroPhotos = useMemo(() => featuredPhotos.slice(0, 3), [featuredPhotos]);
+	const [heroImagesLoaded, setHeroImagesLoaded] = useState(false);
 
-	const [displayedPhotos, setDisplayedPhotos] = useState<Photo[]>(() => featuredPhotos.slice(0, 8));
-	const [photosPerPage] = useState(8);
-	const [currentPage, setCurrentPage] = useState(1);
-	const [hasMorePhotos, setHasMorePhotos] = useState(() => featuredPhotos.length > 8);
-	const [showViewCollections, setShowViewCollections] = useState(false);
+	// Progressive loading state
+	const [displayedPhotos, setDisplayedPhotos] = useState<Photo[]>([]);
+	const [photosToShow, setPhotosToShow] = useState(6);
+	const [showAllPhotos, setShowAllPhotos] = useState(false);
+
+	// Preload hero images for faster loading
+	useEffect(() => {
+		const heroImageUrls = heroPhotos
+			.filter((photo) => photo.preSignedUrl)
+			.map((photo) => optimizeImageUrl(photo.preSignedUrl!, { width: 1200, height: 800, quality: 85 }));
+
+		if (heroImageUrls.length > 0) {
+			preloadImages(heroImageUrls).then(() => {
+				setHeroImagesLoaded(true);
+			});
+		} else {
+			setHeroImagesLoaded(true);
+		}
+	}, [heroPhotos]);
+
+	// Initialize displayed photos
+	useEffect(() => {
+		setDisplayedPhotos(featuredPhotos.slice(0, photosToShow));
+	}, [featuredPhotos, photosToShow]);
+
+	const handleSeeMore = () => {
+		if (photosToShow >= featuredPhotos.length) {
+			// All photos are shown, don't load more
+			return;
+		}
+
+		const newPhotosToShow = Math.min(photosToShow + 6, featuredPhotos.length);
+		setPhotosToShow(newPhotosToShow);
+
+		if (newPhotosToShow >= featuredPhotos.length) {
+			setShowAllPhotos(true);
+		}
+	};
+
+	const getButtonText = () => {
+		if (showAllPhotos) {
+			return 'View All Collections';
+		}
+		return 'See More Photos';
+	};
+
+	const getButtonAction = () => {
+		if (showAllPhotos) {
+			return '/gallery';
+		}
+		return null; // Will trigger handleSeeMore
+	};
 
 	useEffect(() => {
 		if (heroPhotos.length <= 1) return;
@@ -47,39 +96,6 @@ export const Home: React.FC = () => {
 
 		return () => clearInterval(interval);
 	}, [heroPhotos.length]);
-
-	const loadMorePhotos = useCallback(() => {
-		const startIndex = currentPage * photosPerPage;
-		const endIndex = startIndex + photosPerPage;
-		const newPhotos = featuredPhotos.slice(startIndex, endIndex);
-
-		if (newPhotos.length > 0) {
-			setDisplayedPhotos((prev) => [...prev, ...newPhotos]);
-			setCurrentPage((prev) => prev + 1);
-
-			if (endIndex >= featuredPhotos.length) {
-				setHasMorePhotos(false);
-				setShowViewCollections(true);
-			}
-		} else {
-			setHasMorePhotos(false);
-			setShowViewCollections(true);
-		}
-	}, [currentPage, photosPerPage, featuredPhotos]);
-
-	useEffect(() => {
-		const handleScroll = () => {
-			if (
-				hasMorePhotos &&
-				window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 1000
-			) {
-				loadMorePhotos();
-			}
-		};
-
-		window.addEventListener('scroll', handleScroll);
-		return () => window.removeEventListener('scroll', handleScroll);
-	}, [hasMorePhotos, loadMorePhotos]);
 
 	const currentHeroPhoto = heroPhotos[currentHeroIndex];
 	const recentPhotos = displayedPhotos.slice(1);
@@ -113,18 +129,38 @@ export const Home: React.FC = () => {
 		}
 	};
 
+	const handleButtonClick = () => {
+		const action = getButtonAction();
+		if (action) {
+			// Navigate to gallery
+			window.location.href = action;
+		} else {
+			// Load more photos
+			handleSeeMore();
+		}
+	};
+
 	return (
 		<div className="min-h-screen bg-gray-900 text-white">
 			<section className="relative h-screen flex items-center justify-center overflow-hidden">
+				{!heroImagesLoaded && (
+					<div className="absolute inset-0 bg-gray-900 flex items-center justify-center z-30">
+						<div className="text-center">
+							<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto mb-4" />
+							<p className="text-gray-400">Loading gallery...</p>
+						</div>
+					</div>
+				)}
+
 				{heroPhotos.length > 0 ? (
 					heroPhotos.map((photo, index) => (
 						<div
 							key={photo.key}
 							className="absolute inset-0 bg-cover bg-center cursor-pointer transition-opacity duration-1000 ease-in-out"
 							style={{
-								backgroundImage: `url(${photo.preSignedUrl})`,
+								backgroundImage: `url(${optimizeImageUrl(photo.preSignedUrl || '', { width: 1200, height: 800, quality: 85 })})`,
 								backgroundColor: '#1f2937',
-								opacity: index === currentHeroIndex ? 1 : 0,
+								opacity: index === currentHeroIndex && heroImagesLoaded ? 1 : 0,
 							}}
 							onClick={() => handlePhotoClick(photo)}
 						/>
@@ -232,38 +268,34 @@ export const Home: React.FC = () => {
 						columns="large"
 					/>
 
-					{hasMorePhotos && (
-						<motion.div
-							className="text-center mt-8"
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							transition={{ duration: 0.5 }}
-						>
-							<div className="inline-flex items-center text-gray-400">
-								<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-400 mr-2" />
-								Loading more featured photos...
-							</div>
-						</motion.div>
-					)}
-
-					{showViewCollections && (
-						<motion.div
-							className="text-center mt-12"
-							initial={{ opacity: 0, y: 20 }}
-							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.6, delay: 0.3 }}
-						>
+					{/* See More / View Collections Button */}
+					<motion.div
+						className="text-center mt-12"
+						initial={{ opacity: 0, y: 20 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.6, delay: 0.3 }}
+					>
+						{showAllPhotos ? (
 							<Link to="/gallery">
 								<motion.button
 									className="px-8 py-3 border border-gray-600 text-white rounded-full font-medium hover:bg-white hover:text-gray-900 transition-all duration-300"
 									whileHover={{ scale: 1.05 }}
 									whileTap={{ scale: 0.95 }}
 								>
-									View Collections
+									{getButtonText()}
 								</motion.button>
 							</Link>
-						</motion.div>
-					)}
+						) : (
+							<motion.button
+								className="px-8 py-3 border border-gray-600 text-white rounded-full font-medium hover:bg-white hover:text-gray-900 transition-all duration-300"
+								whileHover={{ scale: 1.05 }}
+								whileTap={{ scale: 0.95 }}
+								onClick={handleButtonClick}
+							>
+								{getButtonText()}
+							</motion.button>
+						)}
+					</motion.div>
 				</div>
 			</motion.section>
 
