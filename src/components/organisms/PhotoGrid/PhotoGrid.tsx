@@ -98,16 +98,16 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({
 
 		if (aspectRatio === 'natural') {
 			if (columns === 'large') {
-				return 'columns-1 md:columns-2 lg:columns-3 gap-4 sm:gap-6 space-y-4';
+				return 'columns-2 md:columns-2 lg:columns-3 gap-2 sm:gap-4 space-y-2 sm:space-y-4';
 			}
-			return 'columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 sm:gap-6 space-y-4';
+			return 'columns-2 md:columns-2 lg:columns-3 xl:columns-4 gap-2 sm:gap-4 space-y-2 sm:space-y-4';
 		}
 
 		if (columns === 'large') {
-			return 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6';
+			return 'grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-6';
 		}
 
-		return 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6';
+		return 'grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-6';
 	})();
 
 	return (
