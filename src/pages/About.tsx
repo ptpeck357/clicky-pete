@@ -26,29 +26,19 @@ export const About: React.FC = () => {
 							</div>
 
 							<div className="p-4 sm:p-6 font-mono text-xs sm:text-sm">
-								<div className="text-blue-400">
-									<span className="text-purple-400">const</span> Photographer = () =&gt; &#123;
-								</div>
-								<div className="ml-2 sm:ml-4 mt-2">
+								<div className="mt-2">
 									<div className="text-blue-400">
-										<span className="text-purple-400">const</span> passion ={' '}
+										<span className="text-purple-400">let</span> passion ={' '}
 										<span className="text-green-400">'photography'</span>;
 									</div>
 									<div className="text-blue-400">
-										<span className="text-purple-400">const</span> focus ={' '}
+										<span className="text-purple-400">let</span> profession ={' '}
 										<span className="text-green-400">'software_developer'</span>;
 									</div>
 								</div>
 
-								<div className="ml-2 sm:ml-4 mt-4 text-blue-400">
-									<span className="text-purple-400">return</span> (
-								</div>
-
-								<div className="ml-8 mt-2">
-									<div className="text-gray-300">
-										&lt;<span className="text-red-400">Container</span>&gt;
-									</div>
-									<div className="ml-4">
+								<div className="mt-2">
+									<div>
 										<div className="text-gray-300">
 											&lt;<span className="text-red-400">Title</span>&gt;
 										</div>
@@ -70,22 +60,18 @@ export const About: React.FC = () => {
 											Montana?
 											<br />
 											<br />
-											Over the years since then, I've expanded out in my photography niches. Even
-											though I've been doing photography for 16 plus years, there's always
-											something new and exciting to learn!
+											Outside of work and photography, I enjoy learning new things, which has led
+											me to pick up a variety of hobbies and interests. Most of my time is spent
+											outdoors - skiing, hunting, camping, hiking, fishing, dirt biking, and
+											playing sports like ultimate, volleyball, and spikeball. Since I was always
+											outside, I figured I might as well capture the scenary.
 											<span className="text-blue-400 animate-blink">|</span>
 										</div>
 										<div className="text-gray-300">
 											&lt;/<span className="text-red-400">Bio</span>&gt;
 										</div>
 									</div>
-									<div className="text-gray-300">
-										&lt;/<span className="text-red-400">Container</span>&gt;
-									</div>
 								</div>
-
-								<div className="ml-4 mt-2 text-blue-400">);</div>
-								<div className="text-blue-400">&#125;;</div>
 							</div>
 						</motion.div>
 
@@ -106,7 +92,7 @@ export const About: React.FC = () => {
 
 								<div className="absolute bottom-4 left-4 text-left">
 									<div className="text-white text-xl font-bold mb-1">Peter Peck</div>
-									<div className="text-gray-300 text-sm">Bozeman, MT</div>
+									<div className="text-white-300 text-md">Bozeman, MT</div>
 								</div>
 							</div>
 						</motion.div>
@@ -238,6 +224,63 @@ export const About: React.FC = () => {
 							</div>
 						</motion.div>
 					</div>
+				</div>
+			</section>
+
+			<div className="bg-gray-900 py-5">
+				<div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
+					<div className="relative">
+						<div className="absolute inset-0 flex items-center">
+							<div className="w-full border-t border-gradient-to-r from-transparent via-purple-500 to-transparent"></div>
+						</div>
+						<div className="relative flex justify-center">
+							<div className="bg-gradient-to-r from-purple-500 via-blue-500 to-green-500 h-0.5 w-full max-w-4xl rounded-full"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<section className="bg-gray-900 py-12 sm:py-16">
+				<div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+					<motion.div
+						className="text-center"
+						initial={{ opacity: 0, y: 30 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.6 }}
+						viewport={{ once: true }}
+					>
+						<h3 className="text-2xl sm:text-3xl font-bold text-white mb-8">Gear in Action</h3>
+						<div className="space-y-8">
+							<div className="relative w-full max-w-4xl mx-auto">
+								<div className="aspect-video bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
+									<iframe
+										width="100%"
+										height="100%"
+										src="https://www.youtube.com/embed/GQ17DyRhXBA?si=dAvh8Mes2DBW6-3P"
+										title="YouTube video player"
+										allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+										referrerPolicy="strict-origin-when-cross-origin"
+										allowFullScreen
+										className="w-full h-full"
+									></iframe>
+								</div>
+							</div>
+							<div className="relative w-full max-w-4xl mx-auto">
+								<div className="aspect-video bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
+									<iframe
+										width="100%"
+										height="100%"
+										src="https://www.youtube.com/embed/hTJs0CMkr-M?si=uM65YvjelRPPKEC9"
+										title="YouTube video player"
+										allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+										referrerPolicy="strict-origin-when-cross-origin"
+										allowFullScreen
+										className="w-full h-full"
+									></iframe>
+								</div>
+							</div>
+						</div>
+					</motion.div>
 				</div>
 			</section>
 
