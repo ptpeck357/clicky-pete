@@ -181,7 +181,7 @@ export const Home: React.FC = () => {
 				</motion.div>
 
 				<motion.button
-					className="absolute bottom-24 left-1/2 transform -translate-x-1/2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 rounded-full p-3 bg-black bg-opacity-30 hover:bg-opacity-50 transition-all duration-300"
+					className="absolute bottom-16 sm:bottom-20 md:bottom-24 left-1/2 transform -translate-x-1/2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 rounded-full p-3 bg-black bg-opacity-30 hover:bg-opacity-50 transition-all duration-300 mb-safe"
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ delay: 1, duration: 0.8 }}
