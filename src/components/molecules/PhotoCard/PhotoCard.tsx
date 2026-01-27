@@ -38,7 +38,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
 		if (aspectRatio === 'square') return 'aspect-square';
 
 		const photoAspectRatio = (photo.tags.aspectRatio as string) || '3:2';
-		if (photoAspectRatio === '3:4') return 'aspect-[3/4]';
+		if (photoAspectRatio === '4:5') return 'aspect-[4/5]';
 		if (photoAspectRatio === '3:2') return 'aspect-[3/2]';
 		return 'aspect-square';
 	};
