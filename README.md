@@ -1,16 +1,16 @@
 # Photography Portfolio
 
-A modern, full-stack photography portfolio application built with React, TypeScript, .NET 8, and AWS S3. Features tag-based photo organization, responsive design, and a clean, professional interface.
+A modern, full-stack photography portfolio application built with React, TypeScript, .NET 8, and AWS S3. Features a clean, professional interface for showcasing photography work with tag-based filtering and responsive design.
 
 ## 🚀 Features
 
-- **Photo Management**: Upload, view, and organize photos with tags
+- **Photo Gallery**: View and organize photos with tags
 - **Tag-Based Filtering**: Filter photos by category, location, equipment, and style
 - **Responsive Design**: Works beautifully on desktop, tablet, and mobile
 - **AWS S3 Integration**: Secure cloud storage with presigned URLs
 - **Modern UI**: Clean, professional interface with Tailwind CSS
 - **Photo Modal**: Full-screen photo viewing with navigation
-- **Category Pages**: Dedicated pages for each photo category
+- **Collection Browsing**: Explore photos organized by location and theme
 
 ## 🛠 Tech Stack
 
@@ -43,16 +43,27 @@ photography-portfolio/
 │   │       ├── Services/       # Business logic
 │   │       └── Program.cs      # API startup
 │   │
-│   ├── components/             # React components
-│   │   ├── ui/                # Reusable UI components
-│   │   ├── gallery/           # Photo gallery components
-│   │   ├── filters/           # Filter components
-│   │   └── layout/            # Layout components
+│   ├── app/                   # App configuration
+│   │   ├── App.tsx            # Main app component
+│   │   └── Router.tsx         # Route definitions
+│   │
+│   ├── components/            # React components
+│   │   ├── atoms/             # Basic UI components
+│   │   ├── molecules/         # Composite components
+│   │   ├── organisms/         # Complex components
+│   │   └── templates/         # Page layouts
 │   │
 │   ├── pages/                 # Page components
+│   │   ├── Home.tsx           # Homepage with featured photos
+│   │   ├── Gallery.tsx        # Photo gallery with filtering
+│   │   ├── About.tsx          # About page
+│   │   └── NotFound.tsx       # 404 page
+│   │
 │   ├── hooks/                 # Custom React hooks
 │   ├── services/              # API communication
 │   ├── types/                 # TypeScript definitions
+│   ├── data/                  # Mock data
+│   ├── utils/                 # Utility functions
 │   └── styles/                # CSS styles
 │
 ├── public/                    # Static assets
@@ -82,8 +93,9 @@ npm install
 # Copy environment template
 cp .env.example .env
 
-# Edit .env with your API URL
+# Edit .env with your configuration
 VITE_API_URL=https://localhost:7000/api
+VITE_USE_MOCK_DATA=true
 ```
 
 ### 3. Configure AWS S3
@@ -125,30 +137,26 @@ Visit:
 
 ## 📸 Usage
 
-### Uploading Photos
-
-1. Navigate to the **Upload** page
-2. Drag and drop photos or click to select
-3. Add tags for organization:
-   - **Category**: landscape, portrait, street, etc.
-   - **Location**: where the photo was taken
-   - **Equipment**: camera/lens used
-   - **Style**: black-white, golden-hour, etc.
-4. Click **Upload** to save to S3
-
 ### Browsing Photos
 
+- **Home**: Featured photos with progressive loading
 - **Gallery**: View all photos with filtering options
-- **Categories**: Browse photos by category
-- **Photo Modal**: Click any photo for full-screen view
+- **Collections**: Browse photos organized by location (Idaho, Montana, Drone, etc.)
+- **Categories**: Filter by photo type (landscape, portrait, street, aerial)
+- **Photo Modal**: Click any photo for full-screen view with navigation
+
+### Navigation
+
+- **Home** → Featured photos and hero carousel
+- **Gallery** → All photos with collection and category filters
+- **About** → Photographer information and contact
 
 ### API Endpoints
 
-- `POST /api/images/upload` - Upload photos with tags
 - `GET /api/images` - List all photos
 - `GET /api/images/by-tag/{tagKey}` - Filter by tag
 - `GET /api/images/categories` - Get all categories
-- `DELETE /api/images/{key}` - Delete photo
+- `GET /api/images/{key}/url` - Get presigned URLs
 
 ## 🏗 Development
 
@@ -185,11 +193,8 @@ The project includes:
 1. Create an S3 bucket in AWS Console
 2. Configure bucket permissions for your AWS credentials
 3. Required permissions:
-   - `s3:PutObject`
    - `s3:GetObject`
-   - `s3:DeleteObject`
    - `s3:ListBucket`
-   - `s3:PutObjectTagging`
    - `s3:GetObjectTagging`
 
 ### Environment Variables
@@ -197,6 +202,7 @@ The project includes:
 **Frontend (.env):**
 ```bash
 VITE_API_URL=https://localhost:7000/api
+VITE_USE_MOCK_DATA=true
 ```
 
 **Backend (appsettings.json):**
