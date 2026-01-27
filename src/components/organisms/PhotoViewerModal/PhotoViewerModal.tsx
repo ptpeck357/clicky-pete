@@ -123,7 +123,7 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 					/>
 
 					<motion.button
-						className="absolute top-6 right-6 z-10 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+						className="absolute top-6 right-6 z-10 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors cursor-pointer"
 						onClick={onClose}
 						whileHover={{ scale: 1.1 }}
 						whileTap={{ scale: 0.9 }}
