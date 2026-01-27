@@ -9,7 +9,6 @@ A modern, full-stack photography portfolio application built with React, TypeScr
 - **Responsive Design**: Works beautifully on desktop, tablet, and mobile
 - **AWS S3 Integration**: Secure cloud storage with presigned URLs
 - **Modern UI**: Clean, professional interface with Tailwind CSS
-- **Search Functionality**: Search photos by tags or filename
 - **Photo Modal**: Full-screen photo viewing with navigation
 - **Category Pages**: Dedicated pages for each photo category
 
@@ -141,7 +140,6 @@ Visit:
 
 - **Gallery**: View all photos with filtering options
 - **Categories**: Browse photos by category
-- **Search**: Find photos by tags or filename
 - **Photo Modal**: Click any photo for full-screen view
 
 ### API Endpoints

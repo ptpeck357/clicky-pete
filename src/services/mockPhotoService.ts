@@ -5,7 +5,6 @@ import {
 	getPhotosByCollection,
 	getCategories,
 	getCollections,
-	searchPhotos,
 } from '../data/mockPhotos';
 
 export const mockPhotoService = {
@@ -82,9 +81,5 @@ export const mockPhotoService = {
 
 	async getCollections(): Promise<string[]> {
 		return getCollections();
-	},
-
-	async searchPhotos(query: string): Promise<Photo[]> {
-		return searchPhotos(query);
 	},
 };

@@ -18,5 +18,4 @@ export interface PhotoFilter {
 	category?: string;
 	location?: string;
 	collection?: string;
-	search?: string;
 }

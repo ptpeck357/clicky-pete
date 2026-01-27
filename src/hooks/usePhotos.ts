@@ -24,26 +24,13 @@ export const usePhotos = (filter?: PhotoFilter) => {
 				fetchedPhotos = await photoService.getPhotos();
 			}
 
-			if (filter?.search) {
-				const searchTerm = filter.search.toLowerCase();
-				fetchedPhotos = fetchedPhotos.filter(
-					(photo) =>
-						Object.values(photo.tags).some((tag) => {
-							if (typeof tag === 'string') {
-								return tag.toLowerCase().includes(searchTerm);
-							}
-							return false;
-						}) || photo.key.toLowerCase().includes(searchTerm),
-				);
-			}
-
 			setPhotos(fetchedPhotos);
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Failed to fetch photos');
 		} finally {
 			setLoading(false);
 		}
-	}, [filter?.category, filter?.collection, filter?.location, filter?.search]);
+	}, [filter?.category, filter?.collection, filter?.location]);
 
 	useEffect(() => {
 		fetchPhotos();
