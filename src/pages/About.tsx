@@ -424,7 +424,7 @@ export const About: React.FC = () => {
 								transition={{ duration: 0.6, delay: 1.0 }}
 								viewport={{ once: true }}
 							>
-								<span className="text-black-400">© 2026 Peter Peck Photography</span>
+								<span className="text-black-400">© 2026 Clicky Pete Photography</span>
 							</motion.div>
 						</div>
 					</div>
