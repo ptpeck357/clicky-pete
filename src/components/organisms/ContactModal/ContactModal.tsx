@@ -70,7 +70,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
 								<h2 className="text-2xl font-bold text-white">Get In Touch</h2>
 								<button
 									onClick={onClose}
-									className="text-gray-400 hover:text-white transition-colors p-1"
+									className="text-gray-400 hover:text-white transition-colors p-1 cursor-pointer"
 								>
 									<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path
@@ -183,14 +183,14 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
 										<button
 											type="button"
 											onClick={onClose}
-											className="flex-1 px-4 py-2 text-gray-300 border border-gray-600 rounded-lg hover:bg-gray-700 transition-colors"
+											className="flex-1 px-4 py-2 text-gray-300 border border-gray-600 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer"
 										>
 											Cancel
 										</button>
 										<button
 											type="submit"
 											disabled={isSubmitting}
-											className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+											className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 cursor-pointer"
 										>
 											{isSubmitting ? (
 												<>

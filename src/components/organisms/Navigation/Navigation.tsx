@@ -94,7 +94,7 @@ export const Navigation: React.FC<NavigationProps> = ({ className = '', onItemCl
 						onClick={handleItemClick}
 						className={`${baseClasses} text-gray-300 hover:text-white hover:bg-gray-700`}
 					>
-						Admin
+						{/* Admin */}
 					</Link>
 				</motion.div>
 			)}
