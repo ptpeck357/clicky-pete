@@ -1,7 +1,6 @@
 import { BrowserRouter, useLocation } from 'react-router-dom';
 import { Router } from './Router';
 import { Header, Footer } from '../components/organisms';
-import { AuthProvider } from '../contexts';
 
 function AppContent() {
 	const location = useLocation();
@@ -20,10 +19,8 @@ function AppContent() {
 
 export default function App() {
 	return (
-		<AuthProvider>
-			<BrowserRouter>
-				<AppContent />
-			</BrowserRouter>
-		</AuthProvider>
+		<BrowserRouter>
+			<AppContent />
+		</BrowserRouter>
 	);
 }

@@ -14,13 +14,6 @@ export interface CategoriesResponse {
 	count: number;
 }
 
-export interface UploadResponse {
-	key: string;
-	url: string;
-	tags: Record<string, string | boolean>;
-	message: string;
-}
-
 export interface Photo {
 	key: string;
 	lastModified: string;
