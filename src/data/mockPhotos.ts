@@ -315,16 +315,3 @@ export const getCollectionStats = () => {
 		})
 		.filter((collection) => collection.photos.length > 0); // Only return collections with photos
 };
-
-export const searchPhotos = (query: string): Photo[] => {
-	const lowercaseQuery = query.toLowerCase();
-	return mockPhotos.filter(
-		(photo) =>
-			Object.entries(photo.tags).some(([, value]) => {
-				if (typeof value === 'string') {
-					return value.toLowerCase().includes(lowercaseQuery);
-				}
-				return false;
-			}) || photo.key.toLowerCase().includes(lowercaseQuery),
-	);
-};

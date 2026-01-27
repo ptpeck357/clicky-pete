@@ -91,18 +91,4 @@ export const photoService = {
 		const response = await apiClient.get<{ collections: string[] }>('/images/collections');
 		return response.collections;
 	},
-
-	async searchPhotos(query: string): Promise<Photo[]> {
-		if (USE_MOCK_DATA) {
-			return mockPhotoService.searchPhotos(query);
-		}
-
-		const allPhotos = await this.getPhotos();
-		return allPhotos.filter(
-			(photo) =>
-				Object.values(photo.tags).some(
-					(tag) => typeof tag === 'string' && tag.toLowerCase().includes(query.toLowerCase()),
-				) || photo.key.toLowerCase().includes(query.toLowerCase()),
-		);
-	},
 };

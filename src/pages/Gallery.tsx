@@ -2,7 +2,6 @@ import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { PhotoGrid, PhotoViewerModal, CollectionsGrid } from '../components/organisms';
-import { SearchBar } from '../components/molecules';
 import { usePhotos } from '../hooks/usePhotos';
 import { shuffleArray } from '../utils/array';
 import type { Photo, PhotoFilter } from '../types/photo';
@@ -77,10 +76,6 @@ export const Gallery: React.FC = () => {
 
 	const handleCollectionSelect = (collection: string) => {
 		navigate(`/gallery/${collection}`);
-	};
-
-	const handleSearchChange = (search: string) => {
-		setLocalFilter((prev) => ({ ...prev, search: search || undefined }));
 	};
 
 	const handlePhotoClick = (photo: Photo) => {
@@ -203,17 +198,6 @@ export const Gallery: React.FC = () => {
 								{filter.collection && ` from ${filter.collection}`}
 							</motion.p>
 						</div>
-
-						{viewMode === 'photos' && (
-							<motion.div
-								className="mt-4 lg:mt-0 w-full lg:w-96"
-								initial={{ opacity: 0, x: 20 }}
-								animate={{ opacity: 1, x: 0 }}
-								transition={{ duration: 0.6, delay: 0.3 }}
-							>
-								<SearchBar onSearch={handleSearchChange} />
-							</motion.div>
-						)}
 					</div>
 				</motion.div>
 
