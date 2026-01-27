@@ -1,6 +1,7 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Tag, Spinner } from '../../atoms';
+import { optimizeImageUrl } from '../../../utils/imageOptimization';
 import type { Photo } from '../../../types/photo';
 
 interface PhotoCardProps {
@@ -22,6 +23,35 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
 	const [imageError, setImageError] = useState(false);
 	const [retryCount, setRetryCount] = useState(0);
 	const [tagsExpanded, setTagsExpanded] = useState(false);
+	const [shouldLoad, setShouldLoad] = useState(false);
+	const imgRef = useRef<HTMLDivElement>(null);
+
+	// Intersection Observer for better lazy loading
+	useEffect(() => {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						setShouldLoad(true);
+						observer.unobserve(entry.target);
+					}
+				});
+			},
+			{
+				rootMargin: '50px', // Start loading 50px before the image comes into view
+			},
+		);
+
+		if (imgRef.current) {
+			observer.observe(imgRef.current);
+		}
+
+		return () => {
+			if (imgRef.current) {
+				observer.unobserve(imgRef.current);
+			}
+		};
+	}, []);
 
 	const handleImageError = useCallback(() => {
 		if (retryCount < 2) {
@@ -32,7 +62,9 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
 		}
 	}, [retryCount]);
 
-	const imageUrl = retryCount > 0 ? `${photo.preSignedUrl}&retry=${retryCount}` : photo.preSignedUrl;
+	const imageUrl = photo.preSignedUrl ? optimizeImageUrl(photo.preSignedUrl, { width: 600, quality: 80 }) : '';
+
+	const retryImageUrl = retryCount > 0 ? `${imageUrl}&retry=${retryCount}` : imageUrl;
 
 	const getAspectClass = () => {
 		if (aspectRatio === 'square') return 'aspect-square';
@@ -54,7 +86,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
 			whileTap={{ scale: 0.98 }}
 			layout
 		>
-			<div className={`relative ${getAspectClass()} bg-gray-700 overflow-hidden`}>
+			<div className={`relative ${getAspectClass()} bg-gray-700 overflow-hidden`} ref={imgRef}>
 				{!imageLoaded && !imageError && (
 					<motion.div
 						className="absolute inset-0 flex items-center justify-center"
@@ -93,9 +125,9 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
 							<p className="text-sm">Failed to load</p>
 						</div>
 					</motion.div>
-				) : (
+				) : shouldLoad ? (
 					<motion.img
-						src={imageUrl}
+						src={retryImageUrl}
 						alt={(photo.tags.category as string) || 'Photo'}
 						className="w-full h-full object-cover"
 						loading="lazy"
@@ -110,7 +142,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
 						onError={handleImageError}
 						whileHover={{ scale: 1.05 }}
 					/>
-				)}
+				) : null}
 
 				<motion.div
 					className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 flex items-end"
