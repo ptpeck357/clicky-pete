@@ -40,22 +40,12 @@ export const Header: React.FC = () => {
 		>
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				<div className="flex justify-between items-center h-16">
-					<Link to="/" className="flex items-center space-x-2" onClick={() => setIsMobileMenuOpen(false)}>
-						<div className="w-8 h-8 bg-neutral-900 rounded-lg flex items-center justify-center">
-							<svg
-								className="w-5 h-5 text-white"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								strokeWidth="2"
-								strokeLinecap="round"
-								strokeLinejoin="round"
-							>
-								<path d="M3 18l6-8 4 5 3-4 5 7" />
-							</svg>
+					<Link to="/" className="flex items-center space-x-1" onClick={() => setIsMobileMenuOpen(false)}>
+						<div className="w-14 h-14 flex items-center justify-center">
+							<img src="/camera.svg" alt="Camera icon" className="w-full h-full" />
 						</div>
 
-						<span className="text-xl font-bold text-white">Clicky Pete</span>
+						<span className="text-xl font-bold text-white leading-none">Clicky Pete</span>
 					</Link>
 
 					<Navigation className="hidden md:flex" />
