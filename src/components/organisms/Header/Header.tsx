@@ -17,13 +17,10 @@ export const Header: React.FC = () => {
 			const currentScrollY = window.scrollY;
 
 			if (currentScrollY < 10) {
-				// Always show header at the top
 				setIsVisible(true);
 			} else if (currentScrollY > lastScrollY && currentScrollY > 100) {
-				// Scrolling down & past 100px - hide header
 				setIsVisible(false);
 			} else if (currentScrollY < lastScrollY) {
-				// Scrolling up - show header
 				setIsVisible(true);
 			}
 

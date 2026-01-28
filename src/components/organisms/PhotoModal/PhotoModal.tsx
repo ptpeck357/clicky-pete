@@ -18,20 +18,23 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({ photo, isOpen, onClose, 
 
 	if (!photo) return null;
 
-	const formatDate = (dateString: string) => {
-		return new Date(dateString).toLocaleDateString('en-US', {
-			year: 'numeric',
-			month: 'long',
-			day: 'numeric',
-		});
+	const getPhotoUrls = () => {
+		const cloudFrontUrl = import.meta.env.VITE_CLOUDFRONT_URL;
+		if (!cloudFrontUrl) {
+			throw new Error(
+				'CloudFront URL not configured. Please set VITE_CLOUDFRONT_URL in your environment variables.',
+			);
+		}
+
+		const baseUrl = `${cloudFrontUrl}/photos`;
+		return {
+			src: `${baseUrl}/2000/${photo.file}`, // Default to large for modal
+			srcSet: `${baseUrl}/800/${photo.file} 800w, ${baseUrl}/2000/${photo.file} 2000w`,
+			sizes: '(max-width: 1024px) 800px, 2000px',
+		};
 	};
 
-	const formatFileSize = (bytes: number) => {
-		const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-		if (bytes === 0) return '0 Bytes';
-		const i = Math.floor(Math.log(bytes) / Math.log(1024));
-		return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + ' ' + sizes[i];
-	};
+	const photoUrls = getPhotoUrls();
 
 	const handleDelete = () => {
 		if (onDelete) {
@@ -52,7 +55,9 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({ photo, isOpen, onClose, 
 							</div>
 						)}
 						<img
-							src={photo.preSignedUrl}
+							src={photoUrls.src}
+							srcSet={photoUrls.srcSet}
+							sizes={photoUrls.sizes}
 							alt={(photo.tags.category as string) || 'Photo'}
 							className={`w-full h-auto max-h-[50vh] lg:max-h-[70vh] object-contain transition-opacity duration-200 ${
 								imageLoaded ? 'opacity-100' : 'opacity-0'
@@ -74,7 +79,7 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({ photo, isOpen, onClose, 
 						<div className="flex gap-2 w-full sm:w-auto">
 							<Button
 								variant="secondary"
-								onClick={() => window.open(photo.preSignedUrl, '_blank')}
+								onClick={() => window.open(photoUrls.src, '_blank')}
 								className="flex-1 sm:flex-none text-sm"
 							>
 								Open Original
@@ -107,17 +112,12 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({ photo, isOpen, onClose, 
 					<div className="space-y-4">
 						<div>
 							<label className="block text-sm font-medium text-gray-700 mb-1">File Name</label>
-							<p className="text-sm text-gray-900 break-all">{photo.key}</p>
+							<p className="text-sm text-gray-900 break-all">{photo.file}</p>
 						</div>
 
 						<div>
-							<label className="block text-sm font-medium text-gray-700 mb-1">Date Taken</label>
-							<p className="text-sm text-gray-900">{formatDate(photo.lastModified)}</p>
-						</div>
-
-						<div>
-							<label className="block text-sm font-medium text-gray-700 mb-1">File Size</label>
-							<p className="text-sm text-gray-900">{formatFileSize(photo.size)}</p>
+							<label className="block text-sm font-medium text-gray-700 mb-1">Photo ID</label>
+							<p className="text-sm text-gray-900">{photo.id}</p>
 						</div>
 
 						<div>
@@ -129,7 +129,7 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({ photo, isOpen, onClose, 
 										className="flex flex-col sm:flex-row sm:justify-between text-sm gap-1 sm:gap-0"
 									>
 										<span className="font-medium text-gray-600 capitalize">{key}:</span>
-										<span className="text-gray-900">{value}</span>
+										<span className="text-gray-900">{value.toString()}</span>
 									</div>
 								))}
 							</div>

@@ -60,16 +60,34 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 		};
 	}, [isOpen, onClose, onNext, onPrevious]);
 
-	const currentPhotoKey = photo?.key;
-	const [lastPhotoKey, setLastPhotoKey] = useState<string | undefined>();
+	const currentPhotoId = photo?.id;
+	const [lastPhotoId, setLastPhotoId] = useState<string | undefined>();
 
-	if (currentPhotoKey !== lastPhotoKey) {
+	if (currentPhotoId !== lastPhotoId) {
 		setImageLoaded(false);
 		setImageError(false);
-		setLastPhotoKey(currentPhotoKey);
+		setLastPhotoId(currentPhotoId);
 	}
 
 	if (!photo) return null;
+
+	const getPhotoUrls = () => {
+		const cloudFrontUrl = import.meta.env.VITE_CLOUDFRONT_URL;
+		if (!cloudFrontUrl) {
+			throw new Error(
+				'CloudFront URL not configured. Please set VITE_CLOUDFRONT_URL in your environment variables.',
+			);
+		}
+
+		const baseUrl = `${cloudFrontUrl}/photos`;
+		return {
+			src: `${baseUrl}/2000/${photo.file}`, // Default to large for full-screen
+			srcSet: `${baseUrl}/800/${photo.file} 800w, ${baseUrl}/2000/${photo.file} 2000w`,
+			sizes: '(max-width: 1024px) 800px, 2000px',
+		};
+	};
+
+	const photoUrls = getPhotoUrls();
 
 	const getModalDimensions = () => {
 		const aspectRatio = (photo.tags.aspectRatio as string) || '3:2';
@@ -235,7 +253,9 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 							}}
 						>
 							<motion.img
-								src={photo.preSignedUrl}
+								src={photoUrls.src}
+								srcSet={photoUrls.srcSet}
+								sizes={photoUrls.sizes}
 								alt={(photo.tags.category as string) || 'Photo'}
 								className={`w-full h-full object-cover transition-opacity duration-300 ${
 									imageLoaded ? 'opacity-100' : 'opacity-0'

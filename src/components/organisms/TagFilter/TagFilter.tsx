@@ -20,7 +20,7 @@ export const TagFilter: React.FC<TagFilterProps> = ({ onFilterChange }) => {
 
 				photos.forEach((photo) => {
 					Object.entries(photo.tags).forEach(([key, value]) => {
-						if (key !== 'uploaded' && typeof value === 'string') {
+						if (key !== 'uploaded' && key !== 'hero' && typeof value === 'string') {
 							if (!tagsByKey[key]) {
 								tagsByKey[key] = new Set();
 							}

@@ -28,13 +28,11 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
 		e.preventDefault();
 		setIsSubmitting(true);
 
-		// Simulate form submission
 		await new Promise((resolve) => setTimeout(resolve, 1500));
 
 		setIsSubmitting(false);
 		setIsSubmitted(true);
 
-		// Reset form after 2 seconds and close modal
 		setTimeout(() => {
 			setIsSubmitted(false);
 			setFormData({ name: '', email: '', subject: '', message: '' });

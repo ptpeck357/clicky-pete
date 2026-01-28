@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { PhotoViewerModal, PhotoGrid } from '../components/organisms';
-import { getFeaturedPhotos } from '../data/mockPhotos';
+import { photoService } from '../services/photoService';
 import { shuffleArray } from '../utils/array';
-import { optimizeImageUrl, preloadImages } from '../utils/imageOptimization';
+import { preloadImages } from '../utils/imageOptimization';
 import type { Photo } from '../types/photo';
 
 const heroVariants = {
@@ -27,41 +27,72 @@ const textVariants = {
 export const Home: React.FC = () => {
 	const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
-
-	const featuredPhotos = useMemo(() => shuffleArray(getFeaturedPhotos()), []);
+	const [featuredPhotos, setFeaturedPhotos] = useState<Photo[]>([]);
+	const [heroPhotos, setHeroPhotos] = useState<Photo[]>([]);
 
 	const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
-	const heroPhotos = useMemo(() => featuredPhotos.slice(0, 3), [featuredPhotos]);
 	const [heroImagesLoaded, setHeroImagesLoaded] = useState(false);
 
-	// Progressive loading state
 	const [displayedPhotos, setDisplayedPhotos] = useState<Photo[]>([]);
-	const [photosToShow, setPhotosToShow] = useState(6);
+	const [photosToShow, setPhotosToShow] = useState(12);
 	const [showAllPhotos, setShowAllPhotos] = useState(false);
 
-	// Preload hero images for faster loading
 	useEffect(() => {
-		const heroImageUrls = heroPhotos
-			.filter((photo) => photo.preSignedUrl)
-			.map((photo) => optimizeImageUrl(photo.preSignedUrl!, { width: 1200, height: 800, quality: 85 }));
+		const loadPhotos = async () => {
+			try {
+				const [featured, hero] = await Promise.all([
+					photoService.getFeaturedPhotos(),
+					photoService.getHeroPhotos(),
+				]);
+
+				const shuffledFeatured = shuffleArray(featured);
+				setFeaturedPhotos(shuffledFeatured);
+
+				const heroToUse = hero.length > 0 ? hero : shuffledFeatured.slice(0, 3);
+				setHeroPhotos(heroToUse);
+
+				setDisplayedPhotos(shuffledFeatured.slice(0, photosToShow));
+			} catch (error) {
+				console.error('Failed to load photos:', error);
+			}
+		};
+
+		loadPhotos();
+	}, [photosToShow]);
+
+	useEffect(() => {
+		setDisplayedPhotos(featuredPhotos.slice(0, photosToShow));
+	}, [featuredPhotos, photosToShow]);
+
+	useEffect(() => {
+		if (heroPhotos.length === 0) return;
+
+		const cloudFrontUrl = import.meta.env.VITE_CLOUDFRONT_URL;
+		if (!cloudFrontUrl) {
+			console.error('CloudFront URL not configured');
+			return;
+		}
+
+		const heroImageUrls = heroPhotos.flatMap((photo) => [
+			`${cloudFrontUrl}/photos/800/${photo.file}`,
+			`${cloudFrontUrl}/photos/2000/${photo.file}`,
+		]);
 
 		if (heroImageUrls.length > 0) {
-			preloadImages(heroImageUrls).then(() => {
-				setHeroImagesLoaded(true);
-			});
+			preloadImages(heroImageUrls)
+				.then(() => {
+					setHeroImagesLoaded(true);
+				})
+				.catch(() => {
+					setHeroImagesLoaded(true);
+				});
 		} else {
 			setHeroImagesLoaded(true);
 		}
 	}, [heroPhotos]);
 
-	// Initialize displayed photos
-	useEffect(() => {
-		setDisplayedPhotos(featuredPhotos.slice(0, photosToShow));
-	}, [featuredPhotos, photosToShow]);
-
 	const handleSeeMore = () => {
 		if (photosToShow >= featuredPhotos.length) {
-			// All photos are shown, don't load more
 			return;
 		}
 
@@ -84,7 +115,22 @@ export const Home: React.FC = () => {
 		if (showAllPhotos) {
 			return '/gallery';
 		}
-		return null; // Will trigger handleSeeMore
+		return null;
+	};
+
+	const getHeroImageUrl = (photo: Photo, cloudFrontUrl: string) => {
+		const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1920;
+		let size = '2000';
+
+		if (viewportWidth <= 640) {
+			size = '800';
+		} else if (viewportWidth <= 1024) {
+			size = '800';
+		} else {
+			size = '2000';
+		}
+
+		return `${cloudFrontUrl}/photos/${size}/${photo.file}`;
 	};
 
 	useEffect(() => {
@@ -92,13 +138,20 @@ export const Home: React.FC = () => {
 
 		const interval = setInterval(() => {
 			setCurrentHeroIndex((prev) => (prev + 1) % heroPhotos.length);
-		}, 5000);
+		}, 8000);
 
 		return () => clearInterval(interval);
 	}, [heroPhotos.length]);
 
-	const currentHeroPhoto = heroPhotos[currentHeroIndex];
 	const recentPhotos = displayedPhotos.slice(1);
+
+	const handlePrevHero = () => {
+		setCurrentHeroIndex((prev) => (prev - 1 + heroPhotos.length) % heroPhotos.length);
+	};
+
+	const handleNextHero = () => {
+		setCurrentHeroIndex((prev) => (prev + 1) % heroPhotos.length);
+	};
 
 	const handlePhotoClick = (photo: Photo) => {
 		setSelectedPhoto(photo);
@@ -112,7 +165,7 @@ export const Home: React.FC = () => {
 
 	const getCurrentPhotoIndex = () => {
 		if (!selectedPhoto) return -1;
-		return displayedPhotos.findIndex((p) => p.key === selectedPhoto.key);
+		return displayedPhotos.findIndex((p) => p.id === selectedPhoto.id);
 	};
 
 	const handleNextPhoto = () => {
@@ -132,17 +185,15 @@ export const Home: React.FC = () => {
 	const handleButtonClick = () => {
 		const action = getButtonAction();
 		if (action) {
-			// Navigate to gallery
 			window.location.href = action;
 		} else {
-			// Load more photos
 			handleSeeMore();
 		}
 	};
 
 	return (
 		<div className="min-h-screen bg-gray-900 text-white">
-			<section className="relative h-screen flex items-center justify-center overflow-hidden">
+			<section className="relative h-screen w-full -mt-16 flex items-center justify-center overflow-hidden">
 				{!heroImagesLoaded && (
 					<div className="absolute inset-0 bg-gray-900 flex items-center justify-center z-30">
 						<div className="text-center">
@@ -153,43 +204,69 @@ export const Home: React.FC = () => {
 				)}
 
 				{heroPhotos.length > 0 ? (
-					heroPhotos.map((photo, index) => (
-						<div
-							key={photo.key}
-							className="absolute inset-0 bg-cover bg-center cursor-pointer transition-opacity duration-1000 ease-in-out"
-							style={{
-								backgroundImage: `url(${optimizeImageUrl(photo.preSignedUrl || '', { width: 1200, height: 800, quality: 85 })})`,
-								backgroundColor: '#1f2937',
-								opacity: index === currentHeroIndex && heroImagesLoaded ? 1 : 0,
-							}}
-							onClick={() => handlePhotoClick(photo)}
-						/>
-					))
-				) : (
-					<div
-						className="absolute inset-0 bg-cover bg-center"
-						style={{
-							backgroundImage: `url(https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop)`,
-							backgroundColor: '#1f2937',
-						}}
-					/>
-				)}
-				<div className="absolute inset-0 bg-black bg-opacity-40 hover:bg-opacity-30 transition-all duration-300" />
+					heroPhotos.map((photo, index) => {
+						const cloudFrontUrl = import.meta.env.VITE_CLOUDFRONT_URL;
+						if (!cloudFrontUrl) {
+							console.error('CloudFront URL not configured');
+							return null;
+						}
 
-				{currentHeroPhoto && (
-					<div
-						className="absolute top-8 right-8 bg-black bg-opacity-50 rounded-full p-3 opacity-0 hover:opacity-100 transition-opacity cursor-pointer z-20"
-						onClick={() => handlePhotoClick(currentHeroPhoto)}
-					>
-						<svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth={2}
-								d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
-							/>
-						</svg>
+						const imageUrl = getHeroImageUrl(photo, cloudFrontUrl);
+						const isVisible = index === currentHeroIndex && heroImagesLoaded;
+
+						return (
+							<div
+								key={photo.id}
+								className="absolute inset-0 transition-opacity duration-1000 ease-in-out overflow-hidden z-0 bg-black flex items-center justify-center"
+								style={{
+									opacity: isVisible ? 1 : 0,
+								}}
+							>
+								<img
+									src={imageUrl}
+									alt={photo.tags.category || 'Hero photo'}
+									className="w-full h-full object-contain sm:object-cover"
+								/>
+							</div>
+						);
+					})
+				) : (
+					<div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
+						<div className="text-center text-gray-400">
+							<p className="text-lg">No hero photos available</p>
+							<p className="text-sm">
+								Please configure your CloudFront URL and ensure photos.json contains hero photos
+							</p>
+						</div>
 					</div>
+				)}
+
+				{heroPhotos.length > 1 && (
+					<>
+						<button
+							onClick={handlePrevHero}
+							className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all"
+							aria-label="Previous image"
+						>
+							<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M15 19l-7-7 7-7"
+								/>
+							</svg>
+						</button>
+						<button
+							onClick={handleNextHero}
+							className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all"
+							aria-label="Next image"
+						>
+							<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+							</svg>
+						</button>
+					</>
 				)}
 
 				<motion.div
@@ -199,7 +276,7 @@ export const Home: React.FC = () => {
 					animate="visible"
 				>
 					<motion.h1
-						className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 leading-tight"
+						className="text-2xl sm:text-5xl md:text-7xl font-bold mb-4 sm:mb-6 leading-tight"
 						variants={textVariants}
 						transition={{ duration: 0.8, ease: 'easeOut' }}
 					>
@@ -207,7 +284,7 @@ export const Home: React.FC = () => {
 					</motion.h1>
 
 					<motion.p
-						className="text-lg sm:text-xl text-gray-300 mb-8 max-w-2xl mx-auto px-4"
+						className="text-sm sm:text-xl text-gray-300 mb-6 sm:mb-8 max-w-2xl mx-auto px-4"
 						variants={textVariants}
 						transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
 					>
@@ -217,7 +294,7 @@ export const Home: React.FC = () => {
 				</motion.div>
 
 				<motion.button
-					className="absolute bottom-16 sm:bottom-20 md:bottom-24 left-1/2 transform -translate-x-1/2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 rounded-full p-3 bg-black bg-opacity-30 hover:bg-opacity-50 transition-all duration-300 mb-safe"
+					className="absolute bottom-16 sm:bottom-20 md:bottom-24 left-1/2 transform -translate-x-1/2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 p-3 transition-all duration-300 mb-safe"
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ delay: 1, duration: 0.8 }}
@@ -238,7 +315,7 @@ export const Home: React.FC = () => {
 						animate={{ y: [0, 8, 0] }}
 						transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
 					>
-						<svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path
 								strokeLinecap="round"
 								strokeLinejoin="round"
@@ -268,7 +345,6 @@ export const Home: React.FC = () => {
 						columns="large"
 					/>
 
-					{/* See More / View Collections Button */}
 					<motion.div
 						className="text-center mt-12"
 						initial={{ opacity: 0, y: 20 }}

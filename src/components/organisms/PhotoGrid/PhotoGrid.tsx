@@ -14,33 +14,6 @@ interface PhotoGridProps {
 	columns?: 'default' | 'large';
 }
 
-const containerVariants = {
-	hidden: { opacity: 0 },
-	visible: {
-		opacity: 1,
-		transition: {
-			staggerChildren: 0.03,
-			delayChildren: 0,
-		},
-	},
-};
-
-const itemVariants = {
-	hidden: {
-		opacity: 0,
-		y: 10,
-		scale: 0.95,
-	},
-	visible: {
-		opacity: 1,
-		y: 0,
-		scale: 1,
-		transition: {
-			duration: 0.2,
-		},
-	},
-};
-
 export const PhotoGrid: React.FC<PhotoGridProps> = ({
 	photos,
 	loading = false,
@@ -111,18 +84,9 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({
 	})();
 
 	return (
-		<motion.div className={gridClasses} variants={containerVariants} initial="hidden" animate="visible">
+		<div className={gridClasses}>
 			{photos.map((photo) => (
-				<motion.div
-					key={photo.key}
-					variants={itemVariants}
-					whileHover={{
-						scale: 1.02,
-						transition: { duration: 0.2 },
-					}}
-					whileTap={{ scale: 0.98 }}
-					className={aspectRatio === 'natural' ? 'break-inside-avoid mb-4' : ''}
-				>
+				<div key={photo.id} className={aspectRatio === 'natural' ? 'break-inside-avoid mb-4' : ''}>
 					<PhotoCard
 						photo={photo}
 						onClick={() => onPhotoClick?.(photo)}
@@ -130,8 +94,8 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({
 						aspectRatio={aspectRatio}
 						showMetadata={showMetadata}
 					/>
-				</motion.div>
+				</div>
 			))}
-		</motion.div>
+		</div>
 	);
 };
