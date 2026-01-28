@@ -1,9 +1,15 @@
 export interface Photo {
-	key: string;
-	lastModified: string;
-	size: number;
-	tags: Record<string, string | boolean>;
-	preSignedUrl?: string;
+	id: string;
+	file: string;
+	tags: {
+		category: string;
+		location: string;
+		collection: string;
+		featured: boolean;
+		hero: boolean;
+		aspectRatio: string;
+		collectionCover?: boolean;
+	};
 }
 
 export interface Collection {

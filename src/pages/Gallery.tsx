@@ -1,8 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { PhotoGrid, PhotoViewerModal, CollectionsGrid } from '../components/organisms';
 import { usePhotos } from '../hooks/usePhotos';
+import { photoService } from '../services/photoService';
 import { shuffleArray } from '../utils/array';
 import type { Photo, PhotoFilter } from '../types/photo';
 
@@ -49,9 +50,17 @@ export const Gallery: React.FC = () => {
 
 	const showAllPhotos = searchParams.get('view') === 'all';
 
+	const formatCategoryName = (category: string): string => {
+		return category
+			.toLowerCase()
+			.split(/[\s-_]+/) // Split on spaces, hyphens, or underscores
+			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+			.join(' ');
+	};
+
 	const filter = useMemo<PhotoFilter>(() => {
 		if (showAllPhotos) {
-			return {}; // No filter for all photos
+			return {};
 		}
 		return urlCollection ? { collection: urlCollection } : {};
 	}, [urlCollection, showAllPhotos]);
@@ -63,15 +72,44 @@ export const Gallery: React.FC = () => {
 	const [localFilter, setLocalFilter] = useState<PhotoFilter>({});
 	const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [categories, setCategories] = useState<string[]>([]);
+	const [categoriesLoading, setCategoriesLoading] = useState(false);
+	const [photosToShow, setPhotosToShow] = useState(15);
 
 	const finalFilter = { ...filter, ...localFilter };
 	const { photos, loading, error, refetch } = usePhotos(finalFilter);
 
 	const shuffledPhotos = useMemo(() => shuffleArray(photos), [photos]);
+	const displayedPhotos = useMemo(() => shuffledPhotos.slice(0, photosToShow), [shuffledPhotos, photosToShow]);
+	const hasMorePhotos = photosToShow < shuffledPhotos.length;
+
+	useEffect(() => {
+		if (showAllPhotos) {
+			const fetchCategories = async () => {
+				try {
+					setCategoriesLoading(true);
+					const fetchedCategories = await photoService.getCategories();
+					setCategories(fetchedCategories);
+				} catch (error) {
+					console.error('Failed to fetch categories:', error);
+					setCategories([]);
+				} finally {
+					setCategoriesLoading(false);
+				}
+			};
+
+			fetchCategories();
+		}
+	}, [showAllPhotos]);
 
 	const handleCategoryChange = (category: string | undefined) => {
 		setLocalFilter({ category });
+		setPhotosToShow(12);
 		navigate('/gallery?view=all');
+	};
+
+	const handleLoadMore = () => {
+		setPhotosToShow((prev) => prev + 12);
 	};
 
 	const handleCollectionSelect = (collection: string) => {
@@ -90,7 +128,7 @@ export const Gallery: React.FC = () => {
 
 	const getCurrentPhotoIndex = () => {
 		if (!selectedPhoto) return -1;
-		return shuffledPhotos.findIndex((p) => p.key === selectedPhoto.key);
+		return shuffledPhotos.findIndex((p) => p.id === selectedPhoto.id);
 	};
 
 	const handleNextPhoto = () => {
@@ -110,8 +148,6 @@ export const Gallery: React.FC = () => {
 	const handleBackToCollections = () => {
 		navigate('/gallery');
 	};
-
-	const categories = ['landscape', 'portrait', 'street', 'aerial', 'wildlife'];
 
 	if (error) {
 		return (
@@ -223,6 +259,7 @@ export const Gallery: React.FC = () => {
 						<motion.button
 							onClick={() => {
 								setLocalFilter({});
+								setPhotosToShow(12);
 								navigate('/gallery?view=all');
 							}}
 							className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
@@ -287,31 +324,61 @@ export const Gallery: React.FC = () => {
 										>
 											All
 										</motion.button>
-										{categories.map((category, index) => (
-											<motion.button
-												key={category}
-												onClick={() => handleCategoryChange(category)}
-												variants={filterButtonVariants}
-												initial="inactive"
-												animate={localFilter.category === category ? 'active' : 'inactive'}
-												whileHover="hover"
-												whileTap={{ scale: 0.98 }}
-												className="px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors capitalize"
-												style={{ animationDelay: `${index * 0.05}s` }}
+
+										{categoriesLoading ? (
+											<motion.div
+												className="px-3 py-2 text-xs sm:text-sm text-gray-400"
+												initial={{ opacity: 0 }}
+												animate={{ opacity: 1 }}
 											>
-												{category}
-											</motion.button>
-										))}
+												Loading categories...
+											</motion.div>
+										) : categories.length > 0 ? (
+											categories.map((category, index) => (
+												<motion.button
+													key={category}
+													onClick={() => handleCategoryChange(category)}
+													variants={filterButtonVariants}
+													initial="inactive"
+													animate={localFilter.category === category ? 'active' : 'inactive'}
+													whileHover="hover"
+													whileTap={{ scale: 0.98 }}
+													className="px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors"
+													style={{ animationDelay: `${index * 0.05}s` }}
+												>
+													{formatCategoryName(category)}
+												</motion.button>
+											))
+										) : (
+											<motion.div
+												className="px-3 py-2 text-xs sm:text-sm text-gray-400"
+												initial={{ opacity: 0 }}
+												animate={{ opacity: 1 }}
+											>
+												No categories available
+											</motion.div>
+										)}
 									</motion.div>
 								</motion.div>
 							)}
 
 							<PhotoGrid
-								photos={shuffledPhotos}
+								photos={displayedPhotos}
 								loading={loading}
 								onPhotoClick={handlePhotoClick}
 								aspectRatio="natural"
 							/>
+
+							{hasMorePhotos && (
+								<div className="flex justify-center mt-8">
+									<button
+										onClick={handleLoadMore}
+										className="px-6 py-3 bg-gray-700 text-white rounded-full font-medium hover:bg-gray-600 transition-colors"
+									>
+										Load More ({shuffledPhotos.length - photosToShow} remaining)
+									</button>
+								</div>
+							)}
 						</motion.div>
 					)}
 				</AnimatePresence>

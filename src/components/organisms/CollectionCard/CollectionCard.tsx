@@ -10,6 +10,24 @@ interface CollectionCardProps {
 }
 
 export const CollectionCard: React.FC<CollectionCardProps> = ({ name, count, coverPhoto, onClick }) => {
+	const getPhotoUrls = () => {
+		const cloudFrontUrl = import.meta.env.VITE_CLOUDFRONT_URL;
+		if (!cloudFrontUrl) {
+			throw new Error(
+				'CloudFront URL not configured. Please set VITE_CLOUDFRONT_URL in your environment variables.',
+			);
+		}
+
+		const baseUrl = `${cloudFrontUrl}/photos`;
+		return {
+			src: `${baseUrl}/800/${coverPhoto.file}`, // Default/fallback
+			srcSet: `${baseUrl}/400/${coverPhoto.file} 400w, ${baseUrl}/800/${coverPhoto.file} 800w, ${baseUrl}/2000/${coverPhoto.file} 2000w`,
+			sizes: '(max-width: 640px) 400px, (max-width: 1024px) 800px, 2000px',
+		};
+	};
+
+	const photoUrls = getPhotoUrls();
+
 	return (
 		<motion.div
 			className="relative bg-gray-800 rounded-lg overflow-hidden cursor-pointer group"
@@ -22,7 +40,9 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({ name, count, cov
 		>
 			<div className="aspect-square relative overflow-hidden">
 				<motion.img
-					src={coverPhoto.preSignedUrl}
+					src={photoUrls.src}
+					srcSet={photoUrls.srcSet}
+					sizes={photoUrls.sizes}
 					alt={`${name} collection`}
 					className="w-full h-full object-cover"
 					whileHover={{ scale: 1.1 }}

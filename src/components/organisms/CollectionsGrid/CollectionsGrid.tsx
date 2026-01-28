@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { CollectionCard } from '../CollectionCard';
-import { getCollectionStats } from '../../../data/mockPhotos';
+import { photoService } from '../../../services/photoService';
+import { generateCollections } from '../../../services/collectionService';
 import { Spinner } from '../../atoms';
 import type { Collection } from '../../../types/photo';
 
@@ -23,16 +24,21 @@ const containerVariants = {
 export const CollectionsGrid: React.FC<CollectionsGridProps> = ({ onCollectionSelect }) => {
 	const [collections, setCollections] = useState<Collection[]>([]);
 	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
 		const fetchCollections = async () => {
 			try {
 				setLoading(true);
-				await new Promise((resolve) => setTimeout(resolve, 200));
-				const collectionStats = getCollectionStats();
-				setCollections(collectionStats);
+				setError(null);
+
+				const allPhotos = await photoService.getPhotos();
+				const generatedCollections = generateCollections(allPhotos);
+
+				setCollections(generatedCollections);
 			} catch (error) {
 				console.error('Failed to fetch collections:', error);
+				setError(error instanceof Error ? error.message : 'Failed to load collections');
 			} finally {
 				setLoading(false);
 			}
@@ -59,6 +65,20 @@ export const CollectionsGrid: React.FC<CollectionsGridProps> = ({ onCollectionSe
 					Loading collections...
 				</motion.p>
 			</motion.div>
+		);
+	}
+
+	if (error) {
+		return (
+			<div className="text-center py-12">
+				<p className="text-red-400 mb-4">{error}</p>
+				<button
+					onClick={() => window.location.reload()}
+					className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+				>
+					Try Again
+				</button>
+			</div>
 		);
 	}
 

@@ -1,7 +1,6 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Tag, Spinner } from '../../atoms';
-import { optimizeImageUrl } from '../../../utils/imageOptimization';
+import { Tag } from '../../atoms';
 import type { Photo } from '../../../types/photo';
 
 interface PhotoCardProps {
@@ -19,85 +18,57 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
 	aspectRatio = 'square',
 	showMetadata = true,
 }) => {
-	const [imageLoaded, setImageLoaded] = useState(false);
 	const [imageError, setImageError] = useState(false);
 	const [retryCount, setRetryCount] = useState(0);
 	const [tagsExpanded, setTagsExpanded] = useState(false);
-	const [shouldLoad, setShouldLoad] = useState(false);
+	const [shouldLoad] = useState(true);
 	const imgRef = useRef<HTMLDivElement>(null);
-
-	// Intersection Observer for better lazy loading
-	useEffect(() => {
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						setShouldLoad(true);
-						observer.unobserve(entry.target);
-					}
-				});
-			},
-			{
-				rootMargin: '50px', // Start loading 50px before the image comes into view
-			},
-		);
-
-		if (imgRef.current) {
-			observer.observe(imgRef.current);
-		}
-
-		return () => {
-			if (imgRef.current) {
-				observer.unobserve(imgRef.current);
-			}
-		};
-	}, []);
 
 	const handleImageError = useCallback(() => {
 		if (retryCount < 2) {
 			setRetryCount((prev) => prev + 1);
-			setImageLoaded(false);
 		} else {
 			setImageError(true);
 		}
 	}, [retryCount]);
 
-	const imageUrl = photo.preSignedUrl ? optimizeImageUrl(photo.preSignedUrl, { width: 600, quality: 80 }) : '';
+	const getPhotoUrls = () => {
+		const cloudFrontUrl = import.meta.env.VITE_CLOUDFRONT_URL;
+		if (!cloudFrontUrl) {
+			throw new Error(
+				'CloudFront URL not configured. Please set VITE_CLOUDFRONT_URL in your environment variables.',
+			);
+		}
 
-	const retryImageUrl = retryCount > 0 ? `${imageUrl}&retry=${retryCount}` : imageUrl;
+		const baseUrl = `${cloudFrontUrl}/photos`;
+		return {
+			src: `${baseUrl}/800/${photo.file}`, // Default/fallback
+			srcSet: `${baseUrl}/400/${photo.file} 400w, ${baseUrl}/800/${photo.file} 800w, ${baseUrl}/2000/${photo.file} 2000w`,
+			sizes: '(max-width: 640px) 400px, (max-width: 1024px) 800px, 2000px',
+		};
+	};
+
+	const photoUrls = getPhotoUrls();
 
 	const getAspectClass = () => {
 		if (aspectRatio === 'square') return 'aspect-square';
 
-		const photoAspectRatio = (photo.tags.aspectRatio as string) || '3:2';
+		const photoAspectRatio = photo.tags.aspectRatio || '3:2';
 		if (photoAspectRatio === '4:5') return 'aspect-[4/5]';
 		if (photoAspectRatio === '3:2') return 'aspect-[3/2]';
 		return 'aspect-square';
 	};
 
+	const displayableTags = Object.entries(photo.tags).filter(
+		([key]) => !['featured', 'hero', 'aspectRatio'].includes(key),
+	);
+
 	return (
-		<motion.div
-			className={`bg-gray-800 rounded-lg overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer group ${className}`}
+		<div
+			className={`bg-gray-800 rounded-lg overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer group hover:-translate-y-2 ${className}`}
 			onClick={onClick}
-			whileHover={{
-				y: -8,
-				transition: { duration: 0.2, ease: 'easeOut' },
-			}}
-			whileTap={{ scale: 0.98 }}
-			layout
 		>
 			<div className={`relative ${getAspectClass()} bg-gray-700 overflow-hidden`} ref={imgRef}>
-				{!imageLoaded && !imageError && (
-					<motion.div
-						className="absolute inset-0 flex items-center justify-center"
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						exit={{ opacity: 0 }}
-					>
-						<Spinner size="md" color="gray" />
-					</motion.div>
-				)}
-
 				{imageError ? (
 					<motion.div
 						className="absolute inset-0 flex items-center justify-center bg-gray-700"
@@ -126,133 +97,88 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
 						</div>
 					</motion.div>
 				) : shouldLoad ? (
-					<motion.img
-						src={retryImageUrl}
-						alt={(photo.tags.category as string) || 'Photo'}
+					<img
+						src={photoUrls.src}
+						srcSet={photoUrls.srcSet}
+						sizes={photoUrls.sizes}
+						alt={photo.tags.category || 'Photo'}
 						className="w-full h-full object-cover"
 						loading="lazy"
-						decoding="async"
-						initial={{ opacity: 0, scale: 1.05 }}
-						animate={{
-							opacity: imageLoaded ? 1 : 0,
-							scale: imageLoaded ? 1 : 1.05,
-						}}
-						transition={{ duration: 0.25, ease: 'easeOut' }}
-						onLoad={() => setImageLoaded(true)}
 						onError={handleImageError}
-						whileHover={{ scale: 1.05 }}
 					/>
 				) : null}
 
-				<motion.div
-					className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 flex items-end"
-					initial={{ opacity: 0 }}
-					whileHover={{ opacity: 1 }}
-				>
-					<motion.div
-						className="p-4 text-white"
-						initial={{ y: 20, opacity: 0 }}
-						whileHover={{ y: 0, opacity: 1 }}
-						transition={{ delay: 0.1 }}
-					>
+				<div className="absolute inset-0 bg-transparent group-hover:bg-black/50 transition-all duration-300 flex items-end">
+					<div className="p-4 text-white opacity-0 group-hover:opacity-100 transition-opacity">
 						{photo.tags.category && (
-							<motion.div
-								initial={{ scale: 0.8, opacity: 0 }}
-								whileHover={{ scale: 1, opacity: 1 }}
-								transition={{ delay: 0.2 }}
-							>
-								<Tag variant="blue" size="sm">
-									{photo.tags.category}
-								</Tag>
-							</motion.div>
+							<Tag variant="blue" size="sm">
+								{photo.tags.category}
+							</Tag>
 						)}
-						{photo.tags.location && (
-							<motion.p
-								className="text-sm font-medium mt-2"
-								initial={{ y: 10, opacity: 0 }}
-								whileHover={{ y: 0, opacity: 1 }}
-								transition={{ delay: 0.3 }}
-							>
-								{photo.tags.location}
-							</motion.p>
-						)}
-					</motion.div>
-				</motion.div>
+						{photo.tags.location && <p className="text-sm font-medium mt-2">{photo.tags.location}</p>}
+					</div>
+				</div>
 			</div>
 
 			{showMetadata && (
 				<motion.div className="p-4" initial={{ opacity: 0.8 }} whileHover={{ opacity: 1 }}>
 					<motion.div className="flex flex-wrap gap-1" initial={{ opacity: 0.7 }} whileHover={{ opacity: 1 }}>
-						{Object.entries(photo.tags)
-							.filter(([key]) => !['uploaded', 'featured', 'aspectRatio', 'equipment'].includes(key))
-							.slice(0, tagsExpanded ? undefined : 3)
-							.map(([key, value], index) => (
-								<motion.div
-									key={key}
-									initial={{ opacity: 0, x: -10 }}
-									animate={{ opacity: 1, x: 0 }}
-									transition={{ delay: index * 0.1 }}
-								>
-									<Tag variant="default" size="sm">
-										{key}: {value}
-									</Tag>
-								</motion.div>
-							))}
-						{Object.entries(photo.tags).filter(
-							([key]) => !['uploaded', 'featured', 'aspectRatio', 'equipment'].includes(key),
-						).length > 3 &&
-							!tagsExpanded && (
-								<motion.button
-									onClick={(e) => {
-										e.stopPropagation();
-										setTagsExpanded(true);
-									}}
-									className="inline-flex items-center"
-									initial={{ opacity: 0, scale: 0.8 }}
-									animate={{ opacity: 1, scale: 1 }}
-									transition={{ delay: 0.3 }}
-									whileHover={{ scale: 1.05 }}
-									whileTap={{ scale: 0.95 }}
-								>
-									<Tag variant="default" size="sm">
-										+
-										{Object.entries(photo.tags).filter(
-											([key]) =>
-												!['uploaded', 'featured', 'aspectRatio', 'equipment'].includes(key),
-										).length - 3}{' '}
-										more
-									</Tag>
-								</motion.button>
-							)}
+						{displayableTags.slice(0, tagsExpanded ? undefined : 3).map(([key, value], index) => (
+							<motion.div
+								key={key}
+								initial={{ opacity: 0, x: -10 }}
+								animate={{ opacity: 1, x: 0 }}
+								transition={{ delay: index * 0.1 }}
+							>
+								<Tag variant="default" size="sm">
+									{key}: {value.toString()}
+								</Tag>
+							</motion.div>
+						))}
+						{displayableTags.length > 3 && !tagsExpanded && (
+							<motion.button
+								onClick={(e) => {
+									e.stopPropagation();
+									setTagsExpanded(true);
+								}}
+								className="inline-flex items-center"
+								initial={{ opacity: 0, scale: 0.8 }}
+								animate={{ opacity: 1, scale: 1 }}
+								transition={{ delay: 0.3 }}
+								whileHover={{ scale: 1.05 }}
+								whileTap={{ scale: 0.95 }}
+							>
+								<Tag variant="default" size="sm">
+									+{displayableTags.length - 3} more
+								</Tag>
+							</motion.button>
+						)}
 					</motion.div>
 
-					{tagsExpanded &&
-						Object.entries(photo.tags).filter(
-							([key]) => !['uploaded', 'featured', 'aspectRatio', 'equipment'].includes(key),
-						).length > 3 && (
-							<motion.div
-								className="flex justify-center mt-2"
-								initial={{ opacity: 0, y: 10 }}
-								animate={{ opacity: 1, y: 0 }}
-								transition={{ delay: 0.2 }}
+					{tagsExpanded && displayableTags.length > 3 && (
+						<motion.div
+							className="flex justify-center mt-2"
+							initial={{ opacity: 0, y: 10 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ delay: 0.2 }}
+						>
+							<motion.button
+								onClick={(e) => {
+									e.stopPropagation();
+									setTagsExpanded(false);
+								}}
+								className="inline-flex items-center"
+								whileHover={{ scale: 1.05 }}
+								whileTap={{ scale: 0.95 }}
 							>
-								<motion.button
-									onClick={(e) => {
-										e.stopPropagation();
-										setTagsExpanded(false);
-									}}
-									className="inline-flex items-center"
-									whileHover={{ scale: 1.05 }}
-									whileTap={{ scale: 0.95 }}
-								>
-									<Tag variant="default" size="sm">
-										Show less
-									</Tag>
-								</motion.button>
-							</motion.div>
-						)}
+								<Tag variant="default" size="sm">
+									Show less
+								</Tag>
+							</motion.button>
+						</motion.div>
+					)}
 				</motion.div>
 			)}
-		</motion.div>
+		</div>
 	);
 };

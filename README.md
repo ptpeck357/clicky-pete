@@ -1,16 +1,17 @@
 # Photography Portfolio
 
-A modern, full-stack photography portfolio application built with React, TypeScript, .NET 8, and AWS S3. Features a clean, professional interface for showcasing photography work with tag-based filtering and responsive design.
+A modern photography portfolio application built with React, TypeScript, and CloudFront CDN. Features a clean, professional interface for showcasing photography work with dynamic filtering and responsive design.
 
 ## 🚀 Features
 
-- **Photo Gallery**: View and organize photos with tags
-- **Tag-Based Filtering**: Filter photos by category, location, equipment, and style
+- **Photo Gallery**: View and organize photos with dynamic categories
+- **Dynamic Filtering**: Filter photos by category, location, and collection
 - **Responsive Design**: Works beautifully on desktop, tablet, and mobile
-- **AWS S3 Integration**: Secure cloud storage with presigned URLs
-- **Modern UI**: Clean, professional interface with Tailwind CSS
+- **CloudFront CDN**: Fast global content delivery with multiple image sizes
+- **Modern UI**: Clean, professional interface with Tailwind CSS and animations
 - **Photo Modal**: Full-screen photo viewing with navigation
 - **Collection Browsing**: Explore photos organized by location and theme
+- **Progressive Loading**: Optimized image loading with srcSet and lazy loading
 
 ## 🛠 Tech Stack
 
@@ -19,30 +20,18 @@ A modern, full-stack photography portfolio application built with React, TypeScr
 - **Vite** for fast development and building
 - **React Router** for navigation
 - **Tailwind CSS** for styling
+- **Framer Motion** for animations
 - **Custom hooks** for state management
 
-### Backend
-- **.NET 8** Web API
-- **AWS S3 SDK** for cloud storage
-- **Swagger** for API documentation
-- **Dependency Injection** for clean architecture
-
 ### Infrastructure
-- **AWS S3** for photo storage
-- **Object tagging** for organization
-- **Presigned URLs** for secure access
-
+- **CloudFront CDN** for global content delivery
+- **Responsive Images** with srcSet (400px, 800px, 2000px)
+- **WebP Format** for optimal performance
 ## 📁 Project Structure
 
 ```
 photography-portfolio/
 ├── src/
-│   ├── api/                    # .NET Backend
-│   │   └── ImageApi/
-│   │       ├── Controllers/    # API endpoints
-│   │       ├── Services/       # Business logic
-│   │       └── Program.cs      # API startup
-│   │
 │   ├── app/                   # App configuration
 │   │   ├── App.tsx            # Main app component
 │   │   └── Router.tsx         # Route definitions
@@ -94,46 +83,40 @@ npm install
 cp .env.example .env
 
 # Edit .env with your configuration
-VITE_API_URL=https://localhost:7000/api
-VITE_USE_MOCK_DATA=true
+VITE_CLOUDFRONT_URL=https://your-cloudfront-domain.cloudfront.net
 ```
 
-### 3. Configure AWS S3
+### 3. Prepare Your Photos
 
-Update `src/api/ImageApi/appsettings.json`:
+Upload your photos to your CloudFront distribution with the following structure:
+- **Photos JSON**: `/data/photos.json` - Contains photo metadata
+- **Images**: `/photos/400/filename.webp`, `/photos/800/filename.webp`, `/photos/2000/filename.webp`
 
+Your `photos.json` should follow this format:
 ```json
-{
-  "AWS": {
-    "Region": "us-east-1",
-    "BucketName": "your-actual-bucket-name"
+[
+  {
+    "id": "img-8553",
+    "file": "IMG_8553.webp",
+    "tags": {
+      "category": "landscape",
+      "location": "Yosemite National Park",
+      "collection": "California",
+      "featured": true,
+      "hero": false,
+      "aspectRatio": "3:2"
+    }
   }
-}
+]
 ```
-
-Set up AWS credentials using one of these methods:
-- **AWS CLI**: `aws configure`
-- **Environment variables**: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
-- **IAM roles** (if running on EC2)
 
 ### 4. Run the Application
-
-**Start the backend (.NET API):**
+**Start the application:**
 ```bash
-cd src/api/ImageApi
-dotnet restore
-dotnet run
-```
-
-**Start the frontend (React app):**
-```bash
-# In a new terminal
 npm run dev
 ```
 
-Visit:
-- **Frontend**: http://localhost:5173
-- **API Documentation**: https://localhost:7000/swagger
+Visit: **http://localhost:5173**
 
 ## 📸 Usage
 
@@ -160,22 +143,13 @@ Visit:
 
 ## 🏗 Development
 
-### Frontend Development
+### Development Commands
 
 ```bash
 npm run dev          # Start development server
 npm run build        # Build for production
 npm run lint         # Run ESLint
 npm run format:check # Check Prettier formatting
-```
-
-### Backend Development
-
-```bash
-cd src/api/ImageApi
-dotnet run           # Start API server
-dotnet build         # Build project
-dotnet test          # Run tests (if any)
 ```
 
 ### Code Quality
@@ -188,7 +162,7 @@ The project includes:
 
 ## 🔧 Configuration
 
-### AWS S3 Bucket Setup
+### CloudFront Setup
 
 1. Create an S3 bucket in AWS Console
 2. Configure bucket permissions for your AWS credentials
@@ -201,36 +175,20 @@ The project includes:
 
 **Frontend (.env):**
 ```bash
-VITE_API_URL=https://localhost:7000/api
-VITE_USE_MOCK_DATA=true
-```
-
-**Backend (appsettings.json):**
-```json
-{
-  "AWS": {
-    "Region": "us-east-1",
-    "BucketName": "your-bucket-name"
-  }
-}
+VITE_CLOUDFRONT_URL=https://your-cloudfront-domain.cloudfront.net
 ```
 
 ## 🚀 Deployment
 
-### Frontend Deployment
-
 ```bash
 npm run build
-# Deploy the 'dist' folder to your hosting provider
+# Deploy the 'dist' folder to your hosting provider (Vercel, Netlify, etc.)
 ```
 
-### Backend Deployment
-
-```bash
-cd src/api/ImageApi
-dotnet publish -c Release
-# Deploy to your hosting provider (Azure, AWS, etc.)
-```
+Popular deployment options:
+- **Vercel**: `vercel --prod`
+- **Netlify**: Drag and drop the `dist` folder
+- **AWS S3 + CloudFront**: Upload to S3 bucket with static website hosting
 
 ## 🤝 Contributing
 
@@ -248,4 +206,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Built with modern web technologies
 - Inspired by photography portfolio best practices
-- Uses AWS S3 for reliable cloud storage
+- Uses CloudFront CDN for fast global delivery
