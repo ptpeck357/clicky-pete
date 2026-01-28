@@ -12,11 +12,13 @@ const filterButtonVariants = {
 		scale: 1,
 		backgroundColor: 'rgb(55, 65, 81)',
 		color: 'rgb(209, 213, 219)',
+		transition: { duration: 0.15 },
 	},
 	active: {
 		scale: 1.05,
 		backgroundColor: 'rgb(37, 99, 235)',
 		color: 'rgb(255, 255, 255)',
+		transition: { duration: 0.15 },
 	},
 	hover: {
 		scale: 1.02,
@@ -128,7 +130,10 @@ export const Gallery: React.FC = () => {
 	const handleCategoryChange = (category: string | undefined) => {
 		setLocalFilter({ category });
 		setPhotosToShow(12);
-		navigate('/gallery?view=all');
+		// Only navigate if we're not already on the all photos view
+		if (!showAllPhotos) {
+			navigate('/gallery?view=all', { replace: true });
+		}
 	};
 
 	const handleCollectionSelect = (collection: string) => {
@@ -339,7 +344,7 @@ export const Gallery: React.FC = () => {
 											animate={!localFilter.category ? 'active' : 'inactive'}
 											whileHover="hover"
 											whileTap={{ scale: 0.98 }}
-											className="px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors"
+											className="px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors cursor-pointer"
 										>
 											All
 										</motion.button>
@@ -362,7 +367,7 @@ export const Gallery: React.FC = () => {
 													animate={localFilter.category === category ? 'active' : 'inactive'}
 													whileHover="hover"
 													whileTap={{ scale: 0.98 }}
-													className="px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors"
+													className="px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors cursor-pointer"
 													style={{ animationDelay: `${index * 0.05}s` }}
 												>
 													{formatCategoryName(category)}

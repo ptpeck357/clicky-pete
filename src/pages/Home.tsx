@@ -232,7 +232,7 @@ export const Home: React.FC = () => {
 					<>
 						<button
 							onClick={handlePrevHero}
-							className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all"
+							className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all cursor-pointer"
 							aria-label="Previous image"
 						>
 							<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -246,7 +246,7 @@ export const Home: React.FC = () => {
 						</button>
 						<button
 							onClick={handleNextHero}
-							className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all"
+							className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all cursor-pointer"
 							aria-label="Next image"
 						>
 							<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -372,8 +372,9 @@ export const Home: React.FC = () => {
 						transition={{ duration: 0.8, delay: 0.2 }}
 						viewport={{ once: true }}
 					>
-						"Photography is the art of frozen time... the ability to store emotion and feelings within a
-						frame."
+						For his invisible attributes, namely, his eternal power and divine nature, have been clearly
+						perceived, ever since the creation of the world, in the things that have been made. So they are
+						without excuse.
 					</motion.blockquote>
 					<motion.cite
 						className="block mt-6 text-gray-500"
@@ -382,7 +383,7 @@ export const Home: React.FC = () => {
 						transition={{ duration: 0.6, delay: 0.5 }}
 						viewport={{ once: true }}
 					>
-						— Meshack Otieno
+						- Romans 1:20
 					</motion.cite>
 				</div>
 			</motion.section>
