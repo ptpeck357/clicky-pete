@@ -1,15 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ContactModal } from '../components/organisms/ContactModal';
+import { photoService } from '../services/photoService';
+
+const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=480&h=640&fit=crop&crop=face';
 
 export const About: React.FC = () => {
 	const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+	const [profileImageUrl, setProfileImageUrl] = useState(PLACEHOLDER_IMAGE);
+
+	useEffect(() => {
+		const loadProfileImage = async () => {
+			try {
+				const photos = await photoService.getPhotos();
+				const profilePhoto = photos.find((photo) => photo.file === 'profile.webp');
+				if (profilePhoto) {
+					const cloudFrontUrl = import.meta.env.VITE_CLOUDFRONT_URL;
+					if (cloudFrontUrl) {
+						setProfileImageUrl(`${cloudFrontUrl}/photos/800/${profilePhoto.file}`);
+					}
+				}
+			} catch (error) {
+				console.error('Failed to load profile image:', error);
+			}
+		};
+
+		loadProfileImage();
+	}, []);
 
 	return (
 		<div className="min-h-screen bg-gray-900">
 			<section className="bg-gray-900 py-4 sm:py-8 lg:py-12">
 				<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start">
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-start">
 						<motion.div
 							className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden w-full max-w-2xl"
 							initial={{ opacity: 0, x: -50 }}
@@ -85,7 +108,7 @@ export const About: React.FC = () => {
 							<div className="relative inline-block">
 								<div className="w-64 h-80 sm:w-80 sm:h-96 lg:w-96 lg:h-[32rem] bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg overflow-hidden">
 									<img
-										src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=480&h=640&fit=crop&crop=face"
+										src={profileImageUrl}
 										alt="Photographer with camera"
 										className="w-full h-full object-cover"
 									/>
