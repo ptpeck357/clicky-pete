@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { PhotoGrid, PhotoViewerModal, CollectionsGrid } from '../components/organisms';
@@ -83,6 +83,29 @@ export const Gallery: React.FC = () => {
 	const displayedPhotos = useMemo(() => shuffledPhotos.slice(0, photosToShow), [shuffledPhotos, photosToShow]);
 	const hasMorePhotos = photosToShow < shuffledPhotos.length;
 
+	const loadMoreRef = useRef<HTMLDivElement>(null);
+
+	const handleLoadMore = useCallback(() => {
+		setPhotosToShow((prev) => prev + 12);
+	}, []);
+
+	useEffect(() => {
+		const sentinel = loadMoreRef.current;
+		if (!sentinel || !hasMorePhotos || loading) return;
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (entries[0].isIntersecting) {
+					handleLoadMore();
+				}
+			},
+			{ threshold: 0.1 },
+		);
+
+		observer.observe(sentinel);
+		return () => observer.disconnect();
+	}, [hasMorePhotos, loading, handleLoadMore]);
+
 	useEffect(() => {
 		if (showAllPhotos) {
 			const fetchCategories = async () => {
@@ -106,10 +129,6 @@ export const Gallery: React.FC = () => {
 		setLocalFilter({ category });
 		setPhotosToShow(12);
 		navigate('/gallery?view=all');
-	};
-
-	const handleLoadMore = () => {
-		setPhotosToShow((prev) => prev + 12);
 	};
 
 	const handleCollectionSelect = (collection: string) => {
@@ -370,13 +389,8 @@ export const Gallery: React.FC = () => {
 							/>
 
 							{hasMorePhotos && (
-								<div className="flex justify-center mt-8">
-									<button
-										onClick={handleLoadMore}
-										className="px-6 py-3 bg-gray-700 text-white rounded-full font-medium hover:bg-gray-600 transition-colors"
-									>
-										Load More ({shuffledPhotos.length - photosToShow} remaining)
-									</button>
+								<div ref={loadMoreRef} className="flex justify-center py-8">
+									<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400" />
 								</div>
 							)}
 						</motion.div>

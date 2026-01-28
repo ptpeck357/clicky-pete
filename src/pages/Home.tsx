@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { PhotoViewerModal, PhotoGrid } from '../components/organisms';
@@ -35,7 +35,30 @@ export const Home: React.FC = () => {
 
 	const [displayedPhotos, setDisplayedPhotos] = useState<Photo[]>([]);
 	const [photosToShow, setPhotosToShow] = useState(12);
-	const [showAllPhotos, setShowAllPhotos] = useState(false);
+
+	const loadMoreRef = useRef<HTMLDivElement>(null);
+	const hasMorePhotos = photosToShow < featuredPhotos.length;
+
+	const handleLoadMore = useCallback(() => {
+		setPhotosToShow((prev) => Math.min(prev + 12, featuredPhotos.length));
+	}, [featuredPhotos.length]);
+
+	useEffect(() => {
+		const sentinel = loadMoreRef.current;
+		if (!sentinel || !hasMorePhotos) return;
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (entries[0].isIntersecting) {
+					handleLoadMore();
+				}
+			},
+			{ threshold: 0.1 },
+		);
+
+		observer.observe(sentinel);
+		return () => observer.disconnect();
+	}, [hasMorePhotos, handleLoadMore]);
 
 	useEffect(() => {
 		const loadPhotos = async () => {
@@ -90,33 +113,6 @@ export const Home: React.FC = () => {
 			setHeroImagesLoaded(true);
 		}
 	}, [heroPhotos]);
-
-	const handleSeeMore = () => {
-		if (photosToShow >= featuredPhotos.length) {
-			return;
-		}
-
-		const newPhotosToShow = Math.min(photosToShow + 6, featuredPhotos.length);
-		setPhotosToShow(newPhotosToShow);
-
-		if (newPhotosToShow >= featuredPhotos.length) {
-			setShowAllPhotos(true);
-		}
-	};
-
-	const getButtonText = () => {
-		if (showAllPhotos) {
-			return 'View All Collections';
-		}
-		return 'See More Photos';
-	};
-
-	const getButtonAction = () => {
-		if (showAllPhotos) {
-			return '/gallery';
-		}
-		return null;
-	};
 
 	const getHeroImageUrl = (photo: Photo, cloudFrontUrl: string) => {
 		const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1920;
@@ -179,15 +175,6 @@ export const Home: React.FC = () => {
 		const currentIndex = getCurrentPhotoIndex();
 		if (currentIndex > 0) {
 			setSelectedPhoto(displayedPhotos[currentIndex - 1]);
-		}
-	};
-
-	const handleButtonClick = () => {
-		const action = getButtonAction();
-		if (action) {
-			window.location.href = action;
-		} else {
-			handleSeeMore();
 		}
 	};
 
@@ -294,7 +281,7 @@ export const Home: React.FC = () => {
 				</motion.div>
 
 				<motion.button
-					className="absolute bottom-16 sm:bottom-20 md:bottom-24 left-1/2 transform -translate-x-1/2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 p-3 transition-all duration-300 mb-safe"
+					className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 p-3 transition-all duration-300 mb-safe"
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ delay: 1, duration: 0.8 }}
@@ -345,33 +332,28 @@ export const Home: React.FC = () => {
 						columns="large"
 					/>
 
-					<motion.div
-						className="text-center mt-12"
-						initial={{ opacity: 0, y: 20 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.6, delay: 0.3 }}
-					>
-						{showAllPhotos ? (
+					{hasMorePhotos ? (
+						<div ref={loadMoreRef} className="flex justify-center py-8">
+							<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400" />
+						</div>
+					) : (
+						<motion.div
+							className="text-center mt-12"
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.6, delay: 0.3 }}
+						>
 							<Link to="/gallery">
 								<motion.button
 									className="px-8 py-3 border border-gray-600 text-white rounded-full font-medium hover:bg-white hover:text-gray-900 transition-all duration-300"
 									whileHover={{ scale: 1.05 }}
 									whileTap={{ scale: 0.95 }}
 								>
-									{getButtonText()}
+									View All Collections
 								</motion.button>
 							</Link>
-						) : (
-							<motion.button
-								className="px-8 py-3 border border-gray-600 text-white rounded-full font-medium hover:bg-white hover:text-gray-900 transition-all duration-300"
-								whileHover={{ scale: 1.05 }}
-								whileTap={{ scale: 0.95 }}
-								onClick={handleButtonClick}
-							>
-								{getButtonText()}
-							</motion.button>
-						)}
-					</motion.div>
+						</motion.div>
+					)}
 				</div>
 			</motion.section>
 
