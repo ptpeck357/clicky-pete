@@ -64,8 +64,7 @@ photography-portfolio/
 ### Prerequisites
 
 - **Node.js** 18+ and npm
-- **.NET 8 SDK**
-- **AWS Account** with S3 access
+- **AWS Account** with S3 and CloudFront access
 - **AWS CLI** configured (optional)
 
 ### 1. Clone and Install
@@ -104,11 +103,17 @@ Your `photos.json` should follow this format:
       "collection": "California",
       "featured": true,
       "hero": false,
-      "aspectRatio": "3:2"
+      "aspectRatio": "3:2",
+      "collectionCover": true
     }
   }
 ]
 ```
+
+**Tag descriptions:**
+- `featured`: Show on homepage featured section
+- `hero`: Use as hero/banner image
+- `collectionCover`: Use as the cover photo for this collection
 
 ### 4. Run the Application
 **Start the application:**
@@ -133,13 +138,6 @@ Visit: **http://localhost:5173**
 - **Home** → Featured photos and hero carousel
 - **Gallery** → All photos with collection and category filters
 - **About** → Photographer information and contact
-
-### API Endpoints
-
-- `GET /api/images` - List all photos
-- `GET /api/images/by-tag/{tagKey}` - Filter by tag
-- `GET /api/images/categories` - Get all categories
-- `GET /api/images/{key}/url` - Get presigned URLs
 
 ## 🏗 Development
 
@@ -176,6 +174,7 @@ The project includes:
 **Frontend (.env):**
 ```bash
 VITE_CLOUDFRONT_URL=https://your-cloudfront-domain.cloudfront.net
+VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX  # Optional - Google Analytics
 ```
 
 ## 🚀 Deployment
