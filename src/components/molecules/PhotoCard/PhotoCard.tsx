@@ -19,6 +19,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
 	showMetadata = true,
 }) => {
 	const [imageError, setImageError] = useState(false);
+	const [imageLoaded, setImageLoaded] = useState(false);
 	const [retryCount, setRetryCount] = useState(0);
 	const [tagsExpanded, setTagsExpanded] = useState(false);
 	const [shouldLoad] = useState(true);
@@ -31,6 +32,10 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
 			setImageError(true);
 		}
 	}, [retryCount]);
+
+	const handleImageLoad = useCallback(() => {
+		setImageLoaded(true);
+	}, []);
 
 	const getPhotoUrls = () => {
 		const cloudFrontUrl = import.meta.env.VITE_CLOUDFRONT_URL;
@@ -50,7 +55,19 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
 
 	const photoUrls = getPhotoUrls();
 
+	const getImageDimensions = () => {
+		if (aspectRatio !== 'natural') return {};
+
+		const photoAspectRatio = photo.tags.aspectRatio || '3:2';
+		const [width, height] = photoAspectRatio.split(':').map(Number);
+
+		return {
+			aspectRatio: `${width} / ${height}`,
+		};
+	};
+
 	const getAspectClass = () => {
+		if (aspectRatio === 'natural') return ''; // No aspect ratio constraint for natural layout
 		if (aspectRatio === 'square') return 'aspect-square';
 
 		const photoAspectRatio = photo.tags.aspectRatio || '3:2';
@@ -68,7 +85,11 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
 			className={`bg-gray-800 rounded-lg overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer group hover:-translate-y-2 ${className}`}
 			onClick={onClick}
 		>
-			<div className={`relative ${getAspectClass()} bg-gray-700 overflow-hidden`} ref={imgRef}>
+			<div
+				className={`relative ${getAspectClass()} bg-gray-700 overflow-hidden`}
+				ref={imgRef}
+				style={aspectRatio === 'natural' ? getImageDimensions() : {}}
+			>
 				{imageError ? (
 					<motion.div
 						className="absolute inset-0 flex items-center justify-center bg-gray-700"
@@ -97,15 +118,20 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
 						</div>
 					</motion.div>
 				) : shouldLoad ? (
-					<img
-						src={photoUrls.src}
-						srcSet={photoUrls.srcSet}
-						sizes={photoUrls.sizes}
-						alt={photo.tags.category || 'Photo'}
-						className="w-full h-full object-cover"
-						loading="lazy"
-						onError={handleImageError}
-					/>
+					<>
+						<img
+							src={photoUrls.src}
+							srcSet={photoUrls.srcSet}
+							sizes={photoUrls.sizes}
+							alt={photo.tags.category || 'Photo'}
+							className={`w-full ${aspectRatio === 'natural' ? 'h-auto' : 'h-full'} object-cover ${
+								aspectRatio === 'natural' && !imageLoaded ? 'opacity-0' : 'opacity-100'
+							} transition-opacity duration-300`}
+							loading="lazy"
+							onError={handleImageError}
+							onLoad={handleImageLoad}
+						/>
+					</>
 				) : null}
 
 				<div className="absolute inset-0 bg-transparent group-hover:bg-black/50 transition-all duration-300 flex items-end">
