@@ -80,15 +80,25 @@ export const About: React.FC = () => {
 											<br />
 											A year later, around June 2010, I decided to put my camera to use and start
 											snapping landscape photos because how can you not when you grew up in
-											Montana?
+											Montana? In the summer of 2016, I furthered my photography skills by
+											learning astrophotography. I saw my one friend posts picture of his night
+											photos and texted him for advice how I can wield this magic. Ever since
+											then, been hooked on taking night photos. How can you not when you grew up
+											in Big Sky Country?
+											<br />
+											<br />
+											Then I didn't actually get into portrait photography until August 2020. I
+											got a text from a friend asking if I would shoot his engagments photos. I
+											replied saying I'm more of a landscape photographer. His reply was, "That's
+											fine. I've seen your photos on Facebook and "
 											<br />
 											<br />
 											Outside of work and photography, I enjoy learning new things, which has led
 											me to pick up a variety of hobbies and interests. Most of my time is spent
 											outdoors - skiing, hunting, camping, hiking, fishing, dirt biking, and
 											playing sports like ultimate frisbee, disc golf, volleyball, and spikeball.
-											Since my time was always outside outside, I figured I might as well capture
-											it!
+											Since my time was always outside touching grass, I figured I might as well
+											capture it!
 											<span className="text-blue-400 animate-blink">|</span>
 										</div>
 										<div className="text-gray-300">

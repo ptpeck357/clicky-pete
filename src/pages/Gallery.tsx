@@ -158,6 +158,7 @@ export const Gallery: React.FC = () => {
 	};
 
 	const handleCollectionSelect = (collection: string) => {
+		setLocalFilter({});
 		navigate(`/gallery/${collection}`);
 	};
 
@@ -191,6 +192,7 @@ export const Gallery: React.FC = () => {
 	};
 
 	const handleBackToCollections = () => {
+		setLocalFilter({});
 		navigate('/gallery');
 	};
 
@@ -290,7 +292,10 @@ export const Gallery: React.FC = () => {
 				>
 					<div className="flex gap-2">
 						<motion.button
-							onClick={() => navigate('/gallery')}
+							onClick={() => {
+								setLocalFilter({});
+								navigate('/gallery');
+							}}
 							className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
 								viewMode === 'collections'
 									? 'bg-blue-600 text-white'
