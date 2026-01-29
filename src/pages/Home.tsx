@@ -133,20 +133,12 @@ export const Home: React.FC = () => {
 
 		const interval = setInterval(() => {
 			setCurrentHeroIndex((prev) => (prev + 1) % heroPhotos.length);
-		}, 8000);
+		}, 5000);
 
 		return () => clearInterval(interval);
 	}, [heroPhotos.length]);
 
 	const recentPhotos = displayedPhotos.slice(1);
-
-	const handlePrevHero = () => {
-		setCurrentHeroIndex((prev) => (prev - 1 + heroPhotos.length) % heroPhotos.length);
-	};
-
-	const handleNextHero = () => {
-		setCurrentHeroIndex((prev) => (prev + 1) % heroPhotos.length);
-	};
 
 	const handlePhotoClick = (photo: Photo) => {
 		setSelectedPhoto(photo);
@@ -225,34 +217,6 @@ export const Home: React.FC = () => {
 							</p>
 						</div>
 					</div>
-				)}
-
-				{heroPhotos.length > 1 && (
-					<>
-						<button
-							onClick={handlePrevHero}
-							className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all cursor-pointer"
-							aria-label="Previous image"
-						>
-							<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth={2}
-									d="M15 19l-7-7 7-7"
-								/>
-							</svg>
-						</button>
-						<button
-							onClick={handleNextHero}
-							className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all cursor-pointer"
-							aria-label="Next image"
-						>
-							<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-							</svg>
-						</button>
-					</>
 				)}
 
 				<motion.div
