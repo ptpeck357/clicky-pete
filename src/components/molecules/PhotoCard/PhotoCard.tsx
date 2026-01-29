@@ -61,7 +61,6 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
 		const photoAspectRatio = photo.tags.aspectRatio || '3:2';
 		const [width, height] = photoAspectRatio.split(':').map(Number);
 
-		// Use CSS aspect-ratio to lock container dimensions and prevent layout shift
 		return {
 			aspectRatio: `${width} / ${height}`,
 		};
