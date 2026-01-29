@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { PhotoGrid, PhotoViewerModal, CollectionsGrid } from '../components/organisms';
 import { usePhotos } from '../hooks/usePhotos';
 import { photoService } from '../services/photoService';
@@ -49,13 +49,14 @@ export const Gallery: React.FC = () => {
 	const { collection: urlCollection } = useParams<{ collection: string }>();
 	const [searchParams] = useSearchParams();
 	const navigate = useNavigate();
+	const location = useLocation();
 
 	const showAllPhotos = searchParams.get('view') === 'all';
 
 	const formatCategoryName = (category: string): string => {
 		return category
 			.toLowerCase()
-			.split(/[\s-_]+/) // Split on spaces, hyphens, or underscores
+			.split(/[\s-_]+/)
 			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
 			.join(' ');
 	};
@@ -88,26 +89,27 @@ export const Gallery: React.FC = () => {
 	const isLoadingMoreRef = useRef(false);
 	const observerRef = useRef<IntersectionObserver | null>(null);
 
-	// Reset pagination when collection changes
 	useEffect(() => {
 		setPhotosToShow(15);
 		isLoadingMoreRef.current = false;
 	}, [urlCollection, showAllPhotos]);
 
+	useEffect(() => {
+		setIsModalOpen(false);
+		setSelectedPhoto(null);
+	}, [location.pathname, location.search]);
+
 	const handleLoadMore = useCallback(() => {
 		if (isLoadingMoreRef.current) return;
 		isLoadingMoreRef.current = true;
 		setPhotosToShow((prev) => prev + 12);
-		// Small delay to allow DOM to settle before allowing another load
 		setTimeout(() => {
 			isLoadingMoreRef.current = false;
 		}, 150);
 	}, []);
 
-	// Callback ref - sets up observer when DOM element is actually mounted
 	const loadMoreRef = useCallback(
 		(node: HTMLDivElement | null) => {
-			// Clean up previous observer
 			if (observerRef.current) {
 				observerRef.current.disconnect();
 				observerRef.current = null;
@@ -151,7 +153,6 @@ export const Gallery: React.FC = () => {
 	const handleCategoryChange = (category: string | undefined) => {
 		setLocalFilter({ category });
 		setPhotosToShow(12);
-		// Only navigate if we're not already on the all photos view
 		if (!showAllPhotos) {
 			navigate('/gallery?view=all', { replace: true });
 		}

@@ -3,11 +3,22 @@ import { motion } from 'framer-motion';
 import { ContactModal } from '../components/organisms/ContactModal';
 import { photoService } from '../services/photoService';
 
-const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=480&h=640&fit=crop&crop=face';
+const HERO_IMAGES = ['canyon_land.webp', 'motorcycle.webp', 'mirror_me.webp', 'grand_canyon.webp', 'cover_photo.webp'];
 
 export const About: React.FC = () => {
 	const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-	const [profileImageUrl, setProfileImageUrl] = useState(PLACEHOLDER_IMAGE);
+	const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
+	const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
+
+	useEffect(() => {
+		if (HERO_IMAGES.length <= 1) return;
+
+		const interval = setInterval(() => {
+			setCurrentHeroIndex((prev) => (prev + 1) % HERO_IMAGES.length);
+		}, 5000);
+
+		return () => clearInterval(interval);
+	}, []);
 
 	useEffect(() => {
 		const loadProfileImage = async () => {
@@ -30,6 +41,58 @@ export const About: React.FC = () => {
 
 	return (
 		<div className="min-h-screen bg-gray-900">
+			{HERO_IMAGES.length > 0 && (
+				<section className="relative w-full h-screen -mt-16 flex items-center justify-center overflow-hidden bg-black">
+					{HERO_IMAGES.map((image, index) => (
+						<div
+							key={image}
+							className="absolute inset-0 transition-opacity duration-1000 ease-in-out flex items-center justify-center"
+							style={{ opacity: index === currentHeroIndex ? 1 : 0 }}
+						>
+							<img
+								src={`/photos/aboutme/hero/800/${image}`}
+								srcSet={`
+									/photos/aboutme/hero/400/${image} 400w,
+									/photos/aboutme/hero/800/${image} 800w,
+									/photos/aboutme/hero/2000/${image} 2000w
+								`}
+								sizes="100vw"
+								alt="Hero"
+								className="w-full h-full object-contain sm:object-cover"
+							/>
+						</div>
+					))}
+
+					<div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-gray-900 pointer-events-none" />
+
+					<motion.div
+						className="relative z-10 text-center"
+						initial={{ opacity: 0, y: 30 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.8, ease: 'easeOut' }}
+					>
+						<h1 className="text-2xl sm:text-5xl md:text-7xl font-bold leading-tight">
+							Get to Know <span className="text-blue-400">Me</span>
+						</h1>
+					</motion.div>
+
+					{HERO_IMAGES.length > 1 && (
+						<div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
+							{HERO_IMAGES.map((_, index) => (
+								<button
+									key={index}
+									onClick={() => setCurrentHeroIndex(index)}
+									className={`w-2 h-2 rounded-full transition-all duration-300 ${
+										index === currentHeroIndex ? 'bg-white w-6' : 'bg-white/50 hover:bg-white/75'
+									}`}
+									aria-label={`Go to image ${index + 1}`}
+								/>
+							))}
+						</div>
+					)}
+				</section>
+			)}
+
 			<section className="bg-gray-900 py-4 sm:py-8 lg:py-12">
 				<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-start">
@@ -116,12 +179,16 @@ export const About: React.FC = () => {
 							transition={{ duration: 0.8, delay: 0.2 }}
 						>
 							<div className="relative inline-block">
-								<div className="w-64 h-80 sm:w-80 sm:h-96 lg:w-96 lg:h-[32rem] bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg overflow-hidden">
-									<img
-										src={profileImageUrl}
-										alt="Photographer with camera"
-										className="w-full h-full object-cover"
-									/>
+								<div className="w-64 h-80 sm:w-80 sm:h-96 lg:w-96 lg:h-[32rem] bg-gradient-to-br from-gray-400 to-gray-600 rounded-lg overflow-hidden flex items-center justify-center">
+									{profileImageUrl ? (
+										<img
+											src={profileImageUrl}
+											alt="Photographer with camera"
+											className="w-full h-full object-cover"
+										/>
+									) : (
+										<span className="text-white text-lg">Can't load image</span>
+									)}
 								</div>
 
 								<div className="absolute bottom-4 left-4 text-left">
