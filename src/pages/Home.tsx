@@ -271,7 +271,7 @@ export const Home: React.FC = () => {
 					</motion.h1>
 
 					<motion.p
-						className="text-lg sm:text-xl md:text-2xl text-white-300 mb-6 sm:mb-8 max-w-2xl mx-auto px-4"
+						className="text-base sm:text-xl md:text-2xl text-white-300 mb-6 sm:mb-8 max-w-2xl mx-auto px-4"
 						variants={textVariants}
 						transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
 					>
