@@ -77,7 +77,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
 	};
 
 	const displayableTags = Object.entries(photo.tags).filter(
-		([key]) => !['featured', 'hero', 'aspectRatio'].includes(key),
+		([key]) => !['featured', 'hero', 'aspectRatio', 'collectionCover'].includes(key),
 	);
 
 	return (
