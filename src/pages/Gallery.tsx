@@ -56,9 +56,9 @@ export const Gallery: React.FC = () => {
 	const formatCategoryName = (category: string): string => {
 		return category
 			.toLowerCase()
-			.split(/[\s-_]+/)
+			.split(/[\s\-_|]+/)
 			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-			.join(' ');
+			.join(' | ');
 	};
 
 	const filter = useMemo<PhotoFilter>(() => {
