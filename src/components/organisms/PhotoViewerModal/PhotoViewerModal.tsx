@@ -257,7 +257,7 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 								srcSet={photoUrls.srcSet}
 								sizes={photoUrls.sizes}
 								alt={(photo.tags.category as string) || 'Photo'}
-								className={`w-full h-full object-cover transition-opacity duration-300 ${
+								className={`w-full h-full object-contain transition-opacity duration-300 ${
 									imageLoaded ? 'opacity-100' : 'opacity-0'
 								}`}
 								onLoad={() => setImageLoaded(true)}

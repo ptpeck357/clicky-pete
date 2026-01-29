@@ -251,7 +251,7 @@ export const About: React.FC = () => {
 										<div>
 											<h4 className="text-base font-bold text-white">2009</h4>
 											<p className="text-gray-400 text-sm">
-												Received Kodak camera for my birthday
+												A first camera, received as a birthday gift
 											</p>
 										</div>
 									</div>
@@ -298,7 +298,7 @@ export const About: React.FC = () => {
 										</div>
 										<div>
 											<h4 className="text-base font-bold text-white">2013</h4>
-											<p className="text-gray-400 text-sm">Family bought a Canon T3i</p>
+											<p className="text-gray-400 text-sm">A Canon T3i enters the journey</p>
 										</div>
 									</div>
 
@@ -321,7 +321,7 @@ export const About: React.FC = () => {
 										<div>
 											<h4 className="text-base font-bold text-white">2016</h4>
 											<p className="text-gray-400 text-sm">
-												Started astrophotography and long exposures
+												Discovered astrophotography and long exposures
 											</p>
 										</div>
 									</div>
@@ -344,9 +344,7 @@ export const About: React.FC = () => {
 										</div>
 										<div>
 											<h4 className="text-base font-bold text-white">2018</h4>
-											<p className="text-gray-400 text-sm">
-												Early editing with Adobe Lightroom Classic
-											</p>
+											<p className="text-gray-400 text-sm">Learning Adobe Lightroom Classic</p>
 										</div>
 									</div>
 
@@ -414,7 +412,7 @@ export const About: React.FC = () => {
 										</div>
 										<div>
 											<h4 className="text-base font-bold text-white">2021</h4>
-											<p className="text-gray-400 text-sm">Purchased drone</p>
+											<p className="text-gray-400 text-sm">Introducing aerial photography</p>
 										</div>
 									</div>
 								</div>
