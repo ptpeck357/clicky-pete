@@ -73,15 +73,14 @@ export const Home: React.FC = () => {
 
 				const heroToUse = hero.length > 0 ? hero : shuffledFeatured.slice(0, 3);
 				setHeroPhotos(heroToUse);
-
-				setDisplayedPhotos(shuffledFeatured.slice(0, photosToShow));
 			} catch (error) {
 				console.error('Failed to load photos:', error);
 			}
 		};
 
 		loadPhotos();
-	}, [photosToShow]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	useEffect(() => {
 		setDisplayedPhotos(featuredPhotos.slice(0, photosToShow));

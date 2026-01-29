@@ -391,7 +391,7 @@ export const About: React.FC = () => {
 										<div>
 											<h4 className="text-base font-bold text-white">2020</h4>
 											<p className="text-gray-400 text-sm">
-												First engagement, wedding, and graduation
+												First engagement, wedding, and graduation shoots
 											</p>
 										</div>
 									</div>
@@ -414,9 +414,7 @@ export const About: React.FC = () => {
 										</div>
 										<div>
 											<h4 className="text-base font-bold text-white">2021</h4>
-											<p className="text-gray-400 text-sm">
-												Added aerial photography to the skill set
-											</p>
+											<p className="text-gray-400 text-sm">Purchased drone</p>
 										</div>
 									</div>
 								</div>

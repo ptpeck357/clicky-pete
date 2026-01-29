@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import Masonry from '@mui/lab/Masonry';
 import { PhotoCard } from '../../molecules';
 import { Spinner } from '../../atoms';
 import type { Photo } from '../../../types/photo';
@@ -69,13 +70,6 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({
 	const gridClasses = (() => {
 		if (layout === 'masonry') return 'masonry-grid';
 
-		if (aspectRatio === 'natural') {
-			if (columns === 'large') {
-				return 'columns-2 md:columns-2 lg:columns-3 gap-2 sm:gap-4 space-y-2 sm:space-y-4';
-			}
-			return 'columns-2 md:columns-2 lg:columns-3 xl:columns-4 gap-2 sm:gap-4 space-y-2 sm:space-y-4';
-		}
-
 		if (columns === 'large') {
 			return 'grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-6';
 		}
@@ -83,10 +77,38 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({
 		return 'grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-6';
 	})();
 
+	if (aspectRatio === 'natural') {
+		const columnCount = columns === 'large' ? { xs: 2, sm: 2, lg: 3, xl: 3 } : { xs: 2, sm: 2, lg: 4, xl: 4 };
+
+		return (
+			<Masonry
+				columns={columnCount}
+				spacing={2}
+				sx={{
+					margin: 0,
+					'& .MuiMasonry-item': {
+						transition: 'none !important', // Disable transitions to prevent jumping
+					},
+				}}
+			>
+				{photos.map((photo) => (
+					<div key={photo.id}>
+						<PhotoCard
+							photo={photo}
+							onClick={() => onPhotoClick?.(photo)}
+							aspectRatio={aspectRatio}
+							showMetadata={showMetadata}
+						/>
+					</div>
+				))}
+			</Masonry>
+		);
+	}
+
 	return (
 		<div className={gridClasses}>
 			{photos.map((photo) => (
-				<div key={photo.id} className={aspectRatio === 'natural' ? 'break-inside-avoid mb-4' : ''}>
+				<div key={photo.id}>
 					<PhotoCard
 						photo={photo}
 						onClick={() => onPhotoClick?.(photo)}
