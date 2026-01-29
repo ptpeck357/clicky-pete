@@ -85,28 +85,49 @@ export const Gallery: React.FC = () => {
 	const displayedPhotos = useMemo(() => shuffledPhotos.slice(0, photosToShow), [shuffledPhotos, photosToShow]);
 	const hasMorePhotos = photosToShow < shuffledPhotos.length;
 
-	const loadMoreRef = useRef<HTMLDivElement>(null);
+	const isLoadingMoreRef = useRef(false);
+	const observerRef = useRef<IntersectionObserver | null>(null);
+
+	// Reset pagination when collection changes
+	useEffect(() => {
+		setPhotosToShow(15);
+		isLoadingMoreRef.current = false;
+	}, [urlCollection, showAllPhotos]);
 
 	const handleLoadMore = useCallback(() => {
+		if (isLoadingMoreRef.current) return;
+		isLoadingMoreRef.current = true;
 		setPhotosToShow((prev) => prev + 12);
+		// Small delay to allow DOM to settle before allowing another load
+		setTimeout(() => {
+			isLoadingMoreRef.current = false;
+		}, 150);
 	}, []);
 
-	useEffect(() => {
-		const sentinel = loadMoreRef.current;
-		if (!sentinel || !hasMorePhotos || loading) return;
+	// Callback ref - sets up observer when DOM element is actually mounted
+	const loadMoreRef = useCallback(
+		(node: HTMLDivElement | null) => {
+			// Clean up previous observer
+			if (observerRef.current) {
+				observerRef.current.disconnect();
+				observerRef.current = null;
+			}
 
-		const observer = new IntersectionObserver(
-			(entries) => {
-				if (entries[0].isIntersecting) {
-					handleLoadMore();
-				}
-			},
-			{ threshold: 0.1 },
-		);
-
-		observer.observe(sentinel);
-		return () => observer.disconnect();
-	}, [hasMorePhotos, loading, handleLoadMore]);
+			if (node && !loading) {
+				const observer = new IntersectionObserver(
+					(entries) => {
+						if (entries[0].isIntersecting) {
+							handleLoadMore();
+						}
+					},
+					{ threshold: 0.1, rootMargin: '200px' },
+				);
+				observer.observe(node);
+				observerRef.current = observer;
+			}
+		},
+		[loading, handleLoadMore],
+	);
 
 	useEffect(() => {
 		if (showAllPhotos) {
