@@ -139,15 +139,15 @@ export const About: React.FC = () => {
 										<div className="ml-4 text-gray-300 leading-relaxed text-xs sm:text-sm">
 											For my 11th birthday, I received a digital Kodak camera which then sat in my
 											dresser for a year... The following summer, I felt guilty not putting my
-											camera to use. So I became "clicky-happy" with the shutter release and began
-											photographing landscape. Because how can you not when you grew up in
-											Montana???
+											camera to use. So I started taking hundreds of bad photos. You could say I
+											became "clicky-happy" with the shutter release. How can you not when you
+											grew up in Montana???
 											<br />
 											<br />
 											Outside of work and photography, I enjoy learning new things, which has led
 											me to pick up a variety of hobbies and interests. Most of my time is spent
 											outdoors - hunting, archery, fishing, camping, hiking, dirt biking, skiing,
-											and playing sports like ultimate frisbee, disc golf, volleyball, or
+											or playing pickup sports like ultimate frisbee, disc golf, volleyball, and
 											spikeball. Since my time was always outside touching grass, I figured I
 											might as well capture the scenery!
 											<span className="text-blue-400 animate-blink">|</span>
@@ -204,7 +204,7 @@ export const About: React.FC = () => {
 
 			<section className="bg-gray-900 py-12 sm:py-16">
 				<div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
 						<motion.div
 							initial={{ opacity: 0, y: 30 }}
 							whileInView={{ opacity: 1, y: 0 }}
@@ -212,32 +212,221 @@ export const About: React.FC = () => {
 							viewport={{ once: true }}
 						>
 							<div className="flex items-center mb-6">
-								<div className="w-3 h-3 bg-purple-500 rounded-full mr-3"></div>
-								<h3 className="text-xl font-bold text-white">SHOOTING STYLES</h3>
+								<svg
+									className="w-5 h-5 text-blue-400 mr-3"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+								>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth={2}
+										d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+									/>
+								</svg>
+								<h3 className="text-xl font-bold text-white">The Journey</h3>
 							</div>
-							<div className="grid grid-cols-2 gap-4">
-								<div className="bg-gray-800 rounded-lg p-4 text-center hover:bg-purple-600 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300">
-									<span className="text-gray-300 text-sm font-medium hover:text-white transition-colors duration-300">
-										Landscape Photography
-									</span>
-								</div>
-								<div className="bg-gray-800 rounded-lg p-4 text-center hover:bg-purple-600 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300">
-									<span className="text-gray-300 text-sm font-medium hover:text-white transition-colors duration-300">
-										Astrophotography
-									</span>
-								</div>
-								<div className="bg-gray-800 rounded-lg p-4 text-center hover:bg-purple-600 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300">
-									<span className="text-gray-300 text-sm font-medium hover:text-white transition-colors duration-300">
-										Portrait Photography
-									</span>
-								</div>
-								<div className="bg-gray-800 rounded-lg p-4 text-center hover:bg-purple-600 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300">
-									<span className="text-gray-300 text-sm font-medium hover:text-white transition-colors duration-300">
-										Aerial Photography
-									</span>
+
+							<div className="relative">
+								<div className="absolute left-3 top-0 h-full w-0.5 bg-gray-700" />
+
+								<div className="space-y-5">
+									<div className="relative flex items-start pl-10">
+										<div className="absolute left-0 w-6 h-6 bg-gray-800 border-2 border-blue-500 rounded-full flex items-center justify-center z-10">
+											<svg
+												className="w-3 h-3 text-blue-400"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth={2}
+													d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+												/>
+											</svg>
+										</div>
+										<div>
+											<h4 className="text-base font-bold text-white">2009</h4>
+											<p className="text-gray-400 text-sm">
+												Received Kodak camera for my birthday
+											</p>
+										</div>
+									</div>
+
+									<div className="relative flex items-start pl-10">
+										<div className="absolute left-0 w-6 h-6 bg-gray-800 border-2 border-green-500 rounded-full flex items-center justify-center z-10">
+											<svg
+												className="w-3 h-3 text-green-400"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth={2}
+													d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+												/>
+											</svg>
+										</div>
+										<div>
+											<h4 className="text-base font-bold text-white">2010</h4>
+											<p className="text-gray-400 text-sm">
+												The beginning of landscape photography
+											</p>
+										</div>
+									</div>
+
+									<div className="relative flex items-start pl-10">
+										<div className="absolute left-0 w-6 h-6 bg-gray-800 border-2 border-purple-500 rounded-full flex items-center justify-center z-10">
+											<svg
+												className="w-3 h-3 text-purple-400"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth={2}
+													d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+												/>
+											</svg>
+										</div>
+										<div>
+											<h4 className="text-base font-bold text-white">2013</h4>
+											<p className="text-gray-400 text-sm">Family bought a Canon T3i</p>
+										</div>
+									</div>
+
+									<div className="relative flex items-start pl-10">
+										<div className="absolute left-0 w-6 h-6 bg-gray-800 border-2 border-blue-500 rounded-full flex items-center justify-center z-10">
+											<svg
+												className="w-3 h-3 text-blue-400"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth={2}
+													d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+												/>
+											</svg>
+										</div>
+										<div>
+											<h4 className="text-base font-bold text-white">2016</h4>
+											<p className="text-gray-400 text-sm">
+												Started astrophotography and long exposures
+											</p>
+										</div>
+									</div>
+
+									<div className="relative flex items-start pl-10">
+										<div className="absolute left-0 w-6 h-6 bg-gray-800 border-2 border-purple-500 rounded-full flex items-center justify-center z-10">
+											<svg
+												className="w-3 h-3 text-purple-400"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth={2}
+													d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+												/>
+											</svg>
+										</div>
+										<div>
+											<h4 className="text-base font-bold text-white">2018</h4>
+											<p className="text-gray-400 text-sm">
+												Early editing with Adobe Lightroom Classic
+											</p>
+										</div>
+									</div>
+
+									<div className="relative flex items-start pl-10">
+										<div className="absolute left-0 w-6 h-6 bg-gray-800 border-2 border-green-500 rounded-full flex items-center justify-center z-10">
+											<svg
+												className="w-3 h-3 text-green-400"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth={2}
+													d="M5 10l7-7m0 0l7 7m-7-7v18"
+												/>
+											</svg>
+										</div>
+										<div>
+											<h4 className="text-base font-bold text-white">2020</h4>
+											<p className="text-gray-400 text-sm">Upgraded to full-frame DLSR camera</p>
+										</div>
+									</div>
+
+									<div className="relative flex items-start pl-10">
+										<div className="absolute left-0 w-6 h-6 bg-gray-800 border-2 border-purple-500 rounded-full flex items-center justify-center z-10">
+											<svg
+												className="w-3 h-3 text-purple-400"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth={2}
+													d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+												/>
+											</svg>
+										</div>
+										<div>
+											<h4 className="text-base font-bold text-white">2020</h4>
+											<p className="text-gray-400 text-sm">
+												First engagement, wedding, and graduation
+											</p>
+										</div>
+									</div>
+
+									<div className="relative flex items-start pl-10">
+										<div className="absolute left-0 w-6 h-6 bg-gray-800 border-2 border-blue-500 rounded-full flex items-center justify-center z-10">
+											<svg
+												className="w-3 h-3 text-blue-400"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth={2}
+													d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+												/>
+											</svg>
+										</div>
+										<div>
+											<h4 className="text-base font-bold text-white">2021</h4>
+											<p className="text-gray-400 text-sm">
+												Added aerial photography to the skill set
+											</p>
+										</div>
+									</div>
 								</div>
 							</div>
 						</motion.div>
+
+						{/* Mobile divider - only shows when stacked */}
+						<div className="lg:hidden flex justify-center py-4">
+							<div className="bg-gradient-to-r from-purple-500 via-blue-500 to-green-500 h-0.5 w-full max-w-4xl rounded-full"></div>
+						</div>
 
 						<motion.div
 							initial={{ opacity: 0, y: 30 }}
@@ -316,234 +505,6 @@ export const About: React.FC = () => {
 							</div>
 						</motion.div>
 					</div>
-				</div>
-			</section>
-
-			<div className="bg-gray-900 py-5">
-				<div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
-					<div className="relative">
-						<div className="absolute inset-0 flex items-center">
-							<div className="w-full border-t border-gradient-to-r from-transparent via-purple-500 to-transparent"></div>
-						</div>
-						<div className="relative flex justify-center">
-							<div className="bg-gradient-to-r from-purple-500 via-blue-500 to-green-500 h-0.5 w-full max-w-4xl rounded-full"></div>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<section className="bg-gray-900 py-12 sm:py-16">
-				<div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-					<motion.div
-						initial={{ opacity: 0, y: 30 }}
-						whileInView={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.6 }}
-						viewport={{ once: true }}
-					>
-						<div className="flex items-center mb-12">
-							<svg
-								className="w-6 h-6 text-blue-400 mr-3"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth={2}
-									d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-								/>
-							</svg>
-							<h2 className="text-2xl font-bold text-white">The Journey</h2>
-						</div>
-
-						<div className="relative">
-							<div className="absolute left-1/2 transform -translate-x-1/2 h-full w-0.5 bg-gray-700" />
-
-							<div className="space-y-12">
-								<div className="relative flex items-center">
-									<div className="flex-1 text-right pr-8">
-										<h3 className="text-lg font-bold text-white">2009</h3>
-										<p className="text-gray-400 text-sm">Received Kodak camera for my birthday</p>
-									</div>
-									<div className="absolute left-1/2 transform -translate-x-1/2 w-10 h-10 bg-gray-800 border-2 border-blue-500 rounded-full flex items-center justify-center z-10">
-										<svg
-											className="w-5 h-5 text-blue-400"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-											/>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-											/>
-										</svg>
-									</div>
-									<div className="flex-1 pl-8" />
-								</div>
-
-								<div className="relative flex items-center">
-									<div className="flex-1 pr-8" />
-									<div className="absolute left-1/2 transform -translate-x-1/2 w-10 h-10 bg-gray-800 border-2 border-green-500 rounded-full flex items-center justify-center z-10">
-										<svg
-											className="w-5 h-5 text-green-400"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-											/>
-										</svg>
-									</div>
-									<div className="flex-1 text-left pl-8">
-										<h3 className="text-lg font-bold text-white">2010</h3>
-										<p className="text-gray-400 text-sm">The beginning of landscape photography</p>
-									</div>
-								</div>
-
-								<div className="relative flex items-center">
-									<div className="flex-1 text-right pr-8">
-										<h3 className="text-lg font-bold text-white">2013</h3>
-										<p className="text-gray-400 text-sm">
-											The family bought a Canon T3i and started using it
-										</p>
-									</div>
-									<div className="absolute left-1/2 transform -translate-x-1/2 w-10 h-10 bg-gray-800 border-2 border-purple-500 rounded-full flex items-center justify-center z-10">
-										<svg
-											className="w-5 h-5 text-purple-400"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-											/>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-											/>
-										</svg>
-									</div>
-									<div className="flex-1 pl-8" />
-								</div>
-
-								<div className="relative flex items-center">
-									<div className="flex-1 pr-8" />
-									<div className="absolute left-1/2 transform -translate-x-1/2 w-10 h-10 bg-gray-800 border-2 border-blue-500 rounded-full flex items-center justify-center z-10">
-										<svg
-											className="w-5 h-5 text-blue-400"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
-											/>
-										</svg>
-									</div>
-									<div className="flex-1 text-left pl-8">
-										<h3 className="text-lg font-bold text-white">2016</h3>
-										<p className="text-gray-400 text-sm">
-											Started to dabble in astrophotography and long exposures
-										</p>
-									</div>
-								</div>
-
-								<div className="relative flex items-center">
-									<div className="flex-1 text-right pr-8">
-										<h3 className="text-lg font-bold text-white">2020 (Early Spring)</h3>
-										<p className="text-gray-400 text-sm">Upgraded to full-frame camera</p>
-									</div>
-									<div className="absolute left-1/2 transform -translate-x-1/2 w-10 h-10 bg-gray-800 border-2 border-green-500 rounded-full flex items-center justify-center z-10">
-										<svg
-											className="w-5 h-5 text-green-400"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M5 10l7-7m0 0l7 7m-7-7v18"
-											/>
-										</svg>
-									</div>
-									<div className="flex-1 pl-8" />
-								</div>
-
-								<div className="relative flex items-center">
-									<div className="flex-1 pr-8" />
-									<div className="absolute left-1/2 transform -translate-x-1/2 w-10 h-10 bg-gray-800 border-2 border-purple-500 rounded-full flex items-center justify-center z-10">
-										<svg
-											className="w-5 h-5 text-purple-400"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-											/>
-										</svg>
-									</div>
-									<div className="flex-1 text-left pl-8">
-										<h3 className="text-lg font-bold text-white">2020</h3>
-										<p className="text-gray-400 text-sm">
-											Photographed first engagement, wedding, and college graduation
-										</p>
-									</div>
-								</div>
-
-								<div className="relative flex items-center">
-									<div className="flex-1 text-right pr-8">
-										<h3 className="text-lg font-bold text-white">2021 (Late Summer)</h3>
-										<p className="text-gray-400 text-sm">
-											Added drone photography to the skill set
-										</p>
-									</div>
-									<div className="absolute left-1/2 transform -translate-x-1/2 w-10 h-10 bg-gray-800 border-2 border-blue-500 rounded-full flex items-center justify-center z-10">
-										<svg
-											className="w-5 h-5 text-blue-400"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-											/>
-										</svg>
-									</div>
-									<div className="flex-1 pl-8" />
-								</div>
-							</div>
-						</div>
-					</motion.div>
 				</div>
 			</section>
 
