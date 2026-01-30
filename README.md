@@ -1,6 +1,6 @@
 # Photography Portfolio
 
-A modern photography portfolio application built with React, TypeScript, and CloudFront CDN. Features a clean, professional interface for showcasing photography work with dynamic filtering and responsive design.
+I created this website to host my photos with the help of AI. Hope you enjoy!
 
 ## 🚀 Features
 
@@ -59,69 +59,10 @@ photography-portfolio/
 └── package.json              # Dependencies
 ```
 
-## 🚀 Getting Started
-
-### Prerequisites
-
-- **Node.js** 18+ and npm
-- **AWS Account** with S3 and CloudFront access
-- **AWS CLI** configured (optional)
-
-### 1. Clone and Install
-
-```bash
-git clone <repository-url>
-cd photography-portfolio
-npm install
-```
-
-### 2. Configure Environment
-
-```bash
-# Copy environment template
-cp .env.example .env
-
-# Edit .env with your configuration
-VITE_CLOUDFRONT_URL=https://your-cloudfront-domain.cloudfront.net
-```
-
-### 3. Prepare Your Photos
-
-Upload your photos to your CloudFront distribution with the following structure:
-- **Photos JSON**: `/data/photos.json` - Contains photo metadata
-- **Images**: `/photos/400/filename.webp`, `/photos/800/filename.webp`, `/photos/2000/filename.webp`
-
-Your `photos.json` should follow this format:
-```json
-[
-  {
-    "id": "img-8553",
-    "file": "IMG_8553.webp",
-    "tags": {
-      "category": "landscape",
-      "location": "Yosemite National Park",
-      "collection": "California",
-      "featured": true,
-      "hero": false,
-      "aspectRatio": "3:2",
-      "collectionCover": true
-    }
-  }
-]
-```
-
 **Tag descriptions:**
 - `featured`: Show on homepage featured section
 - `hero`: Use as hero/banner image
 - `collectionCover`: Use as the cover photo for this collection
-
-### 4. Run the Application
-**Start the application:**
-```bash
-npm run dev
-```
-
-Visit: **http://localhost:5173**
 
 ## 📸 Usage
 
@@ -139,17 +80,6 @@ Visit: **http://localhost:5173**
 - **Gallery** → All photos with collection and category filters
 - **About** → Photographer information and contact
 
-## 🏗 Development
-
-### Development Commands
-
-```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run lint         # Run ESLint
-npm run format:check # Check Prettier formatting
-```
-
 ### Code Quality
 
 The project includes:
@@ -158,44 +88,6 @@ The project includes:
 - **Husky** for git hooks
 - **Commitlint** for conventional commits
 
-## 🔧 Configuration
-
-### CloudFront Setup
-
-1. Create an S3 bucket in AWS Console
-2. Configure bucket permissions for your AWS credentials
-3. Required permissions:
-   - `s3:GetObject`
-   - `s3:ListBucket`
-   - `s3:GetObjectTagging`
-
-### Environment Variables
-
-**Frontend (.env):**
-```bash
-VITE_CLOUDFRONT_URL=https://your-cloudfront-domain.cloudfront.net
-VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX  # Optional - Google Analytics
-```
-
-## 🚀 Deployment
-
-```bash
-npm run build
-# Deploy the 'dist' folder to your hosting provider (Vercel, Netlify, etc.)
-```
-
-Popular deployment options:
-- **Vercel**: `vercel --prod`
-- **Netlify**: Drag and drop the `dist` folder
-- **AWS S3 + CloudFront**: Upload to S3 bucket with static website hosting
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit changes: `git commit -m 'feat: add amazing feature'`
-4. Push to branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
 
 ## 📝 License
 
