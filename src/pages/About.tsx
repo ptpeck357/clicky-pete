@@ -15,7 +15,7 @@ export const About: React.FC = () => {
 
 		const interval = setInterval(() => {
 			setCurrentHeroIndex((prev) => (prev + 1) % HERO_IMAGES.length);
-		}, 5000);
+		}, 3000);
 
 		return () => clearInterval(interval);
 	}, []);
