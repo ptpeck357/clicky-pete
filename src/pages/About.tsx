@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { ContactModal } from '../components/organisms/ContactModal';
 import { photoService } from '../services/photoService';
 
@@ -9,6 +9,10 @@ export const About: React.FC = () => {
 	const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 	const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
 	const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
+
+	// Parallax effect for hero background
+	const { scrollY } = useScroll();
+	const backgroundY = useTransform(scrollY, [0, 500], [0, 300]);
 
 	useEffect(() => {
 		if (HERO_IMAGES.length <= 1) return;
@@ -43,25 +47,27 @@ export const About: React.FC = () => {
 		<div className="min-h-screen bg-gray-900">
 			{HERO_IMAGES.length > 0 && (
 				<section className="relative w-full h-screen -mt-16 flex items-center justify-center overflow-hidden bg-black">
-					{HERO_IMAGES.map((image, index) => (
-						<div
-							key={image}
-							className="absolute inset-0 transition-opacity duration-1000 ease-in-out flex items-center justify-center"
-							style={{ opacity: index === currentHeroIndex ? 1 : 0 }}
-						>
-							<img
-								src={`/photos/aboutme/hero/800/${image}`}
-								srcSet={`
-									/photos/aboutme/hero/400/${image} 400w,
-									/photos/aboutme/hero/800/${image} 800w,
-									/photos/aboutme/hero/2000/${image} 2000w
-								`}
-								sizes="100vw"
-								alt="Hero"
-								className="w-full h-full object-contain sm:object-cover"
-							/>
-						</div>
-					))}
+					<motion.div className="absolute inset-0 z-0" style={{ y: backgroundY }}>
+						{HERO_IMAGES.map((image, index) => (
+							<div
+								key={image}
+								className="absolute inset-0 transition-opacity duration-1000 ease-in-out flex items-center justify-center"
+								style={{ opacity: index === currentHeroIndex ? 1 : 0 }}
+							>
+								<img
+									src={`/photos/aboutme/hero/800/${image}`}
+									srcSet={`
+										/photos/aboutme/hero/400/${image} 400w,
+										/photos/aboutme/hero/800/${image} 800w,
+										/photos/aboutme/hero/2000/${image} 2000w
+									`}
+									sizes="100vw"
+									alt="Hero"
+									className="w-full h-full object-contain sm:object-cover"
+								/>
+							</div>
+						))}
+					</motion.div>
 
 					<div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-gray-900 pointer-events-none" />
 

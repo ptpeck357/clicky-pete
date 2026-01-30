@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { PhotoViewerModal, PhotoGrid } from '../components/organisms';
 import { photoService } from '../services/photoService';
 import { shuffleArray } from '../utils/array';
@@ -140,6 +140,10 @@ export const Home: React.FC = () => {
 
 	const recentPhotos = displayedPhotos.slice(1);
 
+	// Parallax effect for hero background
+	const { scrollY } = useScroll();
+	const backgroundY = useTransform(scrollY, [0, 500], [0, 300]);
+
 	const handlePhotoClick = (photo: Photo) => {
 		setSelectedPhoto(photo);
 		setIsModalOpen(true);
@@ -182,32 +186,34 @@ export const Home: React.FC = () => {
 				)}
 
 				{heroPhotos.length > 0 ? (
-					heroPhotos.map((photo, index) => {
-						const cloudFrontUrl = import.meta.env.VITE_CLOUDFRONT_URL;
-						if (!cloudFrontUrl) {
-							console.error('CloudFront URL not configured');
-							return null;
-						}
+					<motion.div className="absolute inset-0 z-0" style={{ y: backgroundY }}>
+						{heroPhotos.map((photo, index) => {
+							const cloudFrontUrl = import.meta.env.VITE_CLOUDFRONT_URL;
+							if (!cloudFrontUrl) {
+								console.error('CloudFront URL not configured');
+								return null;
+							}
 
-						const imageUrl = getHeroImageUrl(photo, cloudFrontUrl);
-						const isVisible = index === currentHeroIndex && heroImagesLoaded;
+							const imageUrl = getHeroImageUrl(photo, cloudFrontUrl);
+							const isVisible = index === currentHeroIndex && heroImagesLoaded;
 
-						return (
-							<div
-								key={photo.id}
-								className="absolute inset-0 transition-opacity duration-1000 ease-in-out overflow-hidden z-0 bg-black flex items-center justify-center"
-								style={{
-									opacity: isVisible ? 1 : 0,
-								}}
-							>
-								<img
-									src={imageUrl}
-									alt={photo.tags.category || 'Hero photo'}
-									className="w-full h-full object-contain sm:object-cover"
-								/>
-							</div>
-						);
-					})
+							return (
+								<div
+									key={photo.id}
+									className="absolute inset-0 transition-opacity duration-1000 ease-in-out overflow-hidden bg-black flex items-center justify-center"
+									style={{
+										opacity: isVisible ? 1 : 0,
+									}}
+								>
+									<img
+										src={imageUrl}
+										alt={photo.tags.category || 'Hero photo'}
+										className="w-full h-full object-contain sm:object-cover"
+									/>
+								</div>
+							);
+						})}
+					</motion.div>
 				) : (
 					<div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
 						<div className="text-center text-gray-400">
