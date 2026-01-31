@@ -81,7 +81,7 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 
 		const baseUrl = `${cloudFrontUrl}/photos`;
 		return {
-			src: `${baseUrl}/2000/${photo.file}`, // Default to large for full-screen
+			src: `${baseUrl}/2000/${photo.file}`,
 			srcSet: `${baseUrl}/800/${photo.file} 800w, ${baseUrl}/2000/${photo.file} 2000w`,
 			sizes: '(max-width: 1024px) 800px, 2000px',
 		};
@@ -99,20 +99,23 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 		let containerWidth: number;
 		let containerHeight: number;
 
-		if (isPortrait) {
-			containerHeight = Math.min(viewportHeight * 0.85, 800);
-			containerWidth = containerHeight * (3 / 4);
+		const maxWidth = viewportWidth * 0.9;
+		const maxHeight = viewportHeight * 0.8;
 
-			if (containerWidth > viewportWidth * 0.9) {
-				containerWidth = viewportWidth * 0.9;
-				containerHeight = containerWidth * (4 / 3);
+		if (isPortrait) {
+			containerHeight = Math.min(maxHeight, 800);
+			containerWidth = containerHeight * (4 / 5);
+
+			if (containerWidth > maxWidth) {
+				containerWidth = maxWidth;
+				containerHeight = containerWidth * (5 / 4);
 			}
 		} else {
-			containerWidth = Math.min(viewportWidth * 0.85, 1200);
+			containerWidth = Math.min(maxWidth, 1200);
 			containerHeight = containerWidth * (2 / 3);
 
-			if (containerHeight > viewportHeight * 0.9) {
-				containerHeight = viewportHeight * 0.9;
+			if (containerHeight > maxHeight) {
+				containerHeight = maxHeight;
 				containerWidth = containerHeight * (3 / 2);
 			}
 		}
@@ -159,45 +162,8 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 						</svg>
 					</motion.button>
 
-					{onPrevious && (
-						<motion.button
-							className="absolute left-6 top-1/2 transform -translate-y-1/2 z-10 p-3 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
-							onClick={onPrevious}
-							whileHover={{ scale: 1.1 }}
-							whileTap={{ scale: 0.9 }}
-							initial={{ opacity: 0, x: -20 }}
-							animate={{ opacity: 1, x: 0 }}
-							transition={{ delay: 0.3 }}
-						>
-							<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth={2}
-									d="M15 19l-7-7 7-7"
-								/>
-							</svg>
-						</motion.button>
-					)}
-
-					{onNext && (
-						<motion.button
-							className="absolute right-6 top-1/2 transform -translate-y-1/2 z-10 p-3 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
-							onClick={onNext}
-							whileHover={{ scale: 1.1 }}
-							whileTap={{ scale: 0.9 }}
-							initial={{ opacity: 0, x: 20 }}
-							animate={{ opacity: 1, x: 0 }}
-							transition={{ delay: 0.3 }}
-						>
-							<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-							</svg>
-						</motion.button>
-					)}
-
 					<motion.div
-						className="relative flex items-center justify-center"
+						className="relative flex flex-col items-center justify-center"
 						initial={{ opacity: 0, scale: 0.8 }}
 						animate={{ opacity: 1, scale: 1 }}
 						exit={{ opacity: 0, scale: 0.8 }}
@@ -267,9 +233,74 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 								transition={{ duration: 0.3 }}
 							/>
 
+							{onPrevious && (
+								<motion.button
+									className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 p-2 md:p-3 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+									onClick={(e) => {
+										e.stopPropagation();
+										onPrevious();
+									}}
+									whileHover={{ scale: 1.1 }}
+									whileTap={{ scale: 0.9 }}
+									initial={{ opacity: 0, x: -20 }}
+									animate={{ opacity: 1, x: [0, -4, 0] }}
+									transition={{
+										opacity: { delay: 0.3, duration: 0.3 },
+										x: { delay: 0.6, repeat: Infinity, duration: 1.2, ease: 'easeInOut' },
+									}}
+								>
+									<svg
+										className="w-4 h-4 md:w-6 md:h-6"
+										fill="none"
+										stroke="currentColor"
+										viewBox="0 0 24 24"
+									>
+										<path
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											strokeWidth={2}
+											d="M15 19l-7-7 7-7"
+										/>
+									</svg>
+								</motion.button>
+							)}
+
+							{onNext && (
+								<motion.button
+									className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 p-2 md:p-3 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+									onClick={(e) => {
+										e.stopPropagation();
+										onNext();
+									}}
+									whileHover={{ scale: 1.1 }}
+									whileTap={{ scale: 0.9 }}
+									initial={{ opacity: 0, x: 20 }}
+									animate={{ opacity: 1, x: [0, 4, 0] }}
+									transition={{
+										opacity: { delay: 0.3, duration: 0.3 },
+										x: { delay: 0.6, repeat: Infinity, duration: 1.2, ease: 'easeInOut' },
+									}}
+								>
+									<svg
+										className="w-4 h-4 md:w-6 md:h-6"
+										fill="none"
+										stroke="currentColor"
+										viewBox="0 0 24 24"
+									>
+										<path
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											strokeWidth={2}
+											d="M9 5l7 7-7 7"
+										/>
+									</svg>
+								</motion.button>
+							)}
+
+							{/* Desktop: Overlay on image */}
 							{imageLoaded && !imageError && (
 								<motion.div
-									className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 rounded-b-lg"
+									className="hidden md:block absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 rounded-b-lg"
 									initial={{ opacity: 0, y: 20 }}
 									animate={{ opacity: 1, y: 0 }}
 									transition={{ delay: 0.5, duration: 0.3 }}
@@ -290,10 +321,25 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 								</motion.div>
 							)}
 						</div>
+
+						{/* Mobile: Metadata below image */}
+						<div className="md:hidden mt-3 text-center">
+							<div className="text-white">
+								{photo.tags.category && (
+									<span className="inline-block bg-blue-600 text-[10px] px-2 py-0.5 rounded-full mb-1 font-medium">
+										{photo.tags.category}
+									</span>
+								)}
+								{photo.tags.location && <p className="text-xs font-medium">{photo.tags.location}</p>}
+								{photo.tags.collection && (
+									<p className="text-[10px] text-gray-400">{photo.tags.collection} Collection</p>
+								)}
+							</div>
+						</div>
 					</motion.div>
 
 					<motion.div
-						className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex items-center gap-4 text-white/70 text-sm"
+						className="hidden lg:flex absolute bottom-6 left-1/2 transform -translate-x-1/2 items-center gap-4 text-white/70 text-sm"
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ delay: 0.6 }}

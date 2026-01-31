@@ -1,1 +1,0 @@
-export { PhotoModal } from './PhotoModal';

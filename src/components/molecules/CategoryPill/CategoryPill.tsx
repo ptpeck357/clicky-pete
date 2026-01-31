@@ -12,9 +12,9 @@ export const CategoryPill: React.FC<CategoryPillProps> = ({ category, isActive =
 	return (
 		<Button
 			variant={isActive ? 'primary' : 'ghost'}
-			size="md"
+			size="sm"
 			onClick={onClick}
-			className="rounded-full capitalize"
+			className="rounded-full capitalize text-sm md:px-4 md:py-2 md:text-base"
 		>
 			{category}
 			{count !== undefined && (

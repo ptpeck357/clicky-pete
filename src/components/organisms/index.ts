@@ -4,7 +4,6 @@ export { Navigation } from './Navigation';
 export { Header } from './Header';
 export { Footer } from './Footer';
 export { Sidebar } from './Sidebar';
-export { PhotoModal } from './PhotoModal';
 export { PhotoViewerModal } from './PhotoViewerModal';
 export { CollectionCard } from './CollectionCard';
 export { CollectionsGrid } from './CollectionsGrid';

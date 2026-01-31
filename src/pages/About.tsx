@@ -196,7 +196,7 @@ export const About: React.FC = () => {
 				</div>
 			</section>
 
-			<div className="bg-gray-900 py-12">
+			<div className="bg-gray-900 py-7 sm:py-12">
 				<div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
 					<div className="relative">
 						<div className="absolute inset-0 flex items-center">
@@ -209,7 +209,7 @@ export const About: React.FC = () => {
 				</div>
 			</div>
 
-			<section className="bg-gray-900 py-12 sm:py-16">
+			<section className="bg-gray-900 py-7 sm:py-16">
 				<div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
 						<motion.div
@@ -232,13 +232,13 @@ export const About: React.FC = () => {
 										d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
 									/>
 								</svg>
-								<h3 className="text-xl font-bold text-white">The Journey</h3>
+								<h3 className="text-xl font-bold text-white">THE JOURNEY</h3>
 							</div>
 
 							<div className="relative">
 								<div className="absolute left-3 top-0 h-full w-0.5 bg-gray-700" />
 
-								<div className="space-y-5">
+								<div className="space-y-7">
 									<div className="relative flex items-start pl-10">
 										<div className="absolute left-0 w-6 h-6 bg-gray-800 border-2 border-blue-500 rounded-full flex items-center justify-center z-10">
 											<svg
@@ -334,28 +334,6 @@ export const About: React.FC = () => {
 									</div>
 
 									<div className="relative flex items-start pl-10">
-										<div className="absolute left-0 w-6 h-6 bg-gray-800 border-2 border-purple-500 rounded-full flex items-center justify-center z-10">
-											<svg
-												className="w-3 h-3 text-purple-400"
-												fill="none"
-												stroke="currentColor"
-												viewBox="0 0 24 24"
-											>
-												<path
-													strokeLinecap="round"
-													strokeLinejoin="round"
-													strokeWidth={2}
-													d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-												/>
-											</svg>
-										</div>
-										<div>
-											<h4 className="text-base font-bold text-white">2018</h4>
-											<p className="text-gray-400 text-sm">Learning Adobe Lightroom Classic</p>
-										</div>
-									</div>
-
-									<div className="relative flex items-start pl-10">
 										<div className="absolute left-0 w-6 h-6 bg-gray-800 border-2 border-green-500 rounded-full flex items-center justify-center z-10">
 											<svg
 												className="w-3 h-3 text-green-400"
@@ -427,7 +405,7 @@ export const About: React.FC = () => {
 						</motion.div>
 
 						{/* Mobile divider - only shows when stacked */}
-						<div className="lg:hidden flex justify-center py-4">
+						<div className="lg:hidden flex justify-center py-7">
 							<div className="bg-gradient-to-r from-purple-500 via-blue-500 to-green-500 h-0.5 w-full max-w-4xl rounded-full"></div>
 						</div>
 
@@ -438,7 +416,25 @@ export const About: React.FC = () => {
 							viewport={{ once: true }}
 						>
 							<div className="flex items-center mb-6">
-								<div className="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
+								<svg
+									className="w-5 h-5 text-blue-400 mr-3"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+								>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth={2}
+										d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+									/>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth={2}
+										d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+									/>
+								</svg>
 								<h3 className="text-xl font-bold text-white">GEAR</h3>
 							</div>
 							<div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
@@ -511,7 +507,7 @@ export const About: React.FC = () => {
 				</div>
 			</section>
 
-			<div className="bg-gray-900 py-5">
+			<div className="bg-gray-900 py-7">
 				<div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
 					<div className="relative">
 						<div className="absolute inset-0 flex items-center">
@@ -524,7 +520,7 @@ export const About: React.FC = () => {
 				</div>
 			</div>
 
-			<section className="bg-gray-900 py-12 sm:py-16">
+			<section className="bg-gray-900 py-7 sm:py-16">
 				<div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 					<motion.div
 						className="text-center"

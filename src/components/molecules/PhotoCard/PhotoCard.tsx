@@ -22,6 +22,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
 	const [imageLoaded, setImageLoaded] = useState(false);
 	const [retryCount, setRetryCount] = useState(0);
 	const [tagsExpanded, setTagsExpanded] = useState(false);
+	const [mobileInfoExpanded, setMobileInfoExpanded] = useState(false);
 	const [shouldLoad] = useState(true);
 	const imgRef = useRef<HTMLDivElement>(null);
 
@@ -147,8 +148,72 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
 			</div>
 
 			{showMetadata && (
-				<motion.div className="p-4" initial={{ opacity: 0.8 }} whileHover={{ opacity: 1 }}>
-					<motion.div className="flex flex-wrap gap-1" initial={{ opacity: 0.7 }} whileHover={{ opacity: 1 }}>
+				<motion.div className="p-3 md:p-4" initial={{ opacity: 0.8 }} whileHover={{ opacity: 1 }}>
+					{/* Mobile: Show info toggle */}
+					{!mobileInfoExpanded && (
+						<motion.button
+							onClick={(e) => {
+								e.stopPropagation();
+								setMobileInfoExpanded(true);
+							}}
+							className="md:hidden inline-flex items-center"
+							whileHover={{ scale: 1.05 }}
+							whileTap={{ scale: 0.95 }}
+						>
+							<Tag variant="default" size="sm">
+								Show info
+							</Tag>
+						</motion.button>
+					)}
+
+					{/* Mobile: Expanded tags */}
+					{mobileInfoExpanded && (
+						<motion.div
+							className="md:hidden"
+							initial={{ opacity: 0, height: 0 }}
+							animate={{ opacity: 1, height: 'auto' }}
+							transition={{ duration: 0.2 }}
+						>
+							<motion.div
+								className="flex flex-wrap gap-1"
+								initial={{ opacity: 0.7 }}
+								whileHover={{ opacity: 1 }}
+							>
+								{displayableTags.map(([key, value], index) => (
+									<motion.div
+										key={key}
+										initial={{ opacity: 0, x: -10 }}
+										animate={{ opacity: 1, x: 0 }}
+										transition={{ delay: index * 0.05 }}
+									>
+										<Tag variant="default" size="sm">
+											{key}: {value.toString()}
+										</Tag>
+									</motion.div>
+								))}
+							</motion.div>
+							<motion.button
+								onClick={(e) => {
+									e.stopPropagation();
+									setMobileInfoExpanded(false);
+								}}
+								className="mt-2 inline-flex items-center"
+								whileHover={{ scale: 1.05 }}
+								whileTap={{ scale: 0.95 }}
+							>
+								<Tag variant="default" size="sm">
+									Hide info
+								</Tag>
+							</motion.button>
+						</motion.div>
+					)}
+
+					{/* Desktop: Always show tags */}
+					<motion.div
+						className="hidden md:flex flex-wrap gap-1"
+						initial={{ opacity: 0.7 }}
+						whileHover={{ opacity: 1 }}
+					>
 						{displayableTags.slice(0, tagsExpanded ? undefined : 3).map(([key, value], index) => (
 							<motion.div
 								key={key}
@@ -183,7 +248,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({
 
 					{tagsExpanded && displayableTags.length > 3 && (
 						<motion.div
-							className="flex justify-center mt-2"
+							className="hidden md:flex justify-center mt-2"
 							initial={{ opacity: 0, y: 10 }}
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ delay: 0.2 }}

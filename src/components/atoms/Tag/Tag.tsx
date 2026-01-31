@@ -27,8 +27,8 @@ export const Tag: React.FC<TagProps> = ({
 	};
 
 	const sizeClasses = {
-		sm: 'px-2 py-1 text-xs',
-		md: 'px-3 py-1 text-sm',
+		sm: 'px-1.5 py-0.5 text-[10px] md:px-2 md:py-1 md:text-xs',
+		md: 'px-2 py-0.5 text-xs md:px-3 md:py-1 md:text-sm',
 	};
 
 	const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]}`;
