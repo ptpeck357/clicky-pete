@@ -176,20 +176,25 @@ export const Gallery: React.FC = () => {
 
 	const getCurrentPhotoIndex = () => {
 		if (!selectedPhoto) return -1;
-		return shuffledPhotos.findIndex((p) => p.id === selectedPhoto.id);
+		return displayedPhotos.findIndex((p) => p.id === selectedPhoto.id);
 	};
 
 	const handleNextPhoto = () => {
 		const currentIndex = getCurrentPhotoIndex();
-		if (currentIndex < shuffledPhotos.length - 1) {
-			setSelectedPhoto(shuffledPhotos[currentIndex + 1]);
+		if (currentIndex < displayedPhotos.length - 1) {
+			setSelectedPhoto(displayedPhotos[currentIndex + 1]);
+		} else if (hasMorePhotos) {
+			// Load more photos and navigate to the next one
+			const nextIndex = currentIndex + 1;
+			setPhotosToShow((prev) => Math.max(prev + 12, nextIndex + 1));
+			setSelectedPhoto(shuffledPhotos[nextIndex]);
 		}
 	};
 
 	const handlePreviousPhoto = () => {
 		const currentIndex = getCurrentPhotoIndex();
 		if (currentIndex > 0) {
-			setSelectedPhoto(shuffledPhotos[currentIndex - 1]);
+			setSelectedPhoto(displayedPhotos[currentIndex - 1]);
 		}
 	};
 

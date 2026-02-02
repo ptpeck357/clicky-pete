@@ -154,9 +154,9 @@ export const About: React.FC = () => {
 											Outside of work and photography, I enjoy learning new things, which has led
 											me to pick up a variety of hobbies and interests. Most of my time is spent
 											outdoors - hunting, archery, fishing, camping, hiking, dirt biking, skiing,
-											or playing pickup sports like ultimate frisbee, disc golf, volleyball, and
-											spikeball. Since my time was always outside touching grass, I figured I
-											might as well capture the scenery!
+											or playing pickup sports like ultimate frisbee, volleyball, and spikeball.
+											Since my time was always outside touching grass, I figured I might as well
+											capture the scenery!
 											<span className="text-blue-400 animate-blink">|</span>
 										</div>
 										<div className="text-gray-300">
