@@ -144,11 +144,11 @@ export const About: React.FC = () => {
 											&lt;<span className="text-red-400">Bio</span>&gt;
 										</div>
 										<div className="ml-4 text-gray-300 leading-relaxed text-xs sm:text-sm">
-											For my 11th birthday, I received a digital Kodak camera which then sat on
+											For my 12th birthday, I received a digital Kodak camera which then sat on
 											top of dresser for a year... The following summer, I felt guilty not putting
-											my camera to use. So that’s when I started taking hundreds of bad
-											photos—perhaps even millions. You could say I got a little “clicky-happy”
-											with the shutter release. How can you not when you grew up in Montana???
+											my camera to use. So that’s when I started taking hundreds of bad photos —
+											perhaps even millions. You could say I got a little “clicky-happy” with the
+											shutter release. How can you not when you grew up in Montana???
 											<br />
 											<br />
 											Outside of work and photography, I enjoy learning new things, which has led
