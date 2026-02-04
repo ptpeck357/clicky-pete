@@ -102,7 +102,33 @@ export const About: React.FC = () => {
 
 			<section className="bg-gray-900 py-4 sm:py-8 lg:py-12">
 				<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-start">
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 md:items-stretch">
+						<motion.div
+							className="flex justify-center w-full md:h-full"
+							initial={{ opacity: 0, x: 50 }}
+							animate={{ opacity: 1, x: 0 }}
+							transition={{ duration: 0.8, delay: 0.2 }}
+						>
+							<div className="relative w-full max-w-md md:max-w-2xl md:h-full my-4 md:my-0">
+								<div className="w-full aspect-[3/4] md:aspect-auto md:h-full md:min-h-80 bg-gradient-to-br from-gray-400 to-gray-600 rounded-lg overflow-hidden flex items-center justify-center">
+									{profileImageUrl ? (
+										<img
+											src={profileImageUrl}
+											alt="Photographer with camera"
+											className="w-full h-full object-cover"
+										/>
+									) : (
+										<span className="text-white text-lg">Can't load image</span>
+									)}
+								</div>
+
+								<div className="absolute bottom-4 left-4 text-left">
+									<div className="text-white text-xl font-bold mb-1">Peter Peck</div>
+									<div className="text-white-300 text-md">Bozeman, MT</div>
+								</div>
+							</div>
+						</motion.div>
+
 						<motion.div
 							className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden w-full max-w-2xl"
 							initial={{ opacity: 0, x: -50 }}
@@ -166,45 +192,14 @@ export const About: React.FC = () => {
 								</div>
 							</div>
 						</motion.div>
-
-						<motion.div
-							className="flex justify-center w-full"
-							initial={{ opacity: 0, x: 50 }}
-							animate={{ opacity: 1, x: 0 }}
-							transition={{ duration: 0.8, delay: 0.2 }}
-						>
-							<div className="relative inline-block">
-								<div className="w-64 h-80 sm:w-80 sm:h-96 lg:w-96 lg:h-[32rem] bg-gradient-to-br from-gray-400 to-gray-600 rounded-lg overflow-hidden flex items-center justify-center">
-									{profileImageUrl ? (
-										<img
-											src={profileImageUrl}
-											alt="Photographer with camera"
-											className="w-full h-full object-cover"
-										/>
-									) : (
-										<span className="text-white text-lg">Can't load image</span>
-									)}
-								</div>
-
-								<div className="absolute bottom-4 left-4 text-left">
-									<div className="text-white text-xl font-bold mb-1">Peter Peck</div>
-									<div className="text-white-300 text-md">Bozeman, MT</div>
-								</div>
-							</div>
-						</motion.div>
 					</div>
 				</div>
 			</section>
 
 			<div className="bg-gray-900 py-7 sm:py-12">
-				<div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
-					<div className="relative">
-						<div className="absolute inset-0 flex items-center">
-							<div className="w-full border-t border-gradient-to-r from-transparent via-purple-500 to-transparent"></div>
-						</div>
-						<div className="relative flex justify-center">
-							<div className="bg-gradient-to-r from-purple-500 via-blue-500 to-green-500 h-0.5 w-full max-w-4xl rounded-full"></div>
-						</div>
+				<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+					<div className="relative flex justify-center">
+						<div className="bg-gradient-to-r from-purple-500 via-blue-500 to-green-500 h-0.5 w-full rounded-full"></div>
 					</div>
 				</div>
 			</div>
