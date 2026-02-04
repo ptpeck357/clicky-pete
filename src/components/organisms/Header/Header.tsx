@@ -41,10 +41,6 @@ export const Header: React.FC = () => {
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				<div className="flex justify-between items-center h-16">
 					<Link to="/" className="flex items-center space-x-1" onClick={() => setIsMobileMenuOpen(false)}>
-						<div className="w-14 h-14 flex items-center justify-center">
-							<img src="/camera.svg" alt="Camera icon" className="w-full h-full" />
-						</div>
-
 						<span className="text-xl font-bold text-white leading-none">Clicky Pete</span>
 					</Link>
 
