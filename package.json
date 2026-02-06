@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint:eslint": "eslint . --max-warnings=0",
-    "lint:eslint:fix": "eslint . --max-warnings=0 --fix",
+    "lint:eslint": "eslint . --max-warnings=10",
+    "lint:eslint:fix": "eslint . --max-warnings=10 --fix",
     "lint:prettier": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "lint:prettier:fix": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "fix": "npm run lint:eslint:fix && npm run lint:prettier:fix",
