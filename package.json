@@ -13,7 +13,8 @@
     "fix": "npm run lint:eslint:fix && npm run lint:prettier:fix",
     "pre-commit": "lint-staged",
     "prepare": "husky",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "ci": "npm run lint:eslint && npm run lint:prettier && npm run build"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
