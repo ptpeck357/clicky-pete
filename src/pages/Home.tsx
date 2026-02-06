@@ -80,7 +80,6 @@ export const Home: React.FC = () => {
 		window.scrollTo(0, 0);
 
 		loadPhotos();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
