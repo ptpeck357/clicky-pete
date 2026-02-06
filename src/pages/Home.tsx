@@ -90,6 +90,9 @@ export const Home: React.FC = () => {
 	useEffect(() => {
 		if (heroPhotos.length === 0) return;
 
+		const LOADING_TIMEOUT_MS = 15000;
+		let hasCompleted = false;
+
 		const cloudFrontUrl = import.meta.env.VITE_CLOUDFRONT_URL;
 		if (!cloudFrontUrl) {
 			console.error('CloudFront URL not configured');
@@ -101,17 +104,39 @@ export const Home: React.FC = () => {
 			`${cloudFrontUrl}/photos/2000/${photo.file}`,
 		]);
 
+		const timeoutId = setTimeout(() => {
+			if (!hasCompleted) {
+				console.warn('Hero images loading timed out, proceeding anyway');
+				hasCompleted = true;
+				setHeroImagesLoaded(true);
+			}
+		}, LOADING_TIMEOUT_MS);
+
 		if (heroImageUrls.length > 0) {
 			preloadImages(heroImageUrls)
 				.then(() => {
-					setHeroImagesLoaded(true);
+					if (!hasCompleted) {
+						hasCompleted = true;
+						clearTimeout(timeoutId);
+						setHeroImagesLoaded(true);
+					}
 				})
 				.catch(() => {
-					setHeroImagesLoaded(true);
+					if (!hasCompleted) {
+						hasCompleted = true;
+						clearTimeout(timeoutId);
+						setHeroImagesLoaded(true);
+					}
 				});
 		} else {
+			hasCompleted = true;
+			clearTimeout(timeoutId);
 			setHeroImagesLoaded(true);
 		}
+
+		return () => {
+			if (timeoutId) clearTimeout(timeoutId);
+		};
 	}, [heroPhotos]);
 
 	const getHeroImageUrl = (photo: Photo, cloudFrontUrl: string) => {

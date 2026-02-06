@@ -27,16 +27,26 @@ export const CollectionsGrid: React.FC<CollectionsGridProps> = ({ onCollectionSe
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
+		const LOADING_TIMEOUT_MS = 15000;
+		let timeoutId: ReturnType<typeof setTimeout>;
+
 		const fetchCollections = async () => {
 			try {
 				setLoading(true);
 				setError(null);
 
+				timeoutId = setTimeout(() => {
+					setError('Loading timed out. Please check your connection and try again.');
+					setLoading(false);
+				}, LOADING_TIMEOUT_MS);
+
 				const allPhotos = await photoService.getPhotos();
 				const generatedCollections = generateCollections(allPhotos);
 
+				clearTimeout(timeoutId);
 				setCollections(generatedCollections);
 			} catch (error) {
+				clearTimeout(timeoutId);
 				console.error('Failed to fetch collections:', error);
 				setError(error instanceof Error ? error.message : 'Failed to load collections');
 			} finally {
@@ -45,6 +55,10 @@ export const CollectionsGrid: React.FC<CollectionsGridProps> = ({ onCollectionSe
 		};
 
 		fetchCollections();
+
+		return () => {
+			if (timeoutId) clearTimeout(timeoutId);
+		};
 	}, []);
 
 	if (loading) {
