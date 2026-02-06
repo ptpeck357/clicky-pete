@@ -3,7 +3,13 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { ContactModal } from '../components/organisms/ContactModal';
 import { photoService } from '../services/photoService';
 
-const HERO_IMAGES = ['canyon_land.webp', 'motorcycle.webp', 'mirror_me.webp', 'grand_canyon.webp', 'cover_photo.webp'];
+const HERO_IMAGES = [
+	'canyon_land.webp',
+	'motorcycle.webp',
+	'northern_lights.webp',
+	'grand_canyon.webp',
+	'cover_photo.webp',
+];
 
 export const About: React.FC = () => {
 	const [isContactModalOpen, setIsContactModalOpen] = useState(false);
@@ -148,7 +154,7 @@ export const About: React.FC = () => {
 								<div className="mt-2">
 									<div className="text-blue-400">
 										<span className="text-purple-400">let</span> passion ={' '}
-										<span className="text-green-400">'photography'</span>;
+										<span className="text-green-400">'the_outdoors'</span>;
 									</div>
 									<div className="text-blue-400">
 										<span className="text-purple-400">let</span> profession ={' '}
@@ -575,7 +581,7 @@ export const About: React.FC = () => {
 						>
 							Let's capture <span className="text-blue-400">something</span>
 							<br />
-							<div className="mt-2">beautiful</div>
+							<div className="mt-2">neat</div>
 						</motion.h2>
 
 						<motion.p
