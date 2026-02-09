@@ -25,7 +25,7 @@ export const About: React.FC = () => {
 
 		const interval = setInterval(() => {
 			setCurrentHeroIndex((prev) => (prev + 1) % HERO_IMAGES.length);
-		}, 3000);
+		}, 2500);
 		window.scrollTo(0, 0);
 
 		return () => clearInterval(interval);

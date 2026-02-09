@@ -158,7 +158,7 @@ export const Home: React.FC = () => {
 
 		const interval = setInterval(() => {
 			setCurrentHeroIndex((prev) => (prev + 1) % heroPhotos.length);
-		}, 3000);
+		}, 2500);
 
 		return () => clearInterval(interval);
 	}, [heroPhotos.length]);
