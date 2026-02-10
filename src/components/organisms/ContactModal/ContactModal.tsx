@@ -37,16 +37,35 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
 		e.preventDefault();
 		setIsSubmitting(true);
 
-		await new Promise((resolve) => setTimeout(resolve, 1500));
+		const apiUrl = import.meta.env.VITE_CONTACT_API_URL;
 
-		setIsSubmitting(false);
-		setIsSubmitted(true);
+		try {
+			if (apiUrl) {
+				const response = await fetch(`${apiUrl}/contact`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(formData),
+				});
 
-		setTimeout(() => {
-			setIsSubmitted(false);
-			setFormData({ name: '', email: '', subject: '', message: '' });
-			onClose();
-		}, 2000);
+				if (!response.ok) {
+					throw new Error('Failed to send message');
+				}
+			} else {
+				await new Promise((resolve) => setTimeout(resolve, 1500));
+			}
+
+			setIsSubmitted(true);
+			setTimeout(() => {
+				setIsSubmitted(false);
+				setFormData({ name: '', email: '', subject: '', message: '' });
+				onClose();
+			}, 2000);
+		} catch (error) {
+			console.error('Contact form error:', error);
+			alert('Failed to send message. Please try again.');
+		} finally {
+			setIsSubmitting(false);
+		}
 	};
 
 	const handleBackdropClick = (e: React.MouseEvent) => {
