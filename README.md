@@ -11,6 +11,9 @@ I created this website to host my photos with the help of AI. Hope you enjoy!
 - **Modern UI**: Clean, professional interface with Tailwind CSS and animations
 - **Photo Modal**: Full-screen photo viewing with navigation
 - **Collection Browsing**: Explore photos organized by location and theme
+- **Contact Form**: Get in touch directly through the site, powered by AWS SES and Lambda
+- **Hero Carousel**: Auto-rotating hero images with dot indicators and parallax scrolling
+- **Infinite Scroll**: Photos load progressively as you scroll down the page
 - **Progressive Loading**: Optimized image loading with srcSet and lazy loading
 
 ## 🛠 Tech Stack
@@ -24,9 +27,12 @@ I created this website to host my photos with the help of AI. Hope you enjoy!
 - **Custom hooks** for state management
 
 ### Infrastructure
-- **CloudFront CDN** for global content delivery
-- **Responsive Images** with srcSet (400px, 800px, 2000px)
-- **WebP Format** for optimal performance
+- **AWS S3** for photo storage, with images stored in multiple sizes (400px, 800px, 2000px) in WebP format
+- **AWS CloudFront** as a CDN sitting in front of S3 for fast global content delivery
+- **AWS Amplify** for hosting and continuous deployment
+- **AWS Route 53** for DNS management
+- **AWS SES** for handling contact form emails via a Lambda function
+- **Responsive Images** with srcSet served through CloudFront
 ## 📁 Project Structure
 
 ```
@@ -51,7 +57,6 @@ photography-portfolio/
 │   ├── hooks/                 # Custom React hooks
 │   ├── services/              # API communication
 │   ├── types/                 # TypeScript definitions
-│   ├── data/                  # Mock data
 │   ├── utils/                 # Utility functions
 │   └── styles/                # CSS styles
 │
@@ -92,9 +97,3 @@ The project includes:
 ## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Built with modern web technologies
-- Inspired by photography portfolio best practices
-- Uses CloudFront CDN for fast global delivery
