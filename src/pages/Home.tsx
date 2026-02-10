@@ -274,6 +274,21 @@ export const Home: React.FC = () => {
 					</motion.p>
 				</motion.div>
 
+				{heroPhotos.length > 1 && (
+					<div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
+						{heroPhotos.map((_, index) => (
+							<button
+								key={index}
+								onClick={() => setCurrentHeroIndex(index)}
+								className={`w-2 h-2 rounded-full transition-all duration-300 ${
+									index === currentHeroIndex ? 'bg-white w-6' : 'bg-white/50 hover:bg-white/75'
+								}`}
+								aria-label={`Go to image ${index + 1}`}
+							/>
+						))}
+					</div>
+				)}
+
 				<motion.button
 					className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 p-3 transition-all duration-300 mb-safe"
 					initial={{ opacity: 0, y: 20 }}
