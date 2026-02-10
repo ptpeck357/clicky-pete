@@ -183,12 +183,12 @@ export const About: React.FC = () => {
 											shutter release. How can you not when you grew up in Montana???
 											<br />
 											<br />
-											Outside of work and photography, I enjoy learning new things, which has led
-											me to pick up a variety of hobbies and interests. Most of my time is spent
-											outdoors - hunting, archery, fishing, camping, hiking, dirt biking, skiing,
-											or playing pickup sports like ultimate frisbee, volleyball, and spikeball.
-											Since my time was always outside touching grass, I figured I might as well
-											capture the scenery!
+											Outside of work and photography, I enjoy spending time with people and
+											learning what makes them tick. Beyond that, I also love touching grass which
+											has led me to pick up a variety of hobbies and interests - hunting, archery,
+											fishing, camping, hiking, dirt biking, skiing, or playing pickup sports like
+											ultimate frisbee, volleyball, and spikeball. Since I was always touching
+											grass, I figured I might as well capture the scenery!
 											<span className="text-blue-400 animate-blink">|</span>
 										</div>
 										<div className="text-gray-300">
@@ -476,9 +476,6 @@ export const About: React.FC = () => {
 										</span>
 										<span className="bg-gray-700 border border-purple-500 text-purple-400 px-4 py-2 rounded-lg text-sm font-mono hover:bg-purple-500 hover:text-white hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300">
 											Adobe Bridge
-										</span>
-										<span className="bg-gray-700 border border-purple-500 text-purple-400 px-4 py-2 rounded-lg text-sm font-mono hover:bg-purple-500 hover:text-white hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300">
-											Adobe Photoshop
 										</span>
 										<span className="bg-gray-700 border border-purple-500 text-purple-400 px-4 py-2 rounded-lg text-sm font-mono hover:bg-purple-500 hover:text-white hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300">
 											Davinci Resolve
