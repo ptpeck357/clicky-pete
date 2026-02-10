@@ -3,13 +3,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { ContactModal } from '../components/organisms/ContactModal';
 import { photoService } from '../services/photoService';
 
-const HERO_IMAGES = [
-	'canyon_land.webp',
-	'motorcycle.webp',
-	'northern_lights.webp',
-	'grand_canyon.webp',
-	'cover_photo.webp',
-];
+const HERO_IMAGES = ['canyon_land.webp', 'motorcycle.webp', 'northern_lights.webp', 'cover_photo.webp', 'moab.webp'];
 
 export const About: React.FC = () => {
 	const [isContactModalOpen, setIsContactModalOpen] = useState(false);
@@ -18,7 +12,7 @@ export const About: React.FC = () => {
 
 	// Parallax effect for hero background
 	const { scrollY } = useScroll();
-	const backgroundY = useTransform(scrollY, [0, 500], [0, 300]);
+	const backgroundY = useTransform(scrollY, [0, 500], [0, 400]);
 
 	useEffect(() => {
 		if (HERO_IMAGES.length <= 1) return;
@@ -76,7 +70,7 @@ export const About: React.FC = () => {
 						))}
 					</motion.div>
 
-					<div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-gray-900 pointer-events-none" />
+					<div className="absolute inset-0 bg-gradient-to-b from-transparent from-70% to-gray-900 pointer-events-none" />
 
 					<motion.div
 						className="relative z-10 text-center"
@@ -259,7 +253,7 @@ export const About: React.FC = () => {
 										<div>
 											<h4 className="text-base font-bold text-white">2009</h4>
 											<p className="text-gray-400 text-sm">
-												A first camera, received as a birthday gift
+												First camera, received as a birthday gift
 											</p>
 										</div>
 									</div>
@@ -282,9 +276,7 @@ export const About: React.FC = () => {
 										</div>
 										<div>
 											<h4 className="text-base font-bold text-white">2010</h4>
-											<p className="text-gray-400 text-sm">
-												The beginning of landscape photography
-											</p>
+											<p className="text-gray-400 text-sm">Beginning of landscape photography</p>
 										</div>
 									</div>
 
@@ -306,7 +298,7 @@ export const About: React.FC = () => {
 										</div>
 										<div>
 											<h4 className="text-base font-bold text-white">2013</h4>
-											<p className="text-gray-400 text-sm">A Canon T3i enters the journey</p>
+											<p className="text-gray-400 text-sm">Canon T3i enters the journey</p>
 										</div>
 									</div>
 
@@ -329,7 +321,7 @@ export const About: React.FC = () => {
 										<div>
 											<h4 className="text-base font-bold text-white">2016</h4>
 											<p className="text-gray-400 text-sm">
-												Discovered astrophotography and long exposures
+												Discovering astrophotography and long exposures
 											</p>
 										</div>
 									</div>
