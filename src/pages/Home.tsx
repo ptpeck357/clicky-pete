@@ -275,7 +275,7 @@ export const Home: React.FC = () => {
 				</motion.div>
 
 				{heroPhotos.length > 1 && (
-					<div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
+					<div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
 						{heroPhotos.map((_, index) => (
 							<button
 								key={index}
@@ -288,39 +288,6 @@ export const Home: React.FC = () => {
 						))}
 					</div>
 				)}
-
-				<motion.button
-					className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 p-3 transition-all duration-300 mb-safe"
-					initial={{ opacity: 0, y: 20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ delay: 1, duration: 0.8 }}
-					onClick={() => {
-						const photoSection = document.querySelector('#photo-section');
-						if (photoSection) {
-							photoSection.scrollIntoView({
-								behavior: 'smooth',
-								block: 'start',
-							});
-						}
-					}}
-					whileHover={{ scale: 1.1, y: -2 }}
-					whileTap={{ scale: 0.95 }}
-					aria-label="Scroll to photo gallery"
-				>
-					<motion.div
-						animate={{ y: [0, 8, 0] }}
-						transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-					>
-						<svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth={2}
-								d="M19 14l-7 7m0 0l-7-7m7 7V3"
-							/>
-						</svg>
-					</motion.div>
-				</motion.button>
 			</section>
 
 			<motion.section
