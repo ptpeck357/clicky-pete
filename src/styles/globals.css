@@ -221,7 +221,7 @@
 	animation: scroll-arrow-pulse 2s infinite;
 }
 
-@keyframes scroll-arrow-pulse {
+/* @keyframes scroll-arrow-pulse {
 	0% {
 		opacity: 1;
 	}
@@ -229,7 +229,7 @@
 		opacity: 0;
 		transform: translate(-10px, -10px);
 	}
-}
+} */
 
 /* Dark theme photo card styles */
 .photo-card-dark {
