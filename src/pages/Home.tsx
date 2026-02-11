@@ -188,6 +188,10 @@ export const Home: React.FC = () => {
 		const currentIndex = getCurrentPhotoIndex();
 		if (currentIndex < displayedPhotos.length - 1) {
 			setSelectedPhoto(displayedPhotos[currentIndex + 1]);
+		} else if (hasMorePhotos) {
+			const nextIndex = currentIndex + 1;
+			setPhotosToShow((prev) => Math.max(prev + 12, nextIndex + 1));
+			setSelectedPhoto(featuredPhotos[nextIndex]);
 		}
 	};
 
