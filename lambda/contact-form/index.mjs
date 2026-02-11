@@ -7,9 +7,9 @@ const TO_EMAIL = process.env.TO_EMAIL;
 const FROM_EMAIL = process.env.FROM_EMAIL || TO_EMAIL;
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-  'Access-Control-Allow-Methods': 'POST,OPTIONS',
+	'Access-Control-Allow-Origin': '*',
+	'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+	'Access-Control-Allow-Methods': 'POST,OPTIONS',
 };
 
 export const handler = async (event) => {
