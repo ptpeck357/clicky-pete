@@ -83,8 +83,16 @@ export const About: React.FC = () => {
 						</h1>
 					</motion.div>
 
+					<div
+						className="absolute bottom-24 left-1/2 -translate-x-1/2 z-10 cursor-pointer"
+						onClick={() => document.getElementById('about-content')?.scrollIntoView({ behavior: 'smooth' })}
+						aria-label="Scroll down"
+					>
+						<div className="scroll-arrow" />
+					</div>
+
 					{HERO_IMAGES.length > 1 && (
-						<div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
+						<div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
 							{HERO_IMAGES.map((_, index) => (
 								<button
 									key={index}
@@ -100,7 +108,7 @@ export const About: React.FC = () => {
 				</section>
 			)}
 
-			<section className="bg-gray-900 py-4 sm:py-8 lg:py-12">
+			<section id="about-content" className="bg-gray-900 py-4 sm:py-8 lg:py-12">
 				<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 md:items-stretch">
 						<motion.div

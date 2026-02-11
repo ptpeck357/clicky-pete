@@ -274,8 +274,16 @@ export const Home: React.FC = () => {
 					</motion.p>
 				</motion.div>
 
+				<div
+					className="absolute bottom-24 left-1/2 -translate-x-1/2 z-10 cursor-pointer"
+					onClick={() => document.getElementById('photo-section')?.scrollIntoView({ behavior: 'smooth' })}
+					aria-label="Scroll down"
+				>
+					<div className="scroll-arrow" />
+				</div>
+
 				{heroPhotos.length > 1 && (
-					<div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
+					<div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
 						{heroPhotos.map((_, index) => (
 							<button
 								key={index}
