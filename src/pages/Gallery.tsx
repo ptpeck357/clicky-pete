@@ -264,14 +264,14 @@ export const Gallery: React.FC = () => {
 			{urlCollection && (
 				<>
 					<div
-						className="fixed left-0 right-0 overflow-hidden bg-gray-900"
-						style={{ top: '4rem', height: '65vh', zIndex: 10 }}
+						className="fixed left-0 right-0 overflow-hidden bg-gray-900 h-[40vh] sm:h-[65vh]"
+						style={{ top: '4rem', zIndex: 10 }}
 					>
 						{coverPhotoUrl && (
 							<img
 								src={coverPhotoUrl}
 								alt={`${urlCollection} collection`}
-								className="absolute inset-0 w-full h-full object-cover object-top"
+								className="absolute inset-0 w-full h-full object-cover object-middle"
 								style={{ transform: `scale(${1 + heroProgress * 0.1})` }}
 							/>
 						)}
@@ -288,7 +288,7 @@ export const Gallery: React.FC = () => {
 							</p>
 						</div>
 					</div>
-					<div style={{ height: '65vh' }} />
+					<div className="h-[40vh] sm:h-[65vh]" />
 				</>
 			)}
 
