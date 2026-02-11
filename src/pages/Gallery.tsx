@@ -78,6 +78,7 @@ export const Gallery: React.FC = () => {
 	const [categories, setCategories] = useState<string[]>([]);
 	const [categoriesLoading, setCategoriesLoading] = useState(false);
 	const [photosToShow, setPhotosToShow] = useState(15);
+	const [scrollY, setScrollY] = useState(0);
 
 	const finalFilter = { ...filter, ...localFilter };
 	const { photos, loading, error, refetch } = usePhotos(finalFilter);
@@ -85,6 +86,21 @@ export const Gallery: React.FC = () => {
 	const shuffledPhotos = useMemo(() => shuffleArray(photos), [photos]);
 	const displayedPhotos = useMemo(() => shuffledPhotos.slice(0, photosToShow), [shuffledPhotos, photosToShow]);
 	const hasMorePhotos = photosToShow < shuffledPhotos.length;
+
+	const heroProgress = urlCollection ? Math.min(scrollY / 300, 1) : 0;
+
+	const coverPhoto = useMemo(() => {
+		if (!urlCollection || photos.length === 0) return null;
+		const landscapePhotos = photos.filter((p) => p.tags.aspectRatio === '3:2');
+		const pool = landscapePhotos.length > 0 ? landscapePhotos : photos;
+		return pool[Math.floor(Math.random() * pool.length)];
+	}, [urlCollection, photos]);
+
+	const coverPhotoUrl = useMemo(() => {
+		if (!coverPhoto) return '';
+		const cloudFrontUrl = import.meta.env.VITE_CLOUDFRONT_URL;
+		return `${cloudFrontUrl}/photos/2000/${coverPhoto.file}`;
+	}, [coverPhoto]);
 
 	const isLoadingMoreRef = useRef(false);
 	const observerRef = useRef<IntersectionObserver | null>(null);
@@ -99,6 +115,13 @@ export const Gallery: React.FC = () => {
 		setIsModalOpen(false);
 		setSelectedPhoto(null);
 	}, [location.pathname, location.search]);
+
+	useEffect(() => {
+		if (!urlCollection) return;
+		const handleScroll = () => setScrollY(window.scrollY);
+		window.addEventListener('scroll', handleScroll, { passive: true });
+		return () => window.removeEventListener('scroll', handleScroll);
+	}, [urlCollection]);
 
 	const handleLoadMore = useCallback(() => {
 		if (isLoadingMoreRef.current) return;
@@ -238,97 +261,132 @@ export const Gallery: React.FC = () => {
 
 	return (
 		<div className="min-h-screen bg-gray-900">
-			<main className="p-4 sm:p-6 bg-gray-900">
-				<motion.div className="mb-6 sm:mb-8" variants={headerVariants} initial="hidden" animate="visible">
-					<div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-4 sm:mb-6">
-						<div>
-							<div className="flex items-center gap-4 mb-2">
-								<motion.h1
-									className="text-2xl sm:text-3xl font-bold text-white"
-									initial={{ opacity: 0, x: -20 }}
-									animate={{ opacity: 1, x: 0 }}
-									transition={{ duration: 0.6, delay: 0.1 }}
-								>
-									{viewMode === 'collections'
-										? 'Collections'
-										: showAllPhotos
-											? 'All Photos'
-											: filter.collection
-												? `${filter.collection} Collection`
-												: 'Gallery'}
-								</motion.h1>
-
-								{viewMode === 'photos' && (
-									<motion.button
-										onClick={handleBackToCollections}
-										className="px-3 py-1 text-sm bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 transition-colors"
-										whileHover={{ scale: 1.05 }}
-										whileTap={{ scale: 0.95 }}
-										initial={{ opacity: 0, x: 20 }}
-										animate={{ opacity: 1, x: 0 }}
-										transition={{ duration: 0.4 }}
-									>
-										← Back to Collections
-									</motion.button>
-								)}
-							</div>
-
-							<motion.p
-								className="text-gray-400 text-sm sm:text-base"
-								initial={{ opacity: 0, x: -20 }}
-								animate={{ opacity: 1, x: 0 }}
-								transition={{ duration: 0.6, delay: 0.2 }}
-							>
-								{viewMode === 'collections'
-									? 'Browse photo collections by location and theme'
-									: loading
-										? 'Loading...'
-										: `${photos.length} photos`}
-								{localFilter.category && ` in ${localFilter.category}`}
-								{filter.collection && ` from ${filter.collection}`}
-							</motion.p>
+			{urlCollection && (
+				<>
+					<div
+						className="fixed left-0 right-0 overflow-hidden bg-gray-900"
+						style={{ top: '4rem', height: '65vh', zIndex: 10 }}
+					>
+						{coverPhotoUrl && (
+							<img
+								src={coverPhotoUrl}
+								alt={`${urlCollection} collection`}
+								className="absolute inset-0 w-full h-full object-cover object-top"
+								style={{ transform: `scale(${1 + heroProgress * 0.1})` }}
+							/>
+						)}
+						<div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/50 to-gray-900/30" />
+						<div
+							className="absolute bottom-0 left-0 right-0 p-6 sm:p-8"
+							style={{ opacity: Math.max(1 - heroProgress * 2, 0) }}
+						>
+							<h1 className="text-3xl sm:text-5xl font-bold text-white mb-2 drop-shadow-lg">
+								{urlCollection}
+							</h1>
+							<p className="text-gray-300 text-sm sm:text-lg drop-shadow">
+								{loading ? 'Loading...' : `${photos.length} photos`}
+							</p>
 						</div>
 					</div>
-				</motion.div>
+					<div style={{ height: '65vh' }} />
+				</>
+			)}
 
-				<motion.div
-					className="mb-6"
-					initial={{ opacity: 0 }}
-					animate={{ opacity: 1 }}
-					transition={{ delay: 0.3 }}
-				>
-					<div className="flex gap-2">
+			<main className={`p-4 sm:p-6 bg-gray-900${urlCollection ? ' relative z-20' : ''}`}>
+				{urlCollection && (
+					<div className="mb-4">
 						<motion.button
-							onClick={() => {
-								setLocalFilter({});
-								navigate('/gallery');
-							}}
-							className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-								viewMode === 'collections'
-									? 'bg-blue-600 text-white'
-									: 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-							}`}
+							onClick={handleBackToCollections}
+							className="px-3 py-1.5 text-sm bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 transition-colors"
 							whileHover={{ scale: 1.05 }}
 							whileTap={{ scale: 0.95 }}
+							initial={{ opacity: 0, x: -20 }}
+							animate={{ opacity: 1, x: 0 }}
+							transition={{ duration: 0.4 }}
 						>
-							Collections
-						</motion.button>
-						<motion.button
-							onClick={() => {
-								setLocalFilter({});
-								setPhotosToShow(12);
-								navigate('/gallery?view=all');
-							}}
-							className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-								showAllPhotos ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-							}`}
-							whileHover={{ scale: 1.05 }}
-							whileTap={{ scale: 0.95 }}
-						>
-							All Photos
+							← Back to Collections
 						</motion.button>
 					</div>
-				</motion.div>
+				)}
+				{!urlCollection && (
+					<motion.div className="mb-6 sm:mb-8" variants={headerVariants} initial="hidden" animate="visible">
+						<div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-4 sm:mb-6">
+							<div>
+								<div className="flex items-center gap-4 mb-2">
+									<motion.h1
+										className="text-2xl sm:text-3xl font-bold text-white"
+										initial={{ opacity: 0, x: -20 }}
+										animate={{ opacity: 1, x: 0 }}
+										transition={{ duration: 0.6, delay: 0.1 }}
+									>
+										{viewMode === 'collections'
+											? 'Collections'
+											: showAllPhotos
+												? 'All Photos'
+												: 'Gallery'}
+									</motion.h1>
+								</div>
+
+								<motion.p
+									className="text-gray-400 text-sm sm:text-base"
+									initial={{ opacity: 0, x: -20 }}
+									animate={{ opacity: 1, x: 0 }}
+									transition={{ duration: 0.6, delay: 0.2 }}
+								>
+									{viewMode === 'collections'
+										? 'Browse photo collections by location and theme'
+										: loading
+											? 'Loading...'
+											: `${photos.length} photos`}
+									{localFilter.category && ` in ${localFilter.category}`}
+								</motion.p>
+							</div>
+						</div>
+					</motion.div>
+				)}
+
+				{!urlCollection && (
+					<motion.div
+						className="mb-6"
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						transition={{ delay: 0.3 }}
+					>
+						<div className="flex gap-2">
+							<motion.button
+								onClick={() => {
+									setLocalFilter({});
+									navigate('/gallery');
+								}}
+								className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+									viewMode === 'collections'
+										? 'bg-blue-600 text-white'
+										: 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+								}`}
+								whileHover={{ scale: 1.05 }}
+								whileTap={{ scale: 0.95 }}
+							>
+								Collections
+							</motion.button>
+							<motion.button
+								onClick={() => {
+									setLocalFilter({});
+									setPhotosToShow(12);
+									navigate('/gallery?view=all');
+								}}
+								className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+									showAllPhotos
+										? 'bg-blue-600 text-white'
+										: 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+								}`}
+								whileHover={{ scale: 1.05 }}
+								whileTap={{ scale: 0.95 }}
+							>
+								All Photos
+							</motion.button>
+						</div>
+					</motion.div>
+				)}
 
 				<AnimatePresence mode="wait">
 					{viewMode === 'collections' ? (

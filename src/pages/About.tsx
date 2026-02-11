@@ -178,8 +178,7 @@ export const About: React.FC = () => {
 											<br />
 											<br />
 											Outside of work and photography, I enjoy spending time with people and
-											learning what makes them tick. Beyond that, I also love touching grass which
-											has led me to pick up a variety of hobbies and interests - hunting, archery,
+											learning what makes them tick. Beyond that, I enjoy hunting, archery,
 											fishing, camping, hiking, dirt biking, skiing, or playing pickup sports like
 											ultimate frisbee, volleyball, and spikeball. Since I was always touching
 											grass, I figured I might as well capture the scenery!
