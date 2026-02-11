@@ -379,7 +379,9 @@ export const Home: React.FC = () => {
 				photo={selectedPhoto}
 				isOpen={isModalOpen}
 				onClose={handleModalClose}
-				onNext={getCurrentPhotoIndex() < displayedPhotos.length - 1 ? handleNextPhoto : undefined}
+				onNext={
+					getCurrentPhotoIndex() < displayedPhotos.length - 1 || hasMorePhotos ? handleNextPhoto : undefined
+				}
 				onPrevious={getCurrentPhotoIndex() > 0 ? handlePreviousPhoto : undefined}
 			/>
 		</div>
