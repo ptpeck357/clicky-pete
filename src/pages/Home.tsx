@@ -275,7 +275,7 @@ export const Home: React.FC = () => {
 				</motion.div>
 
 				<div
-					className="absolute bottom-24 left-1/2 -translate-x-1/2 z-10 cursor-pointer"
+					className="absolute bottom-[12%] left-1/2 -translate-x-1/2 z-10 cursor-pointer"
 					onClick={() => document.getElementById('photo-section')?.scrollIntoView({ behavior: 'smooth' })}
 					aria-label="Scroll down"
 				>
