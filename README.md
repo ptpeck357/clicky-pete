@@ -61,7 +61,7 @@ photography-portfolio/
 │   └── styles/                # CSS styles
 │
 ├── public/                    # Static assets
-└── package.json              # Dependencies
+└── package.json               # Dependencies
 ```
 
 **Tag descriptions:**
