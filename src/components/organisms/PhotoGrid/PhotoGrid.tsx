@@ -11,7 +11,6 @@ interface PhotoGridProps {
 	onPhotoClick?: (photo: Photo) => void;
 	layout?: 'grid' | 'masonry';
 	aspectRatio?: 'square' | 'natural';
-	showMetadata?: boolean;
 	columns?: 'default' | 'large';
 }
 
@@ -21,7 +20,6 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({
 	onPhotoClick,
 	layout = 'grid',
 	aspectRatio = 'square',
-	showMetadata = true,
 	columns = 'default',
 }) => {
 	if (loading) {
@@ -93,12 +91,7 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({
 			>
 				{photos.map((photo) => (
 					<div key={photo.id}>
-						<PhotoCard
-							photo={photo}
-							onClick={() => onPhotoClick?.(photo)}
-							aspectRatio={aspectRatio}
-							showMetadata={showMetadata}
-						/>
+						<PhotoCard photo={photo} onClick={() => onPhotoClick?.(photo)} aspectRatio={aspectRatio} />
 					</div>
 				))}
 			</Masonry>
@@ -114,7 +107,6 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({
 						onClick={() => onPhotoClick?.(photo)}
 						className={layout === 'masonry' ? 'masonry-item' : ''}
 						aspectRatio={aspectRatio}
-						showMetadata={showMetadata}
 					/>
 				</div>
 			))}
