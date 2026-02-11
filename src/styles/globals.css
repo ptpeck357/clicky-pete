@@ -196,28 +196,28 @@
 
 /* Scroll down arrow indicator */
 .scroll-arrow {
-	width: 40px;
-	height: 40px;
+	width: 48px;
+	height: 48px;
 	transform: rotate(45deg);
 	border-left: none;
 	border-top: none;
-	border-right: 2px whitesmoke solid;
-	border-bottom: 2px whitesmoke solid;
+	border-right: 3px whitesmoke solid;
+	border-bottom: 3px whitesmoke solid;
 	position: relative;
 }
 
 .scroll-arrow::before {
 	content: '';
 	position: absolute;
-	width: 20px;
-	height: 20px;
+	width: 24px;
+	height: 24px;
 	top: 50%;
 	left: 50%;
-	margin: -10px 0 0 -10px;
+	margin: -12px 0 0 -12px;
 	border-left: none;
 	border-top: none;
-	border-right: 2px whitesmoke solid;
-	border-bottom: 2px whitesmoke solid;
+	border-right: 3px whitesmoke solid;
+	border-bottom: 3px whitesmoke solid;
 	animation: scroll-arrow-pulse 2s infinite;
 }
 
