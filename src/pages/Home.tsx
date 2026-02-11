@@ -304,7 +304,6 @@ export const Home: React.FC = () => {
 						loading={displayedPhotos.length === 0}
 						onPhotoClick={handlePhotoClick}
 						aspectRatio="natural"
-						showMetadata={false}
 						columns="large"
 					/>
 
