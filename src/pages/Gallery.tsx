@@ -104,7 +104,6 @@ export const Gallery: React.FC = () => {
 
 	const isLoadingMoreRef = useRef(false);
 	const observerRef = useRef<IntersectionObserver | null>(null);
-
 	useEffect(() => {
 		setPhotosToShow(15);
 		isLoadingMoreRef.current = false;

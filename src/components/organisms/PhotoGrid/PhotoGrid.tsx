@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import Masonry from '@mui/lab/Masonry';
+import Masonry from 'react-masonry-css';
 import { PhotoCard } from '../../molecules';
 import { Spinner } from '../../atoms';
 import type { Photo } from '../../../types/photo';
@@ -76,19 +76,13 @@ export const PhotoGrid: React.FC<PhotoGridProps> = ({
 	})();
 
 	if (aspectRatio === 'natural') {
-		const columnCount = columns === 'large' ? { xs: 2, sm: 2, lg: 3, xl: 3 } : { xs: 2, sm: 2, lg: 4, xl: 4 };
+		const breakpointCols: { [key: number]: number; default: number } =
+			columns === 'large'
+				? { default: 3, 1024: 3, 640: 2, 0: 2 }
+				: { default: 4, 1280: 4, 1024: 4, 640: 2, 0: 2 };
 
 		return (
-			<Masonry
-				columns={columnCount}
-				spacing={2}
-				sx={{
-					margin: 0,
-					'& .MuiMasonry-item': {
-						transition: 'none !important', // Disable transitions to prevent jumping
-					},
-				}}
-			>
+			<Masonry breakpointCols={breakpointCols} className="masonry-grid" columnClassName="masonry-grid-column">
 				{photos.map((photo) => (
 					<div key={photo.id}>
 						<PhotoCard photo={photo} onClick={() => onPhotoClick?.(photo)} aspectRatio={aspectRatio} />
