@@ -104,7 +104,6 @@ export const Gallery: React.FC = () => {
 
 	const isLoadingMoreRef = useRef(false);
 	const observerRef = useRef<IntersectionObserver | null>(null);
-
 	useEffect(() => {
 		setPhotosToShow(15);
 		isLoadingMoreRef.current = false;
@@ -146,7 +145,7 @@ export const Gallery: React.FC = () => {
 							handleLoadMore();
 						}
 					},
-					{ threshold: 0.1, rootMargin: '200px' },
+					{ threshold: 0.1, rootMargin: '400px' },
 				);
 				observer.observe(node);
 				observerRef.current = observer;
@@ -485,7 +484,11 @@ export const Gallery: React.FC = () => {
 							/>
 
 							{hasMorePhotos && (
-								<div ref={loadMoreRef} className="flex justify-center py-8">
+								<div
+									ref={loadMoreRef}
+									className="flex justify-center py-8"
+									style={{ overflowAnchor: 'none' }}
+								>
 									<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400" />
 								</div>
 							)}

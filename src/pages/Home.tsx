@@ -53,7 +53,7 @@ export const Home: React.FC = () => {
 					handleLoadMore();
 				}
 			},
-			{ threshold: 0.1 },
+			{ threshold: 0.1, rootMargin: '400px' },
 		);
 
 		observer.observe(sentinel);
@@ -320,7 +320,7 @@ export const Home: React.FC = () => {
 					/>
 
 					{hasMorePhotos ? (
-						<div ref={loadMoreRef} className="flex justify-center py-8">
+						<div ref={loadMoreRef} className="flex justify-center py-8" style={{ overflowAnchor: 'none' }}>
 							<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400" />
 						</div>
 					) : (
