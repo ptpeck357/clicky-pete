@@ -12,7 +12,9 @@ export const About: React.FC = () => {
 
 	// Parallax effect for hero background
 	const { scrollY } = useScroll();
-	const backgroundY = useTransform(scrollY, [0, 500], [0, 400]);
+	const backgroundY = useTransform(scrollY, [0, 800], [0, -350]);
+	const textY = useTransform(scrollY, [0, 500], [0, -150]);
+	const textOpacity = useTransform(scrollY, [0, 400], [1, 0]);
 
 	useEffect(() => {
 		if (HERO_IMAGES.length <= 1) return;
@@ -48,11 +50,14 @@ export const About: React.FC = () => {
 		<div className="min-h-screen bg-gray-900">
 			{HERO_IMAGES.length > 0 && (
 				<section className="relative w-full h-screen -mt-16 flex items-center justify-center overflow-hidden bg-black">
-					<motion.div className="absolute inset-0 z-0" style={{ y: backgroundY }}>
+					<motion.div
+						className="absolute inset-0 z-0 -top-[350px] -bottom-[350px]"
+						style={{ y: backgroundY }}
+					>
 						{HERO_IMAGES.map((image, index) => (
 							<div
 								key={image}
-								className="absolute inset-0 transition-opacity duration-1000 ease-in-out flex items-center justify-center"
+								className="absolute inset-x-0 top-[350px] bottom-[350px] transition-opacity duration-1000 ease-in-out flex items-center justify-center"
 								style={{ opacity: index === currentHeroIndex ? 1 : 0 }}
 							>
 								<img
@@ -77,6 +82,7 @@ export const About: React.FC = () => {
 						initial={{ opacity: 0, y: 30 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.8, ease: 'easeOut' }}
+						style={{ y: textY, opacity: textOpacity }}
 					>
 						<h1 className="text-2xl sm:text-5xl md:text-7xl font-bold leading-tight">
 							Get to Know <span className="text-blue-400">Me</span>

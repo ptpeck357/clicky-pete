@@ -167,7 +167,9 @@ export const Home: React.FC = () => {
 
 	// Parallax effect for hero background
 	const { scrollY } = useScroll();
-	const backgroundY = useTransform(scrollY, [0, 500], [0, 300]);
+	const backgroundY = useTransform(scrollY, [0, 800], [0, -350]);
+	const textY = useTransform(scrollY, [0, 500], [0, -150]);
+	const textOpacity = useTransform(scrollY, [0, 400], [1, 0]);
 
 	const handlePhotoClick = (photo: Photo) => {
 		setSelectedPhoto(photo);
@@ -215,7 +217,10 @@ export const Home: React.FC = () => {
 				)}
 
 				{heroPhotos.length > 0 ? (
-					<motion.div className="absolute inset-0 z-0" style={{ y: backgroundY }}>
+					<motion.div
+						className="absolute inset-0 z-0 -top-[350px] -bottom-[350px]"
+						style={{ y: backgroundY }}
+					>
 						{heroPhotos.map((photo, index) => {
 							const cloudFrontUrl = import.meta.env.VITE_CLOUDFRONT_URL;
 							if (!cloudFrontUrl) {
@@ -229,7 +234,7 @@ export const Home: React.FC = () => {
 							return (
 								<div
 									key={photo.id}
-									className="absolute inset-0 transition-opacity duration-1000 ease-in-out overflow-hidden bg-black flex items-center justify-center"
+									className="absolute inset-x-0 top-[350px] bottom-[350px] transition-opacity duration-1000 ease-in-out overflow-hidden bg-black flex items-center justify-center"
 									style={{
 										opacity: isVisible ? 1 : 0,
 									}}
@@ -259,6 +264,7 @@ export const Home: React.FC = () => {
 					variants={heroVariants}
 					initial="hidden"
 					animate="visible"
+					style={{ y: textY, opacity: textOpacity }}
 				>
 					<motion.h1
 						className="text-2xl sm:text-5xl md:text-7xl font-bold mb-4 sm:mb-6 leading-tight"
