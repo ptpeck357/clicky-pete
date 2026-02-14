@@ -274,7 +274,7 @@ export const Gallery: React.FC = () => {
 								style={{ transform: `scale(${1 + heroProgress * 0.1})` }}
 							/>
 						)}
-						<div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/50 to-gray-900/30" />
+						<div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/35 to-gray-900/15" />
 						<div
 							className="absolute bottom-0 left-0 right-0 p-6 sm:p-8"
 							style={{ opacity: Math.max(1 - heroProgress * 2, 0) }}
