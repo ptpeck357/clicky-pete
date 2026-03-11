@@ -23,6 +23,7 @@ export const Navigation: React.FC<NavigationProps> = ({ className = '', onItemCl
 		{ path: '/', label: 'Home' },
 		{ path: '/gallery', label: 'Gallery' },
 		{ path: '/about', label: 'About' },
+		{ path: '/contact', label: 'Contact' },
 	];
 
 	const baseClasses = isMobile
