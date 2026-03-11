@@ -267,21 +267,12 @@ export const Home: React.FC = () => {
 					style={{ y: textY, opacity: textOpacity }}
 				>
 					<motion.h1
-						className="text-2xl sm:text-5xl md:text-7xl font-bold mb-4 sm:mb-6 leading-tight"
+						className="text-2xl sm:text-5xl md:text-7xl font-bold mb-4 sm:mb-6 leading-tight [text-shadow:0_2px_20px_rgba(0,0,0,0.8),0_4px_40px_rgba(0,0,0,0.5)]"
 						variants={textVariants}
 						transition={{ duration: 0.8, ease: 'easeOut' }}
 					>
 						Capturing <span className="block text-blue-400">The Moment</span>
 					</motion.h1>
-
-					<motion.p
-						className="text-base sm:text-xl md:text-2xl text-white-300 mb-6 sm:mb-8 max-w-2xl mx-auto px-4"
-						variants={textVariants}
-						transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
-					>
-						Climb mountains not so the world can see you, but so you can see the world. <br /> - David
-						McCullough Jr.
-					</motion.p>
 				</motion.div>
 
 				<div

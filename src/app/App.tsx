@@ -12,7 +12,6 @@ if (GA_MEASUREMENT_ID) {
 
 function AppContent() {
 	const location = useLocation();
-	const isAboutPage = location.pathname === '/about';
 
 	useEffect(() => {
 		if (GA_MEASUREMENT_ID) {
@@ -26,7 +25,7 @@ function AppContent() {
 			<main className="pt-16">
 				<Router />
 			</main>
-			{!isAboutPage && <Footer />}
+			<Footer />
 		</div>
 	);
 }
