@@ -213,24 +213,23 @@ export const About: React.FC = () => {
 					</div>
 				</div>
 			</section>
-			<motion.section
-				className="py-20 bg-gray-800"
-				initial={{ opacity: 0 }}
-				whileInView={{ opacity: 1 }}
-				transition={{ duration: 1 }}
-				viewport={{ once: true }}
-			>
-				<div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+
+			<div className="flex justify-center px-4 sm:px-6 lg:px-8 mb-16">
+				<motion.div
+					className="w-full max-w-lg bg-gray-800 rounded-2xl px-10 py-12 text-center"
+					initial={{ opacity: 0, y: 20 }}
+					whileInView={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.8 }}
+					viewport={{ once: true }}
+				>
 					<motion.blockquote
-						className="text-2xl md:text-3xl font-light text-gray-300 leading-relaxed"
+						className="text-lg md:text-xl font-light text-gray-300 leading-relaxed"
 						initial={{ opacity: 0, y: 30 }}
 						whileInView={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.8, delay: 0.2 }}
 						viewport={{ once: true }}
 					>
-						For his invisible attributes, namely, his eternal power and divine nature, have been clearly
-						perceived, ever since the creation of the world, in the things that have been made. So they are
-						without excuse.
+						Climb mountains not so the world can see you, but so you can see the world.
 					</motion.blockquote>
 					<motion.cite
 						className="block mt-6 text-gray-500"
@@ -239,10 +238,10 @@ export const About: React.FC = () => {
 						transition={{ duration: 0.6, delay: 0.5 }}
 						viewport={{ once: true }}
 					>
-						- Romans 1:20
+						— David McCullough Jr.
 					</motion.cite>
-				</div>
-			</motion.section>
+				</motion.div>
+			</div>
 		</div>
 	);
 };

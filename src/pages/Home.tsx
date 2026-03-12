@@ -341,37 +341,6 @@ export const Home: React.FC = () => {
 				</div>
 			</motion.section>
 
-			<motion.section
-				className="py-20 bg-gray-800 mb-12"
-				initial={{ opacity: 0 }}
-				whileInView={{ opacity: 1 }}
-				transition={{ duration: 1 }}
-				viewport={{ once: true }}
-			>
-				<div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-					<motion.blockquote
-						className="text-2xl md:text-3xl font-light text-gray-300 leading-relaxed"
-						initial={{ opacity: 0, y: 30 }}
-						whileInView={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.8, delay: 0.2 }}
-						viewport={{ once: true }}
-					>
-						For his invisible attributes, namely, his eternal power and divine nature, have been clearly
-						perceived, ever since the creation of the world, in the things that have been made. So they are
-						without excuse.
-					</motion.blockquote>
-					<motion.cite
-						className="block mt-6 text-gray-500"
-						initial={{ opacity: 0 }}
-						whileInView={{ opacity: 1 }}
-						transition={{ duration: 0.6, delay: 0.5 }}
-						viewport={{ once: true }}
-					>
-						- Romans 1:20
-					</motion.cite>
-				</div>
-			</motion.section>
-
 			<PhotoViewerModal
 				photo={selectedPhoto}
 				isOpen={isModalOpen}
