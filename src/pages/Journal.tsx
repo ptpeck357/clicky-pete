@@ -2,14 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { fetchJournals } from '../data/journals';
-import type { Journal } from '../data/journals';
+import type { Journal as JournalEntry } from '../data/journals';
 
 export const Journal: React.FC = () => {
 	const navigate = useNavigate();
-	const [entries, setEntries] = useState<Journal[]>([]);
+	const [entries, setEntries] = useState<JournalEntry[]>([]);
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		fetchJournals().then(setEntries).catch(console.error);
+		fetchJournals()
+			.then(setEntries)
+			.catch(console.error)
+			.finally(() => setLoading(false));
 	}, []);
 
 	return (
@@ -44,6 +48,17 @@ export const Journal: React.FC = () => {
 						Newest to Oldest
 					</span>
 				</motion.div>
+
+				{!loading && entries.length === 0 && (
+					<motion.p
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						transition={{ duration: 0.5, delay: 0.3 }}
+						className="text-gray-500 text-sm"
+					>
+						No entries found.
+					</motion.p>
+				)}
 
 				<div className="space-y-20">
 					{entries.map((entry, i) => (
