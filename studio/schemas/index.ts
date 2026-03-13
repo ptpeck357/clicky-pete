@@ -1,5 +1,5 @@
-import { post } from './post';
+import { journal } from './journal';
 
 export const schema = {
-	types: [post],
+	types: [journal],
 };

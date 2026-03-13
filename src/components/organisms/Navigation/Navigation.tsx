@@ -22,7 +22,7 @@ export const Navigation: React.FC<NavigationProps> = ({ className = '', onItemCl
 	const navItems = [
 		{ path: '/', label: 'Home' },
 		{ path: '/gallery', label: 'Gallery' },
-		{ path: '/posts', label: 'Posts' },
+		{ path: '/journal', label: 'Journal' },
 		{ path: '/about', label: 'About' },
 		{ path: '/contact', label: 'Contact' },
 	];

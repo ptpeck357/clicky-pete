@@ -1,8 +1,8 @@
 import { defineField, defineType } from 'sanity';
 
-export const post = defineType({
-	name: 'post',
-	title: 'Post',
+export const journal = defineType({
+	name: 'journal',
+	title: 'Journal Entry',
 	type: 'document',
 	fields: [
 		defineField({
@@ -25,25 +25,12 @@ export const post = defineType({
 			validation: (Rule) => Rule.required(),
 		}),
 		defineField({
-			name: 'category',
-			title: 'Category',
-			type: 'string',
-			validation: (Rule) => Rule.required(),
-		}),
-		defineField({
-			name: 'image',
-			title: 'Photo',
-			type: 'image',
-			options: { hotspot: true },
-			validation: (Rule) => Rule.required(),
-		}),
-		defineField({
-			name: 'excerpt',
-			title: 'Excerpt',
-			description: 'Short teaser shown on the feed.',
-			type: 'text',
-			rows: 3,
-			validation: (Rule) => Rule.required(),
+			name: 'photos',
+			title: 'Photos',
+			description: 'First photo is used as the cover on the feed. Add as many as you like.',
+			type: 'array',
+			of: [{ type: 'image', options: { hotspot: true } }],
+			validation: (Rule) => Rule.required().min(1),
 		}),
 		defineField({
 			name: 'body',
@@ -56,8 +43,8 @@ export const post = defineType({
 	preview: {
 		select: {
 			title: 'title',
-			media: 'image',
-			subtitle: 'category',
+			media: 'photos.0',
+			subtitle: 'date',
 		},
 	},
 });

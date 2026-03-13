@@ -1,21 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { POSTS, fetchPosts } from '../data/posts';
-import type { Post } from '../data/posts';
+import { fetchJournals } from '../data/journals';
+import type { Journal } from '../data/journals';
 
-export const Posts: React.FC = () => {
+export const Journal: React.FC = () => {
 	const navigate = useNavigate();
-	const [posts, setPosts] = useState<Post[]>(POSTS);
+	const [entries, setEntries] = useState<Journal[]>([]);
 
 	useEffect(() => {
-		fetchPosts().then(setPosts).catch(console.error);
+		fetchJournals().then(setEntries).catch(console.error);
 	}, []);
 
 	return (
 		<div className="min-h-screen bg-gray-900">
 			<div className="max-w-3xl mx-auto px-6 py-24 sm:py-32">
-				{/* Header */}
 				<motion.div
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
@@ -29,7 +28,6 @@ export const Posts: React.FC = () => {
 					</p>
 				</motion.div>
 
-				{/* Section header */}
 				<motion.div
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
@@ -47,39 +45,35 @@ export const Posts: React.FC = () => {
 					</span>
 				</motion.div>
 
-				{/* Posts */}
 				<div className="space-y-20">
-					{posts.map((post, i) => (
+					{entries.map((entry, i) => (
 						<motion.article
-							key={post.id}
+							key={entry.id}
 							initial={{ opacity: 0, y: 30 }}
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ duration: 0.6, delay: 0.3 + i * 0.1 }}
 						>
-							{/* Meta */}
-							<div className="flex items-center gap-3 mb-4">
+							<div className="flex items-center gap-3 mb-3">
 								<span className="text-xs font-semibold tracking-widest text-blue-400 uppercase">
-									{post.date}
+									{entry.date}
 								</span>
 								<span className="text-gray-600">·</span>
 								<span className="text-xs font-semibold tracking-widest text-gray-500 uppercase">
-									{post.category}
+									{entry.category}
 								</span>
 							</div>
 
-							{/* Excerpt */}
-							<p className="text-gray-300 text-base leading-relaxed mb-6">{post.excerpt}</p>
+							<h2 className="text-2xl font-bold text-white mb-4">{entry.title}</h2>
 
-							{/* Image — clicking navigates to post detail */}
 							<motion.div
 								className="relative overflow-hidden rounded-lg cursor-pointer group"
 								whileHover={{ scale: 1.005 }}
 								transition={{ duration: 0.3 }}
-								onClick={() => navigate(`/posts/${post.id}`)}
+								onClick={() => navigate(`/journal/${entry.id}`)}
 							>
 								<img
-									src={post.image}
-									alt={post.category}
+									src={entry.images[0]}
+									alt={entry.category}
 									className="w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
 									style={{ maxHeight: '520px' }}
 								/>

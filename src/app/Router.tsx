@@ -4,8 +4,8 @@ import { Home } from '../pages/Home';
 import { Gallery } from '../pages/Gallery';
 import { About } from '../pages/About';
 import { Contact } from '../pages/Contact';
-import { Posts } from '../pages/Posts';
-import { PostDetail } from '../pages/PostDetail';
+import { Journal } from '../pages/Journal';
+import { JournalDetail } from '../pages/JournalDetail';
 import { NotFound } from '../pages/NotFound';
 
 export const Router: React.FC = () => {
@@ -16,8 +16,8 @@ export const Router: React.FC = () => {
 			<Route path="/gallery/:collection" element={<Gallery />} />
 			<Route path="/about" element={<About />} />
 			<Route path="/contact" element={<Contact />} />
-			<Route path="/posts" element={<Posts />} />
-			<Route path="/posts/:id" element={<PostDetail />} />
+			<Route path="/journal" element={<Journal />} />
+			<Route path="/journal/:id" element={<JournalDetail />} />
 			<Route path="*" element={<NotFound />} />
 		</Routes>
 	);
