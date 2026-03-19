@@ -118,8 +118,12 @@ export const About: React.FC = () => {
 								</div>
 
 								<div className="absolute bottom-4 left-4 text-left">
-									<div className="text-white text-3xl font-bold mb-1">Peter Peck</div>
-									<div className="text-white-300 text-xl">Bozeman, MT</div>
+									<div className="text-white text-3xl font-bold mb-1 [text-shadow:0_2px_8px_rgba(0,0,0,0.9),0_4px_16px_rgba(0,0,0,0.7)]">
+										Peter Peck
+									</div>
+									<div className="text-white-300 text-xl [text-shadow:0_2px_8px_rgba(0,0,0,0.9),0_4px_16px_rgba(0,0,0,0.7)]">
+										Bozeman, MT
+									</div>
 								</div>
 							</div>
 						</motion.div>
