@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { photoService } from '../services/photoService';
 
 const HERO_IMAGES = ['canyon_land.webp', 'motorcycle.webp', 'northern_lights.webp', 'cover_photo.webp', 'moab.webp'];
+const PROFILE_BASE = '/photos/aboutme/profile/web';
+const PROFILE_FILE = 'IMG_2993.webp';
 
 export const About: React.FC = () => {
-	const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
 	const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
 
 	// Parallax effect for hero background
@@ -23,25 +23,6 @@ export const About: React.FC = () => {
 		window.scrollTo(0, 0);
 
 		return () => clearInterval(interval);
-	}, []);
-
-	useEffect(() => {
-		const loadProfileImage = async () => {
-			try {
-				const photos = await photoService.getPhotos();
-				const profilePhoto = photos.find((photo) => photo.file === 'profile.webp');
-				if (profilePhoto) {
-					const cloudFrontUrl = import.meta.env.VITE_CLOUDFRONT_URL;
-					if (cloudFrontUrl) {
-						setProfileImageUrl(`${cloudFrontUrl}/photos/800/${profilePhoto.file}`);
-					}
-				}
-			} catch (error) {
-				console.error('Failed to load profile image:', error);
-			}
-		};
-
-		loadProfileImage();
 	}, []);
 
 	return (
@@ -112,7 +93,7 @@ export const About: React.FC = () => {
 				</section>
 			)}
 
-			<section id="about-content" className="bg-gray-900 py-4 sm:py-8 lg:py-12">
+			<section id="about-content" className="bg-gray-900 pt-4 sm:pt-8 lg:pt-12 pb-12 sm:pb-16 lg:pb-20">
 				<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 md:items-stretch">
 						<motion.div
@@ -123,27 +104,22 @@ export const About: React.FC = () => {
 						>
 							<div className="relative w-full max-w-md md:max-w-2xl md:h-full my-4 md:my-0">
 								<div className="w-full aspect-[3/4] md:aspect-auto md:h-full md:min-h-80 bg-gradient-to-br from-gray-400 to-gray-600 rounded-lg overflow-hidden flex items-center justify-center">
-									{profileImageUrl ? (
-										<img
-											src={profileImageUrl}
-											alt="Photographer with camera"
-											className="w-full h-full object-cover"
-										/>
-									) : (
-										<svg
-											className="w-2/3 h-2/3 text-gray-400"
-											viewBox="0 0 24 24"
-											fill="currentColor"
-											xmlns="http://www.w3.org/2000/svg"
-										>
-											<path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
-										</svg>
-									)}
+									<img
+										src={`${PROFILE_BASE}/800/${PROFILE_FILE}`}
+										srcSet={`
+											${PROFILE_BASE}/400/${PROFILE_FILE} 400w,
+											${PROFILE_BASE}/800/${PROFILE_FILE} 800w,
+											${PROFILE_BASE}/2000/${PROFILE_FILE} 2000w
+										`}
+										sizes="(max-width: 768px) 100vw, 50vw"
+										alt="Photographer with camera"
+										className="w-full h-full object-cover"
+									/>
 								</div>
 
 								<div className="absolute bottom-4 left-4 text-left">
-									<div className="text-white text-xl font-bold mb-1">Peter Peck</div>
-									<div className="text-white-300 text-md">Bozeman, MT</div>
+									<div className="text-white text-3xl font-bold mb-1">Peter Peck</div>
+									<div className="text-white-300 text-xl">Bozeman, MT</div>
 								</div>
 							</div>
 						</motion.div>
@@ -214,7 +190,7 @@ export const About: React.FC = () => {
 				</div>
 			</section>
 
-			<div className="flex justify-center px-4 sm:px-6 lg:px-8 mb-16">
+			<div className="flex justify-center px-4 sm:px-6 lg:px-8 pb-12 sm:pb-16 lg:pb-20">
 				<motion.div
 					className="w-full max-w-lg bg-gray-800 rounded-2xl px-10 py-12 text-center"
 					initial={{ opacity: 0, y: 20 }}
