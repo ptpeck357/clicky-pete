@@ -1,5 +1,5 @@
 import { client, urlFor } from '../lib/sanity';
-import type { SanityImageSource } from '@sanity/image-url/lib/types/types';
+import type { SanityImageSource } from '@sanity/image-url';
 
 export interface Journal {
 	id: string;
