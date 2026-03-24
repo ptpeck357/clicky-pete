@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
 const HERO_IMAGES = ['canyon_land.webp', 'motorcycle.webp', 'northern_lights.webp', 'cover_photo.webp', 'moab.webp'];
@@ -6,8 +6,6 @@ const PROFILE_BASE = '/photos/aboutme/profile/web';
 const PROFILE_FILE = 'IMG_2993.webp';
 
 export const About: React.FC = () => {
-	const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
-
 	// Parallax effect for hero background
 	const { scrollY } = useScroll();
 	const backgroundY = useTransform(scrollY, [0, 800], [0, -350]);
@@ -15,14 +13,7 @@ export const About: React.FC = () => {
 	const textOpacity = useTransform(scrollY, [0, 400], [1, 0]);
 
 	useEffect(() => {
-		if (HERO_IMAGES.length <= 1) return;
-
-		const interval = setInterval(() => {
-			setCurrentHeroIndex((prev) => (prev + 1) % HERO_IMAGES.length);
-		}, 2500);
 		window.scrollTo(0, 0);
-
-		return () => clearInterval(interval);
 	}, []);
 
 	return (
@@ -33,25 +24,19 @@ export const About: React.FC = () => {
 						className="absolute inset-0 z-0 -top-[350px] -bottom-[350px]"
 						style={{ y: backgroundY }}
 					>
-						{HERO_IMAGES.map((image, index) => (
-							<div
-								key={image}
-								className="absolute inset-x-0 top-[350px] bottom-[350px] transition-opacity duration-1000 ease-in-out flex items-center justify-center"
-								style={{ opacity: index === currentHeroIndex ? 1 : 0 }}
-							>
-								<img
-									src={`/photos/aboutme/hero/800/${image}`}
-									srcSet={`
-										/photos/aboutme/hero/400/${image} 400w,
-										/photos/aboutme/hero/800/${image} 800w,
-										/photos/aboutme/hero/2000/${image} 2000w
-									`}
-									sizes="100vw"
-									alt="Hero"
-									className="w-full h-full object-contain sm:object-cover"
-								/>
-							</div>
-						))}
+						<div className="absolute inset-x-0 top-[350px] bottom-[350px] flex items-center justify-center">
+							<img
+								src={`/photos/aboutme/hero/800/${HERO_IMAGES[0]}`}
+								srcSet={`
+								/photos/aboutme/hero/400/${HERO_IMAGES[0]} 400w,
+								/photos/aboutme/hero/800/${HERO_IMAGES[0]} 800w,
+								/photos/aboutme/hero/2000/${HERO_IMAGES[0]} 2000w
+							`}
+								sizes="100vw"
+								alt="Hero"
+								className="w-full h-full object-contain sm:object-cover"
+							/>
+						</div>
 					</motion.div>
 
 					<div className="absolute inset-0 bg-gradient-to-b from-transparent from-70% to-gray-900 pointer-events-none" />
@@ -75,21 +60,6 @@ export const About: React.FC = () => {
 					>
 						<div className="scroll-arrow" />
 					</div>
-
-					{HERO_IMAGES.length > 1 && (
-						<div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
-							{HERO_IMAGES.map((_, index) => (
-								<button
-									key={index}
-									onClick={() => setCurrentHeroIndex(index)}
-									className={`w-2 h-2 rounded-full transition-all duration-300 ${
-										index === currentHeroIndex ? 'bg-white w-6' : 'bg-white/50 hover:bg-white/75'
-									}`}
-									aria-label={`Go to image ${index + 1}`}
-								/>
-							))}
-						</div>
-					)}
 				</section>
 			)}
 
