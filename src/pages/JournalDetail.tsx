@@ -65,7 +65,7 @@ export const JournalDetail: React.FC = () => {
 
 	return (
 		<div className="min-h-screen bg-gray-900">
-			<div className="max-w-3xl mx-auto px-6 py-24 sm:py-32">
+			<div className="max-w-3xl mx-auto px-6 py-24 sm:py-24">
 				<motion.button
 					initial={{ opacity: 0, x: -10 }}
 					animate={{ opacity: 1, x: 0 }}
@@ -88,10 +88,9 @@ export const JournalDetail: React.FC = () => {
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.5, delay: 0.1 }}
-					className="flex items-center gap-3 mb-3"
+					className="flex items-center gap-3 mb-6"
 				>
 					<span className="text-xs font-semibold tracking-widest text-blue-400 uppercase">{entry.date}</span>
-					<span className="text-gray-600">·</span>
 					<span className="text-xs font-semibold tracking-widest text-gray-500 uppercase">
 						{entry.category}
 					</span>
@@ -101,21 +100,12 @@ export const JournalDetail: React.FC = () => {
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.5, delay: 0.15 }}
-					className="text-3xl sm:text-4xl font-bold text-white mb-6"
+					className="text-3xl sm:text-4xl font-bold text-white mb-10"
 				>
 					{entry.title}
 				</motion.h1>
 
-				<motion.p
-					initial={{ opacity: 0, y: 20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.5, delay: 0.2 }}
-					className="text-gray-400 text-base leading-relaxed mb-10"
-				>
-					{entry.body}
-				</motion.p>
-
-				<div className="space-y-4">
+				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
 					{entry.images.map((src, i) => (
 						<motion.div
 							key={src}
@@ -128,7 +118,7 @@ export const JournalDetail: React.FC = () => {
 							<img
 								src={src}
 								alt={`${entry.category} ${i + 1}`}
-								className="w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+								className="w-full object-cover transition-transform duration-500 group-hover:scale-[1.02] h-64"
 							/>
 							<div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 rounded-lg flex items-center justify-center">
 								<div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/50 rounded-full p-3 backdrop-blur-sm">
@@ -150,6 +140,15 @@ export const JournalDetail: React.FC = () => {
 						</motion.div>
 					))}
 				</div>
+
+				<motion.p
+					initial={{ opacity: 0, y: 20 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.5, delay: 0.2 }}
+					className="text-gray-400 text-base leading-loose bg-gray-800 rounded-lg px-6 py-5 font-serif"
+				>
+					{entry.body}
+				</motion.p>
 			</div>
 
 			<AnimatePresence>
