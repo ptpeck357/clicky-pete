@@ -40,7 +40,14 @@ export const Header: React.FC = () => {
 		>
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				<div className="flex justify-between items-center h-16">
-					<Link to="/" className="flex items-center space-x-1" onClick={() => setIsMobileMenuOpen(false)}>
+					<Link to="/" className="flex items-center gap-2" onClick={() => setIsMobileMenuOpen(false)}>
+						<img
+							src="/logo.svg"
+							width="28"
+							height="28"
+							alt="Clicky Pete logo"
+							className="-translate-y-0.5 flex-shrink-0"
+						/>
 						<span className="text-xl font-bold text-white leading-none">Clicky Pete</span>
 					</Link>
 

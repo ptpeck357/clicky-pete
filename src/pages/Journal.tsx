@@ -18,7 +18,7 @@ export const Journal: React.FC = () => {
 
 	return (
 		<div className="min-h-screen bg-gray-900">
-			<div className="max-w-3xl mx-auto px-6 py-24 sm:py-32">
+			<div className="max-w-3xl mx-auto px-6 pt-12 pb-24 sm:pt-16 sm:pb-32">
 				<motion.div
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
@@ -72,13 +72,24 @@ export const Journal: React.FC = () => {
 								<span className="text-xs font-semibold tracking-widest text-blue-400 uppercase">
 									{entry.date}
 								</span>
-								<span className="text-gray-600">·</span>
 								<span className="text-xs font-semibold tracking-widest text-gray-500 uppercase">
 									{entry.category}
 								</span>
 							</div>
 
 							<h2 className="text-2xl font-bold text-white mb-4">{entry.title}</h2>
+
+							{entry.body && (
+								<p className="text-gray-400 text-sm leading-relaxed mb-4 font-serif">
+									{entry.body.length > 140 ? entry.body.slice(0, 140).trimEnd() + '…' : entry.body}{' '}
+									<button
+										onClick={() => navigate(`/journal/${entry.id}`)}
+										className="text-blue-400 hover:text-blue-300 transition-colors font-sans font-medium"
+									>
+										Read more →
+									</button>
+								</p>
+							)}
 
 							<motion.div
 								className="relative overflow-hidden rounded-lg cursor-pointer group"
