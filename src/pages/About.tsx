@@ -116,15 +116,6 @@ export const About: React.FC = () => {
 										className="w-full h-full object-cover"
 									/>
 								</div>
-
-								<div className="absolute bottom-4 left-4 text-left">
-									<div className="text-white text-3xl font-bold mb-1 [text-shadow:0_2px_8px_rgba(0,0,0,0.9),0_4px_16px_rgba(0,0,0,0.7)]">
-										Peter Peck
-									</div>
-									<div className="text-white-300 text-xl [text-shadow:0_2px_8px_rgba(0,0,0,0.9),0_4px_16px_rgba(0,0,0,0.7)]">
-										Bozeman, MT
-									</div>
-								</div>
 							</div>
 						</motion.div>
 
@@ -146,13 +137,19 @@ export const About: React.FC = () => {
 							<div className="p-4 sm:p-6 font-mono text-xs sm:text-sm">
 								<div className="mt-2">
 									<div className="text-blue-400">
-										<span className="text-purple-400">let</span> passion ={' '}
-										<span className="text-green-400">'the_outdoors'</span>;
+										<span className="text-purple-400">const</span> name ={' '}
+										<span className="text-green-400">'Peter Peck'</span>;
 									</div>
+									<div className="text-blue-400">
+										<span className="text-purple-400">let</span> location ={' '}
+										<span className="text-green-400">'Bozeman, MT'</span>;
+									</div>
+									<br />
 									<div className="text-blue-400">
 										<span className="text-purple-400">let</span> profession ={' '}
 										<span className="text-green-400">'software_developer'</span>;
 									</div>
+									<br />
 								</div>
 
 								<div className="mt-2">

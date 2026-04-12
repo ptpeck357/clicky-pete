@@ -263,8 +263,8 @@ export const Gallery: React.FC = () => {
 			{urlCollection && (
 				<>
 					<div
-						className="fixed left-0 right-0 overflow-hidden bg-gray-900 h-[40vh] sm:h-[65vh]"
-						style={{ top: '4rem', zIndex: 10 }}
+						className="fixed left-0 right-0 overflow-hidden bg-gray-900 h-[calc(40vh+4rem)] sm:h-[calc(65vh+4rem)]"
+						style={{ top: 0, zIndex: 10 }}
 					>
 						{coverPhotoUrl && (
 							<img
