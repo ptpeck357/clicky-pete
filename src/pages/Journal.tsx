@@ -8,6 +8,7 @@ export const Journal: React.FC = () => {
 	const navigate = useNavigate();
 	const [entries, setEntries] = useState<JournalEntry[]>([]);
 	const [loading, setLoading] = useState(true);
+	const [newestFirst, setNewestFirst] = useState(true);
 
 	useEffect(() => {
 		fetchJournals()
@@ -15,6 +16,8 @@ export const Journal: React.FC = () => {
 			.catch(console.error)
 			.finally(() => setLoading(false));
 	}, []);
+
+	const sortedEntries = newestFirst ? entries : [...entries].reverse();
 
 	return (
 		<div className="min-h-screen bg-gray-900">
@@ -27,8 +30,7 @@ export const Journal: React.FC = () => {
 				>
 					<h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">Behind the Frame</h1>
 					<p className="text-gray-400 text-lg leading-relaxed">
-						A visual journal documenting the intersection of light, perspective, and the stories found in
-						between the shutter clicks.
+						The majority of the photos I take, I generally remember the emotions I felt in that moment.
 					</p>
 				</motion.div>
 
@@ -41,12 +43,20 @@ export const Journal: React.FC = () => {
 					<span className="text-xs font-semibold tracking-widest text-gray-500 uppercase">
 						Journal Entries
 					</span>
-					<span className="text-xs font-semibold tracking-widest text-gray-500 uppercase flex items-center gap-1">
-						<svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<button
+						onClick={() => setNewestFirst((prev) => !prev)}
+						className="text-xs font-semibold tracking-widest text-gray-500 uppercase flex items-center gap-1 cursor-pointer hover:text-gray-300 transition-colors"
+					>
+						<svg
+							className={`w-3 h-3 transition-transform duration-300 ${newestFirst ? '' : 'rotate-180'}`}
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
 							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
 						</svg>
-						Newest to Oldest
-					</span>
+						{newestFirst ? 'Newest to Oldest' : 'Oldest to Newest'}
+					</button>
 				</motion.div>
 
 				{!loading && entries.length === 0 && (
@@ -61,7 +71,7 @@ export const Journal: React.FC = () => {
 				)}
 
 				<div className="space-y-20">
-					{entries.map((entry, i) => (
+					{sortedEntries.map((entry, i) => (
 						<motion.article
 							key={entry.id}
 							initial={{ opacity: 0, y: 30 }}

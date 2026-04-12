@@ -19,10 +19,12 @@ export const Navigation: React.FC<NavigationProps> = ({ className = '', onItemCl
 		onItemClick?.();
 	};
 
+	const isDev = import.meta.env.VITE_ENVIRONMENT === 'dev';
+
 	const navItems = [
 		{ path: '/', label: 'Home' },
 		{ path: '/gallery', label: 'Gallery' },
-		{ path: '/journal', label: 'Journal' },
+		...(isDev ? [{ path: '/journal', label: 'Journal' }] : []),
 		{ path: '/about', label: 'About' },
 		{ path: '/contact', label: 'Contact' },
 	];
