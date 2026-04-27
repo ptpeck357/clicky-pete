@@ -56,7 +56,7 @@ export const Contact: React.FC = () => {
 	const labelClass = 'block text-xs font-semibold tracking-wider text-gray-400 uppercase mb-2';
 
 	return (
-		<div className="min-h-screen bg-gray-900 flex flex-col">
+		<div className="min-h-screen bg-gradient-to-br from-black via-gray-900 via-slate-800 via-blue-900 via-blue-700 via-sky-600 via-cyan-500 via-blue-600 via-indigo-700 via-indigo-900 via-slate-900 to-black flex flex-col">
 			<div className="flex-1 flex items-center justify-center px-6 py-12 sm:py-16 md:py-14 lg:py-32">
 				<div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-12 md:gap-14 lg:gap-24 items-center">
 					{/* Left — headline + socials */}
@@ -76,8 +76,8 @@ export const Contact: React.FC = () => {
 						</div>
 
 						<p className="text-gray-400 text-lg leading-relaxed">
-							Have a shoot in mind? Want to collaborate? Or just want to say hi? Fill out the form and
-							I'll get back to you.
+							Have a shoot in mind? Want to collaborate? <br />
+							Fill out the form and I'll get back to you.
 						</p>
 					</motion.div>
 
@@ -159,7 +159,7 @@ export const Contact: React.FC = () => {
 											onChange={handleInputChange}
 											required
 											className={inputClass}
-											placeholder="Wedding shoot, landscape prints, etc."
+											placeholder="Grad photos, landscape prints, etc."
 										/>
 									</div>
 
@@ -175,7 +175,7 @@ export const Contact: React.FC = () => {
 											required
 											rows={6}
 											className={`${inputClass} resize-none`}
-											placeholder="Tell me about your project, location, date, or anything else on your mind..."
+											placeholder="Tell me about your project"
 										/>
 									</div>
 
