@@ -126,10 +126,36 @@ export const About: React.FC = () => {
 							transition={{ duration: 0.8 }}
 						>
 							<div className="bg-gray-700 px-4 py-2 flex items-center space-x-2">
-								<div className="flex space-x-1">
-									<div className="w-3 h-3 bg-red-500 rounded-full"></div>
-									<div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-									<div className="w-3 h-3 bg-green-500 rounded-full"></div>
+								<div className="flex space-x-2">
+									<div className="w-3.5 h-3.5 bg-red-500 rounded-full flex items-center justify-center text-black/70">
+										<svg
+											viewBox="0 0 10 10"
+											className="w-2 h-2"
+											stroke="currentColor"
+											strokeWidth="1.5"
+											strokeLinecap="round"
+											fill="none"
+										>
+											<path d="M2,2 L8,8 M8,2 L2,8" />
+										</svg>
+									</div>
+									<div className="w-3.5 h-3.5 bg-yellow-500 rounded-full flex items-center justify-center text-black/70">
+										<svg
+											viewBox="0 0 10 10"
+											className="w-2 h-2"
+											stroke="currentColor"
+											strokeWidth="1.5"
+											strokeLinecap="round"
+											fill="none"
+										>
+											<path d="M2,5 L8,5" />
+										</svg>
+									</div>
+									<div className="w-3.5 h-3.5 bg-green-500 rounded-full flex items-center justify-center text-black/70">
+										<svg viewBox="0 0 10 10" className="w-2.5 h-2.5" fill="currentColor">
+											<path d="M1.5,1.5 L6.5,1.5 L1.5,6.5 Z M8.5,8.5 L3.5,8.5 L8.5,3.5 Z" />
+										</svg>
+									</div>
 								</div>
 								<span className="text-gray-300 text-sm font-mono">about_me.tsx</span>
 							</div>
