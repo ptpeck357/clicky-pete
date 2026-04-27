@@ -12,6 +12,7 @@ node_modules
 dist
 dist-ssr
 *.local
+plan.md
 
 # TypeScript build cache
 *.tsbuildinfo
