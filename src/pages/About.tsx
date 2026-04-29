@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
-const HERO_IMAGES = ['canyon_land.webp', 'motorcycle.webp', 'northern_lights.webp', 'cover_photo.webp', 'moab.webp'];
+const HERO_IMAGES = [
+	'mountain_landscape.webp',
+	'canyon_land.webp',
+	'motorcycle.webp',
+	'northern_lights.webp',
+	'cover_photo.webp',
+];
 const PROFILE_BASE = '/photos/aboutme/profile/web';
 const PROFILE_FILE = 'IMG_2993.webp';
 
@@ -77,18 +83,36 @@ export const About: React.FC = () => {
 					</div>
 
 					{HERO_IMAGES.length > 1 && (
-						<div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
-							{HERO_IMAGES.map((_, index) => (
-								<button
-									key={index}
-									onClick={() => setCurrentHeroIndex(index)}
-									className={`w-2 h-2 rounded-full transition-all duration-300 ${
-										index === currentHeroIndex ? 'bg-white w-6' : 'bg-white/50 hover:bg-white/75'
-									}`}
-									aria-label={`Go to image ${index + 1}`}
-								/>
-							))}
-						</div>
+						<>
+							<div className="hidden sm:flex absolute bottom-6 left-1/2 transform -translate-x-1/2 gap-2 z-10">
+								{HERO_IMAGES.map((_, index) => (
+									<button
+										key={index}
+										onClick={() => setCurrentHeroIndex(index)}
+										className={`w-2 h-2 rounded-full transition-all duration-300 ${
+											index === currentHeroIndex
+												? 'bg-white w-6'
+												: 'bg-white/50 hover:bg-white/75'
+										}`}
+										aria-label={`Go to image ${index + 1}`}
+									/>
+								))}
+							</div>
+							<div className="flex sm:hidden absolute top-[calc(50%+34vw+2rem)] left-1/2 transform -translate-x-1/2 gap-2 z-10">
+								{HERO_IMAGES.map((_, index) => (
+									<button
+										key={index}
+										onClick={() => setCurrentHeroIndex(index)}
+										className={`w-2 h-2 rounded-full transition-all duration-300 ${
+											index === currentHeroIndex
+												? 'bg-white w-6'
+												: 'bg-white/50 hover:bg-white/75'
+										}`}
+										aria-label={`Go to image ${index + 1}`}
+									/>
+								))}
+							</div>
+						</>
 					)}
 				</section>
 			)}
