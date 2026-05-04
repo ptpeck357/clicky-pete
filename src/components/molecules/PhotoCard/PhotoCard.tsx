@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Tag } from '../../atoms';
 import type { Photo } from '../../../types/photo';
 
 interface PhotoCardProps {
@@ -121,17 +120,6 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick, className 
 						/>
 					</>
 				) : null}
-
-				<div className="absolute inset-0 bg-transparent group-hover:bg-black/50 transition-all duration-300 flex items-end">
-					<div className="p-4 text-white opacity-0 group-hover:opacity-100 transition-opacity">
-						{photo.tags.category && (
-							<Tag variant="blue" size="sm">
-								{photo.tags.category}
-							</Tag>
-						)}
-						{photo.tags.location && <p className="text-sm font-medium mt-2">{photo.tags.location}</p>}
-					</div>
-				</div>
 			</div>
 		</div>
 	);
