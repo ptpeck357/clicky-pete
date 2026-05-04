@@ -347,7 +347,7 @@ export const Home: React.FC = () => {
 									whileHover={{ scale: 1.05 }}
 									whileTap={{ scale: 0.95 }}
 								>
-									View All Collections
+									View All Photos
 								</motion.button>
 							</Link>
 						</motion.div>

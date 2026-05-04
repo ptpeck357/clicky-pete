@@ -51,7 +51,7 @@ export const Gallery: React.FC = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 
-	const showAllPhotos = searchParams.get('view') === 'all';
+	const showAllPhotos = !urlCollection && searchParams.get('view') !== 'collections';
 
 	const formatCategoryName = (category: string): string => {
 		return category
@@ -177,7 +177,7 @@ export const Gallery: React.FC = () => {
 		setLocalFilter({ category });
 		setPhotosToShow(12);
 		if (!showAllPhotos) {
-			navigate('/gallery?view=all', { replace: true });
+			navigate('/gallery', { replace: true });
 		}
 	};
 
@@ -222,7 +222,7 @@ export const Gallery: React.FC = () => {
 
 	const handleBackToCollections = () => {
 		setLocalFilter({});
-		navigate('/gallery');
+		navigate('/gallery?view=collections');
 	};
 
 	if (error) {
@@ -355,23 +355,8 @@ export const Gallery: React.FC = () => {
 							<motion.button
 								onClick={() => {
 									setLocalFilter({});
-									navigate('/gallery');
-								}}
-								className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-									viewMode === 'collections'
-										? 'bg-blue-600 text-white'
-										: 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-								}`}
-								whileHover={{ scale: 1.05 }}
-								whileTap={{ scale: 0.95 }}
-							>
-								Collections
-							</motion.button>
-							<motion.button
-								onClick={() => {
-									setLocalFilter({});
 									setPhotosToShow(12);
-									navigate('/gallery?view=all');
+									navigate('/gallery');
 								}}
 								className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
 									showAllPhotos
@@ -382,6 +367,21 @@ export const Gallery: React.FC = () => {
 								whileTap={{ scale: 0.95 }}
 							>
 								All Photos
+							</motion.button>
+							<motion.button
+								onClick={() => {
+									setLocalFilter({});
+									navigate('/gallery?view=collections');
+								}}
+								className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+									viewMode === 'collections'
+										? 'bg-blue-600 text-white'
+										: 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+								}`}
+								whileHover={{ scale: 1.05 }}
+								whileTap={{ scale: 0.95 }}
+							>
+								Collections
 							</motion.button>
 						</div>
 					</motion.div>
