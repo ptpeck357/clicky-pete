@@ -222,14 +222,14 @@ export const About: React.FC = () => {
 												putting my camera to use. So that's when I started taking hundreds of
 												bad photos — perhaps even millions. You could say I got a little
 												"clicky-happy" with the shutter release. How can you not when you grew
-												up in Montana???
+												up in Montana?
 												<br />
 												<br />
 												Outside of work and photography, I enjoy spending time with people and
-												learning what makes them tick. Beyond that, I enjoy hunting, archery,
-												fishing, camping, hiking, dirt biking, skiing, or playing pickup sports
-												like ultimate frisbee, volleyball, and spikeball. Since I was always
-												touching grass, I figured I might as well capture the scenery!
+												learning what makes them tick. Beyond that, I enjoy hunting, fishing,
+												camping, hiking, dirt biking, skiing, or playing pickup sports like
+												ultimate frisbee, volleyball, and spikeball. Since I was always touching
+												grass, I figured I might as well photograph the scenery!
 												<span className="text-blue-400 animate-blink">|</span>
 											</div>
 											<div className="text-gray-300">
