@@ -143,6 +143,12 @@ export const Gallery: React.FC = () => {
 					(entries) => {
 						if (entries[0].isIntersecting) {
 							handleLoadMore();
+							setTimeout(() => {
+								if (observerRef.current === observer) {
+									observer.unobserve(node);
+									observer.observe(node);
+								}
+							}, 200);
 						}
 					},
 					{ threshold: 0.1, rootMargin: '400px' },
