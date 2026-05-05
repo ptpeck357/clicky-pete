@@ -13,6 +13,7 @@ const PROFILE_FILE = 'IMG_2993.webp';
 
 export const About: React.FC = () => {
 	const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
+	const [heroTextVisible, setHeroTextVisible] = useState(true);
 
 	// Parallax effect for hero background
 	const { scrollY } = useScroll();
@@ -28,6 +29,11 @@ export const About: React.FC = () => {
 		}, 2500);
 
 		return () => clearInterval(interval);
+	}, []);
+
+	useEffect(() => {
+		const t = setTimeout(() => setHeroTextVisible(false), 3500);
+		return () => clearTimeout(t);
 	}, []);
 
 	return (
@@ -68,15 +74,21 @@ export const About: React.FC = () => {
 					<div className="absolute inset-0 bg-gradient-to-b from-transparent from-70% to-gray-900 pointer-events-none" />
 
 					<motion.div
-						className="relative z-10 text-center"
-						initial={{ opacity: 0, y: 30 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.8, ease: 'easeOut' }}
-						style={{ y: textY, opacity: textOpacity }}
+						className="relative z-10"
+						animate={{ opacity: heroTextVisible ? 1 : 0 }}
+						transition={{ duration: 1, ease: 'easeOut' }}
 					>
-						<h1 className="text-2xl sm:text-5xl md:text-7xl font-bold leading-tight [text-shadow:0_2px_20px_rgba(0,0,0,0.8),0_4px_40px_rgba(0,0,0,0.5)]">
-							Get to Know <span className="text-blue-400">Me</span>
-						</h1>
+						<motion.div
+							className="text-center"
+							initial={{ opacity: 0, y: 30 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.8, ease: 'easeOut' }}
+							style={{ y: textY, opacity: textOpacity }}
+						>
+							<h1 className="text-2xl sm:text-5xl md:text-7xl font-bold leading-tight [text-shadow:0_2px_20px_rgba(0,0,0,0.8),0_4px_40px_rgba(0,0,0,0.5)]">
+								Get to Know <span className="text-blue-400">Me</span>
+							</h1>
+						</motion.div>
 					</motion.div>
 
 					<div
