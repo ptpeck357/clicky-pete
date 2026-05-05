@@ -188,7 +188,7 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 
 					{onPrevious && (
 						<motion.button
-							className="hidden md:block absolute md:left-10 top-1/2 transform -translate-y-1/2 z-10 md:p-3 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+							className="hidden md:block absolute md:left-10 top-1/2 transform -translate-y-1/2 z-10 md:p-3 rounded-full bg-white text-black hover:bg-white/80 transition-colors"
 							onClick={(e) => {
 								e.stopPropagation();
 								onPrevious();
@@ -220,7 +220,7 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 
 					{onNext && (
 						<motion.button
-							className="hidden md:block absolute md:right-10 top-1/2 transform -translate-y-1/2 z-10 md:p-3 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+							className="hidden md:block absolute md:right-10 top-1/2 transform -translate-y-1/2 z-10 md:p-3 rounded-full bg-white text-black hover:bg-white/80 transition-colors"
 							onClick={(e) => {
 								e.stopPropagation();
 								onNext();
