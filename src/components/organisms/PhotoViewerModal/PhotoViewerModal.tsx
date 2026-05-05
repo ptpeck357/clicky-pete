@@ -186,6 +186,65 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 						</svg>
 					</motion.button>
 
+					{onPrevious && (
+						<motion.button
+							className="hidden md:block absolute md:left-10 top-1/2 transform -translate-y-1/2 z-10 md:p-3 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+							onClick={(e) => {
+								e.stopPropagation();
+								onPrevious();
+							}}
+							whileHover={{ scale: 1.1 }}
+							whileTap={{ scale: 0.9 }}
+							initial={{ opacity: 0, x: -20 }}
+							animate={{ opacity: 1, x: [0, -4, 0] }}
+							transition={{
+								opacity: { delay: 0.3, duration: 0.3 },
+								x: { delay: 0.6, repeat: Infinity, duration: 1.2, ease: 'easeInOut' },
+							}}
+						>
+							<svg
+								className="w-4 h-4 md:w-6 md:h-6"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M15 19l-7-7 7-7"
+								/>
+							</svg>
+						</motion.button>
+					)}
+
+					{onNext && (
+						<motion.button
+							className="hidden md:block absolute md:right-10 top-1/2 transform -translate-y-1/2 z-10 md:p-3 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+							onClick={(e) => {
+								e.stopPropagation();
+								onNext();
+							}}
+							whileHover={{ scale: 1.1 }}
+							whileTap={{ scale: 0.9 }}
+							initial={{ opacity: 0, x: 20 }}
+							animate={{ opacity: 1, x: [0, 4, 0] }}
+							transition={{
+								opacity: { delay: 0.3, duration: 0.3 },
+								x: { delay: 0.6, repeat: Infinity, duration: 1.2, ease: 'easeInOut' },
+							}}
+						>
+							<svg
+								className="w-4 h-4 md:w-6 md:h-6"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+							</svg>
+						</motion.button>
+					)}
+
 					<motion.div
 						className="relative flex flex-col items-center justify-center"
 						initial={{ opacity: 0, scale: 0.8 }}
@@ -257,9 +316,10 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 								transition={{ duration: 0.3 }}
 							/>
 
+							{/* Mobile: arrows inside image, centered on photo */}
 							{onPrevious && (
 								<motion.button
-									className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 p-2 md:p-3 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+									className="md:hidden absolute left-2 top-1/2 transform -translate-y-1/2 z-10 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
 									onClick={(e) => {
 										e.stopPropagation();
 										onPrevious();
@@ -273,12 +333,7 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 										x: { delay: 0.6, repeat: Infinity, duration: 1.2, ease: 'easeInOut' },
 									}}
 								>
-									<svg
-										className="w-4 h-4 md:w-6 md:h-6"
-										fill="none"
-										stroke="currentColor"
-										viewBox="0 0 24 24"
-									>
+									<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path
 											strokeLinecap="round"
 											strokeLinejoin="round"
@@ -291,7 +346,7 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 
 							{onNext && (
 								<motion.button
-									className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 p-2 md:p-3 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+									className="md:hidden absolute right-2 top-1/2 transform -translate-y-1/2 z-10 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
 									onClick={(e) => {
 										e.stopPropagation();
 										onNext();
@@ -305,12 +360,7 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 										x: { delay: 0.6, repeat: Infinity, duration: 1.2, ease: 'easeInOut' },
 									}}
 								>
-									<svg
-										className="w-4 h-4 md:w-6 md:h-6"
-										fill="none"
-										stroke="currentColor"
-										viewBox="0 0 24 24"
-									>
+									<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path
 											strokeLinecap="round"
 											strokeLinejoin="round"
