@@ -246,11 +246,19 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 					)}
 
 					<motion.div
-						className="relative flex flex-col items-center justify-center"
+						className="relative flex flex-col items-center justify-center touch-pan-y"
 						initial={{ opacity: 0, scale: 0.8 }}
 						animate={{ opacity: 1, scale: 1 }}
 						exit={{ opacity: 0, scale: 0.8 }}
 						transition={{ duration: 0.4, ease: 'easeOut' }}
+						onPanEnd={(_, info) => {
+							const { offset, velocity } = info;
+							if (offset.x < -50 || velocity.x < -500) {
+								onNext?.();
+							} else if (offset.x > 50 || velocity.x > 500) {
+								onPrevious?.();
+							}
+						}}
 					>
 						{!imageLoaded && !imageError && (
 							<motion.div
@@ -306,7 +314,8 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 								srcSet={photoUrls.srcSet}
 								sizes={photoUrls.sizes}
 								alt={(photo.tags.category as string) || 'Photo'}
-								className={`w-full h-full object-contain transition-opacity duration-300 ${
+								draggable={false}
+								className={`w-full h-full object-contain transition-opacity duration-300 select-none ${
 									imageLoaded ? 'opacity-100' : 'opacity-0'
 								}`}
 								onLoad={() => setImageLoaded(true)}

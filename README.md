@@ -31,7 +31,7 @@ I created this website to host my photos with the help of AI. Hope you enjoy!
 - **AWS CloudFront** as a CDN sitting in front of S3 for fast global content delivery
 - **AWS Amplify** for hosting and continuous deployment
 - **AWS Route 53** for DNS management
-- **AWS SES** for handling contact form emails via a Lambda function
+- **AWS SES** for handling contact form emails via a Lambda function (`lambda/contact-form`)
 - **Responsive Images** with srcSet served through CloudFront
 ## 📁 Project Structure
 
@@ -52,6 +52,7 @@ photography-portfolio/
 │   │   ├── Home.tsx           # Homepage with featured photos
 │   │   ├── Gallery.tsx        # Photo gallery with filtering
 │   │   ├── About.tsx          # About page
+│   │   ├── Contact.tsx        # Contact form
 │   │   └── NotFound.tsx       # 404 page
 │   │
 │   ├── hooks/                 # Custom React hooks
@@ -60,6 +61,7 @@ photography-portfolio/
 │   ├── utils/                 # Utility functions
 │   └── styles/                # CSS styles
 │
+├── lambda/                    # AWS Lambda functions (contact form)
 ├── public/                    # Static assets
 └── package.json               # Dependencies
 ```
@@ -83,7 +85,8 @@ photography-portfolio/
 
 - **Home** → Featured photos and hero carousel
 - **Gallery** → All photos with collection and category filters
-- **About** → Photographer information and contact
+- **About** → Photographer information
+- **Contact** → Contact form (sends via AWS SES Lambda)
 
 ### Code Quality
 
@@ -96,4 +99,4 @@ The project includes:
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
