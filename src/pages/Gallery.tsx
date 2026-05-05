@@ -107,7 +107,6 @@ export const Gallery: React.FC = () => {
 	useEffect(() => {
 		setPhotosToShow(15);
 		isLoadingMoreRef.current = false;
-		window.scrollTo(0, 0);
 	}, [urlCollection, showAllPhotos]);
 
 	useEffect(() => {
