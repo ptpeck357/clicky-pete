@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Photo } from '../../../types/photo';
 
@@ -31,6 +31,30 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 			return () => window.removeEventListener('resize', handleResize);
 		}
 	}, []);
+
+	const onCloseRef = useRef(onClose);
+	useEffect(() => {
+		onCloseRef.current = onClose;
+	}, [onClose]);
+
+	useEffect(() => {
+		if (!isOpen) return;
+
+		window.history.pushState({ modal: 'photo' }, '');
+
+		const handlePopState = () => {
+			onCloseRef.current();
+		};
+
+		window.addEventListener('popstate', handlePopState);
+
+		return () => {
+			window.removeEventListener('popstate', handlePopState);
+			if ((window.history.state as { modal?: string } | null)?.modal === 'photo') {
+				window.history.back();
+			}
+		};
+	}, [isOpen]);
 
 	useEffect(() => {
 		const handleEscape = (e: KeyboardEvent) => {
