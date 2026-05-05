@@ -234,15 +234,21 @@ export const Home: React.FC = () => {
 							return (
 								<div
 									key={photo.id}
-									className="absolute inset-x-0 top-[350px] bottom-[350px] transition-opacity duration-1000 ease-in-out overflow-hidden bg-black flex items-center justify-center"
+									className="absolute inset-x-0 top-[350px] bottom-[350px] transition-opacity duration-1000 ease-in-out overflow-hidden bg-gray-900 flex items-center justify-center"
 									style={{
 										opacity: isVisible ? 1 : 0,
 									}}
 								>
 									<img
 										src={imageUrl}
+										alt=""
+										aria-hidden="true"
+										className="absolute inset-0 w-full h-full object-cover blur-2xl scale-110 sm:hidden"
+									/>
+									<img
+										src={imageUrl}
 										alt={photo.tags.category || 'Hero photo'}
-										className="w-full h-full object-contain sm:object-cover"
+										className="relative w-full h-full object-contain sm:object-cover"
 									/>
 								</div>
 							);
