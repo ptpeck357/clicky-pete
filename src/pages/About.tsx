@@ -34,7 +34,7 @@ export const About: React.FC = () => {
 	return (
 		<div className="min-h-screen bg-gray-900">
 			{HERO_IMAGES.length > 0 && (
-				<section className="relative w-full h-screen -mt-16 flex items-center justify-center overflow-hidden bg-black">
+				<section className="relative w-full h-screen -mt-16 flex items-center justify-center overflow-hidden bg-gray-900">
 					<motion.div
 						className="absolute inset-0 z-0 -top-[350px] -bottom-[350px]"
 						style={{ y: backgroundY }}
@@ -47,6 +47,12 @@ export const About: React.FC = () => {
 							>
 								<img
 									src={`/photos/aboutme/hero/800/${image}`}
+									alt=""
+									aria-hidden="true"
+									className="absolute inset-0 w-full h-full object-cover blur-2xl scale-110 sm:hidden"
+								/>
+								<img
+									src={`/photos/aboutme/hero/800/${image}`}
 									srcSet={`
 										/photos/aboutme/hero/400/${image} 400w,
 										/photos/aboutme/hero/800/${image} 800w,
@@ -54,7 +60,7 @@ export const About: React.FC = () => {
 									`}
 									sizes="100vw"
 									alt="Hero"
-									className="w-full h-full object-contain sm:object-cover"
+									className="relative w-full h-full object-contain sm:object-cover"
 								/>
 							</div>
 						))}
