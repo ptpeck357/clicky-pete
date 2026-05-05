@@ -77,7 +77,6 @@ export const Home: React.FC = () => {
 				console.error('Failed to load photos:', error);
 			}
 		};
-		window.scrollTo(0, 0);
 
 		loadPhotos();
 	}, []);

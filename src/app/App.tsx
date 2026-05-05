@@ -14,6 +14,7 @@ function AppContent() {
 	const location = useLocation();
 
 	useEffect(() => {
+		window.scrollTo(0, 0);
 		if (GA_MEASUREMENT_ID) {
 			ReactGA.send({ hitType: 'pageview', page: location.pathname });
 		}
