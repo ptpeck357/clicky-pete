@@ -114,7 +114,6 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick, className 
 							className={`w-full ${aspectRatio === 'natural' ? 'h-auto' : 'h-full'} object-cover ${
 								aspectRatio === 'natural' && !imageLoaded ? 'opacity-0' : 'opacity-100'
 							} transition-opacity duration-300`}
-							loading="lazy"
 							onError={handleImageError}
 							onLoad={handleImageLoad}
 						/>
