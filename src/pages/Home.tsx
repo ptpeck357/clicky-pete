@@ -32,6 +32,7 @@ export const Home: React.FC = () => {
 
 	const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
 	const [heroImagesLoaded, setHeroImagesLoaded] = useState(false);
+	const [heroTextVisible, setHeroTextVisible] = useState(true);
 
 	const [displayedPhotos, setDisplayedPhotos] = useState<Photo[]>([]);
 	const [photosToShow, setPhotosToShow] = useState(12);
@@ -162,6 +163,12 @@ export const Home: React.FC = () => {
 		return () => clearInterval(interval);
 	}, [heroPhotos.length]);
 
+	useEffect(() => {
+		if (!heroImagesLoaded) return;
+		const t = setTimeout(() => setHeroTextVisible(false), 3500);
+		return () => clearTimeout(t);
+	}, [heroImagesLoaded]);
+
 	const recentPhotos = displayedPhotos.slice(1);
 
 	// Parallax effect for hero background
@@ -265,19 +272,25 @@ export const Home: React.FC = () => {
 				)}
 
 				<motion.div
-					className="relative z-10 text-center max-w-4xl mx-auto px-4"
-					variants={heroVariants}
-					initial="hidden"
-					animate="visible"
-					style={{ y: textY, opacity: textOpacity }}
+					className="relative z-10"
+					animate={{ opacity: heroTextVisible ? 1 : 0 }}
+					transition={{ duration: 1, ease: 'easeOut' }}
 				>
-					<motion.h1
-						className="text-2xl sm:text-5xl md:text-7xl font-bold mb-4 sm:mb-6 leading-tight [text-shadow:0_2px_20px_rgba(0,0,0,0.8),0_4px_40px_rgba(0,0,0,0.5)]"
-						variants={textVariants}
-						transition={{ duration: 0.8, ease: 'easeOut' }}
+					<motion.div
+						className="text-center max-w-4xl mx-auto px-4"
+						variants={heroVariants}
+						initial="hidden"
+						animate="visible"
+						style={{ y: textY, opacity: textOpacity }}
 					>
-						Capturing <span className="block text-blue-400">The Moment</span>
-					</motion.h1>
+						<motion.h1
+							className="text-2xl sm:text-5xl md:text-7xl font-bold mb-4 sm:mb-6 leading-tight [text-shadow:0_2px_20px_rgba(0,0,0,0.8),0_4px_40px_rgba(0,0,0,0.5)]"
+							variants={textVariants}
+							transition={{ duration: 0.8, ease: 'easeOut' }}
+						>
+							Capturing <span className="block text-blue-400">The Moment</span>
+						</motion.h1>
+					</motion.div>
 				</motion.div>
 
 				<div
