@@ -296,7 +296,9 @@ export const Gallery: React.FC = () => {
 				</>
 			)}
 
-			<main className={`p-4 sm:p-6 bg-gray-900${urlCollection ? ' relative z-20' : ''}`}>
+			<main
+				className={`p-4 sm:p-6 bg-[linear-gradient(to_bottom,#111827_0%,#08110f_15%,#0d1c1a_30%,#102622_50%,#13302a_70%,#163a32_80%,#0d1c1a_90%,#111827_100%)]${urlCollection ? ' relative z-20' : ''}`}
+			>
 				{urlCollection && (
 					<div className="mb-4">
 						<motion.button

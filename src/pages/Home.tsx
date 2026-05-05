@@ -333,7 +333,7 @@ export const Home: React.FC = () => {
 
 			<motion.section
 				id="photo-section"
-				className="py-16 bg-gray-900"
+				className="py-16 bg-[linear-gradient(to_bottom,#111827_0%,#05080f_15%,#070d1c_30%,#0a1226_50%,#0c1830_70%,#0f1d3c_80%,#070d1c_90%,#111827_100%)]"
 				initial={{ opacity: 0 }}
 				whileInView={{ opacity: 1 }}
 				transition={{ duration: 0.8 }}
