@@ -95,8 +95,15 @@ export const Gallery: React.FC = () => {
 
 	const coverPhoto = useMemo(() => {
 		if (!urlCollection || photos.length === 0) return null;
-		const landscapePhotos = photos.filter((p) => p.tags.aspectRatio === '3:2');
-		const pool = landscapePhotos.length > 0 ? landscapePhotos : photos;
+		const orient = (p: Photo, want: 'portrait' | 'landscape') => {
+			const ar = p.tags.aspectRatio;
+			if (!ar) return false;
+			const [w, h] = ar.split(':').map(Number);
+			return want === 'portrait' ? h > w : w > h;
+		};
+		const landscapes = photos.filter((p) => orient(p, 'landscape'));
+		const pool = landscapes.length > 0 ? landscapes : photos.filter((p) => orient(p, 'portrait'));
+		if (pool.length === 0) return null;
 		return pool[Math.floor(Math.random() * pool.length)];
 	}, [urlCollection, photos]);
 
@@ -272,7 +279,7 @@ export const Gallery: React.FC = () => {
 							<img
 								src={coverPhotoUrl}
 								alt={`${urlCollection} collection`}
-								className="absolute inset-0 w-full h-full object-cover object-middle"
+								className="absolute inset-0 w-full h-full object-cover"
 							/>
 						</motion.div>
 					)}
