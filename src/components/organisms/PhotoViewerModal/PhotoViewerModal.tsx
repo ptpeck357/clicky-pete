@@ -251,6 +251,15 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 						animate={{ opacity: 1, scale: 1 }}
 						exit={{ opacity: 0, scale: 0.8 }}
 						transition={{ duration: 0.4, ease: 'easeOut' }}
+						onPanEnd={(event, info) => {
+							if ((event as PointerEvent).pointerType !== 'touch') return;
+							const { offset, velocity } = info;
+							if (offset.x < -50 || velocity.x < -500) {
+								onNext?.();
+							} else if (offset.x > 50 || velocity.x > 500) {
+								onPrevious?.();
+							}
+						}}
 					>
 						{!imageLoaded && !imageError && (
 							<motion.div
