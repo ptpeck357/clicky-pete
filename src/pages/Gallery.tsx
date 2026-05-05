@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useMemo, useEffect, useRef, useCallback, useDeferredValue } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { useParams, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { PhotoGrid, PhotoViewerModal, CollectionsGrid } from '../components/organisms';
 import { usePhotos } from '../hooks/usePhotos';
@@ -78,16 +78,20 @@ export const Gallery: React.FC = () => {
 	const [categories, setCategories] = useState<string[]>([]);
 	const [categoriesLoading, setCategoriesLoading] = useState(false);
 	const [photosToShow, setPhotosToShow] = useState(15);
-	const [scrollY, setScrollY] = useState(0);
 
-	const finalFilter = { ...filter, ...localFilter };
-	const { photos, loading, error, refetch } = usePhotos(finalFilter);
+	const deferredCategory = useDeferredValue(localFilter.category);
+	const fetchFilter = useMemo<PhotoFilter>(
+		() => (deferredCategory ? { ...filter, category: deferredCategory } : filter),
+		[filter, deferredCategory],
+	);
+	const { photos, loading, error, refetch } = usePhotos(fetchFilter);
 
 	const shuffledPhotos = useMemo(() => shuffleArray(photos), [photos]);
 	const displayedPhotos = useMemo(() => shuffledPhotos.slice(0, photosToShow), [shuffledPhotos, photosToShow]);
 	const hasMorePhotos = photosToShow < shuffledPhotos.length;
 
-	const heroProgress = urlCollection ? Math.min(scrollY / 300, 1) : 0;
+	const { scrollY } = useScroll();
+	const heroParallaxY = useTransform(scrollY, [0, 700], [0, -200]);
 
 	const coverPhoto = useMemo(() => {
 		if (!urlCollection || photos.length === 0) return null;
@@ -113,13 +117,6 @@ export const Gallery: React.FC = () => {
 		setIsModalOpen(false);
 		setSelectedPhoto(null);
 	}, [location.pathname, location.search]);
-
-	useEffect(() => {
-		if (!urlCollection) return;
-		const handleScroll = () => setScrollY(window.scrollY);
-		window.addEventListener('scroll', handleScroll, { passive: true });
-		return () => window.removeEventListener('scroll', handleScroll);
-	}, [urlCollection]);
 
 	const handleLoadMore = useCallback(() => {
 		if (isLoadingMoreRef.current) return;
@@ -266,39 +263,32 @@ export const Gallery: React.FC = () => {
 	return (
 		<div className="min-h-screen bg-gray-900">
 			{urlCollection && (
-				<>
-					<div
-						className="fixed left-0 right-0 overflow-hidden bg-gray-900 h-[calc(40vh+4rem)] sm:h-[calc(65vh+4rem)]"
-						style={{ top: 0, zIndex: 10 }}
-					>
-						{coverPhotoUrl && (
+				<div className="relative -mt-16 overflow-hidden bg-gray-900 h-[calc(40vh+4rem)] sm:h-[calc(65vh+4rem)]">
+					{coverPhotoUrl && (
+						<motion.div
+							className="absolute inset-x-0 -top-[150px] -bottom-[150px]"
+							style={{ y: heroParallaxY }}
+						>
 							<img
 								src={coverPhotoUrl}
 								alt={`${urlCollection} collection`}
 								className="absolute inset-0 w-full h-full object-cover object-middle"
-								style={{ transform: `scale(${1 + heroProgress * 0.1})` }}
 							/>
-						)}
-						<div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/35 to-gray-900/15" />
-						<div
-							className="absolute bottom-0 left-0 right-0 p-6 sm:p-8"
-							style={{ opacity: Math.max(1 - heroProgress * 2, 0) }}
-						>
-							<h1 className="text-3xl sm:text-5xl font-bold text-white mb-2 drop-shadow-lg">
-								{urlCollection}
-							</h1>
-							<p className="text-gray-300 text-sm sm:text-lg drop-shadow">
-								{loading ? 'Loading...' : `${photos.length} photos`}
-							</p>
-						</div>
+						</motion.div>
+					)}
+					<div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/35 to-gray-900/15" />
+					<div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
+						<h1 className="text-3xl sm:text-5xl font-bold text-white mb-2 drop-shadow-lg">
+							{urlCollection}
+						</h1>
+						<p className="text-gray-300 text-sm sm:text-lg drop-shadow">
+							{loading ? 'Loading...' : `${photos.length} photos`}
+						</p>
 					</div>
-					<div className="h-[40vh] sm:h-[65vh]" />
-				</>
+				</div>
 			)}
 
-			<main
-				className={`p-4 sm:p-6 bg-[linear-gradient(to_bottom,#111827_0%,#08110f_15%,#0d1c1a_30%,#102622_50%,#13302a_70%,#163a32_80%,#0d1c1a_90%,#111827_100%)]${urlCollection ? ' relative z-20' : ''}`}
-			>
+			<main className="p-4 sm:p-6 bg-[linear-gradient(to_bottom,#111827_0%,#040711_15%,#060e1c_30%,#08142a_50%,#0a1a38_70%,#0d2244_80%,#060e1c_90%,#111827_100%)]">
 				{urlCollection && (
 					<div className="mb-4">
 						<motion.button
