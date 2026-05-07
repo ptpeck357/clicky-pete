@@ -1,8 +1,6 @@
 # Photography Portfolio
 
-I created this website to host my photos with the help of AI. Hope you enjoy!
-
-## 🚀 Features
+## Features
 
 - **Photo Gallery**: View and organize photos with dynamic categories
 - **Dynamic Filtering**: Filter photos by category, location, and collection
@@ -16,7 +14,7 @@ I created this website to host my photos with the help of AI. Hope you enjoy!
 - **Infinite Scroll**: Photos load progressively as you scroll down the page
 - **Progressive Loading**: Optimized image loading with srcSet and lazy loading
 
-## 🛠 Tech Stack
+## Tech Stack
 
 ### Frontend
 - **React 19** with TypeScript
@@ -71,7 +69,7 @@ photography-portfolio/
 - `hero`: Use as hero/banner image
 - `collectionCover`: Use as the cover photo for this collection
 
-## 📸 Usage
+## Usage
 
 ### Browsing Photos
 
@@ -97,6 +95,6 @@ The project includes:
 - **Commitlint** for conventional commits
 
 
-## 📝 License
+## License
 
 This project is licensed under the MIT License.
