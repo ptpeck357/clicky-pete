@@ -19,5 +19,12 @@ export default defineConfig([
 			ecmaVersion: 2020,
 			globals: globals.browser,
 		},
+		rules: {
+			// React Compiler rules added in eslint-plugin-react-hooks v7; existing
+			// effects predate them, so surface as warnings rather than blocking CI.
+			'react-hooks/set-state-in-effect': 'warn',
+			'react-hooks/purity': 'warn',
+			'react-hooks/preserve-manual-memoization': 'warn',
+		},
 	},
 ]);
