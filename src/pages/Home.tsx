@@ -140,7 +140,7 @@ export const Home: React.FC = () => {
 
 	const getHeroImageUrl = (photo: Photo, cloudFrontUrl: string) => {
 		const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1920;
-		let size = '2000';
+		let size: string;
 
 		if (viewportWidth <= 640) {
 			size = '800';
