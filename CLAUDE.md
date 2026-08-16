@@ -27,8 +27,15 @@ Each photo exists as three WebP renditions at `photos/{400,800,2000}/<file>`.
 
 Rules that are easy to break:
 
-- **ids follow one convention across every entry**: filename without extension, lowercased,
-  underscores to hyphens (`PSX_20170228_194849.webp` → `psx-20170228-194849`).
+- **`id` is lowercased, `file` keeps the camera's casing.** Every entry pairs them that way:
+  `img-8553` with `IMG_8553.webp`, `psx-20170228-194849` with `PSX_20170228_194849.webp`. The
+  id drops the extension, lowercases, and turns underscores into hyphens; the filename only
+  swaps its extension. Deriving both from the same slug is a mistake that has already been
+  made once, and it leaves the bucket with mixed-case keys.
+- **Only 3:2, 4:5 and 4:3 are accepted on upload.** Anything else means the Lightroom export
+  used the wrong crop, and the upload is refused with 422 unless `x-allow-any-ratio` is set.
+  The list lives in `vite-plugin-admin.ts` and is served to the client via `GET /photos`, so
+  it stays in one place.
 - **`photos.json` must be written as `JSON.stringify(data, null, 2)` plus a trailing
   newline.** It is in `.prettierignore` (the repo sets `useTabs: true`, which would otherwise
   reformat a generated file), so nothing enforces this but the diff. Any other format churns
@@ -36,7 +43,12 @@ Rules that are easy to break:
 - **`aspectRatio` is derived from the image, never typed.** It is not an editable field
   anywhere in the admin, and `/__admin/update` refuses to change it.
 - **Never delete an S3 object that the live `photos.json` still references.** The site breaks
-  immediately, regardless of what the repo copy says. Publish first, then delete.
+  immediately, regardless of what the repo copy says. Publish first, then delete — which is
+  what the admin's "Remove and delete files" does, and why it refuses to delete when the
+  publish hits the ETag lock.
+- **Uploading refuses to overwrite.** A filename already in `photos.json` returns 409, and so
+  does one whose objects exist in the bucket without an entry — removing an entry leaves its
+  files behind, so that state is normal and silently overwriting them would lose a photo.
 
 ## The admin (`/admin`)
 
