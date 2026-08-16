@@ -32,6 +32,7 @@
 - **AWS Route 53** for DNS management
 - **AWS SES** for handling contact form emails via a Lambda function (`lambda/contact-form`)
 - **Responsive Images** with srcSet served through CloudFront
+- **Security headers** — CSP, HSTS, nosniff and a referrer policy, served by Amplify from `customHttp.yml`
 
 ## Getting Started
 
