@@ -14,7 +14,46 @@ interface Pending {
 	tags: EditableTags;
 	status: PendingStatus;
 	message?: string;
+	ratio?: string;
+	/** Set when the crop is not one of the expected ratios and upload was allowed anyway. */
+	allowAnyRatio?: boolean;
 }
+
+const EXPECTED_RATIOS = ['3:2', '4:5'];
+
+const COMMON_RATIOS: [number, number][] = [
+	[3, 2],
+	[2, 3],
+	[4, 5],
+	[5, 4],
+	[4, 3],
+	[3, 4],
+	[16, 9],
+	[9, 16],
+	[1, 1],
+];
+
+/** Mirrors the server's calculation so a bad crop is caught on drop, before any upload. */
+const ratioOf = (width: number, height: number): string => {
+	const actual = width / height;
+	for (const [w, h] of COMMON_RATIOS) {
+		if (Math.abs(actual - w / h) / (w / h) < 0.01) return `${w}:${h}`;
+	}
+	const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
+	const d = gcd(width, height);
+	return `${width / d}:${height / d}`;
+};
+
+const measure = async (file: File): Promise<string | undefined> => {
+	try {
+		const bitmap = await createImageBitmap(file);
+		const ratio = ratioOf(bitmap.width, bitmap.height);
+		bitmap.close();
+		return ratio;
+	} catch {
+		return undefined;
+	}
+};
 
 const EMPTY_TAGS: EditableTags = { category: '', location: '', collection: '' };
 const EMPTY_VALUES: TagValues = { categories: [], locations: [], collections: [] };
@@ -76,18 +115,24 @@ export const AdminPage: React.FC = () => {
 	const addFiles = useCallback(
 		(files: File[]) => {
 			const images = files.filter(isImage);
-			setPending((current) => [
-				...current,
-				...images.map((file, index) => ({
-					key: `${file.name}-${Date.now()}-${index}`,
-					file,
-					preview: URL.createObjectURL(file),
-					// Start from the batch defaults so anything already typed above carries
-					// down, rather than leaving a second empty form to fill in again.
-					tags: { ...bulk },
-					status: 'ready' as PendingStatus,
-				})),
-			]);
+			const added = images.map((file, index) => ({
+				key: `${file.name}-${Date.now()}-${index}`,
+				file,
+				preview: URL.createObjectURL(file),
+				// Start from the batch defaults so anything already typed above carries
+				// down, rather than leaving a second empty form to fill in again.
+				tags: { ...bulk },
+				status: 'ready' as PendingStatus,
+			}));
+			setPending((current) => [...current, ...added]);
+
+			// Measure in the background; a wrong crop should be visible before uploading.
+			for (const item of added) {
+				void measure(item.file).then((ratio) =>
+					setPending((current) => current.map((p) => (p.key === item.key ? { ...p, ratio } : p))),
+				);
+			}
+
 			if (images.length < files.length) {
 				setNotice(`Skipped ${files.length - images.length} non-image file(s).`);
 			}
@@ -139,7 +184,7 @@ export const AdminPage: React.FC = () => {
 			}
 			setPending((current) => current.map((p) => (p.key === item.key ? { ...p, status: 'uploading' } : p)));
 			try {
-				const { entry } = await adminService.uploadPhoto(item.file, item.tags);
+				const { entry } = await adminService.uploadPhoto(item.file, item.tags, item.allowAnyRatio === true);
 				setPending((current) =>
 					current.map((p) =>
 						p.key === item.key
@@ -329,6 +374,42 @@ export const AdminPage: React.FC = () => {
 															{item.message}
 														</p>
 													)}
+													{item.ratio &&
+														!EXPECTED_RATIOS.includes(item.ratio) &&
+														item.status !== 'done' && (
+															<div className="mt-2 flex flex-wrap items-center gap-3 rounded-md border border-amber-700 bg-amber-950/40 px-3 py-2">
+																<span className="text-xs text-amber-300">
+																	Crop is <strong>{item.ratio}</strong> — expected{' '}
+																	{EXPECTED_RATIOS.join(' or ')}. Re-export from
+																	Lightroom, or upload as is.
+																</span>
+																<button
+																	type="button"
+																	onClick={() =>
+																		setPending((current) =>
+																			current.map((p) =>
+																				p.key === item.key
+																					? {
+																							...p,
+																							allowAnyRatio:
+																								!p.allowAnyRatio,
+																						}
+																					: p,
+																			),
+																		)
+																	}
+																	className={`rounded-md border px-3 py-1 text-xs ${
+																		item.allowAnyRatio
+																			? 'border-amber-500 bg-amber-900 text-amber-100'
+																			: 'border-amber-700 text-amber-300 hover:bg-amber-900/60'
+																	}`}
+																>
+																	{item.allowAnyRatio
+																		? 'Will upload as is'
+																		: 'Upload as is'}
+																</button>
+															</div>
+														)}
 													{item.status !== 'done' && (
 														<div className="mt-3">
 															<PhotoForm

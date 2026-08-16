@@ -59,6 +59,13 @@ const aspectRatio = (width: number, height: number): string => {
 	return `${width / d}:${height / d}`;
 };
 
+/**
+ * Only these two are ever shot deliberately, so anything else means the Lightroom export
+ * used the wrong crop. Rejecting at upload is cheaper than noticing later and having to
+ * remove three objects and a manifest entry.
+ */
+const EXPECTED_RATIOS = ['3:2', '4:5'];
+
 const readConfig = (): AdminConfig => {
 	if (!existsSync(CONFIG_PATH)) {
 		throw new Error('admin.config.json not found — copy admin.config.example.json and fill it in.');
@@ -174,6 +181,16 @@ export function adminPlugin(): Plugin {
 						const { width, height } = await upright.metadata();
 						if (!width || !height) return send(res, 400, { error: 'could not read image dimensions' });
 
+						const ratio = aspectRatio(width, height);
+						if (!EXPECTED_RATIOS.includes(ratio) && req.headers['x-allow-any-ratio'] !== 'true') {
+							return send(res, 422, {
+								error: `${meta.filename} is ${ratio} (${width}×${height}). Expected ${EXPECTED_RATIOS.join(' or ')} — check the Lightroom export crop.`,
+								ratio,
+								width,
+								height,
+							});
+						}
+
 						for (const size of SIZES) {
 							const body = await sharp(source)
 								.rotate()
@@ -193,7 +210,7 @@ export function adminPlugin(): Plugin {
 						const entry: Photo = {
 							id,
 							file,
-							tags: { ...meta.tags, aspectRatio: aspectRatio(width, height) },
+							tags: { ...meta.tags, aspectRatio: ratio },
 						};
 						writeManifest([...manifest, entry]);
 						return send(res, 200, { entry, dimensions: { width, height } });

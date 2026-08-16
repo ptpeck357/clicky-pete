@@ -32,12 +32,19 @@ export const adminService = {
 		return request('/photos');
 	},
 
-	/** Uploads one image: resized to three sizes, stored, and appended to photos.json. */
-	async uploadPhoto(file: File, tags: EditableTags): Promise<{ entry: Photo }> {
+	/**
+	 * Uploads one image: resized to three sizes, stored, and appended to photos.json.
+	 * Rejected with 422 if the crop is not 3:2 or 4:5, unless allowAnyRatio is set.
+	 */
+	async uploadPhoto(file: File, tags: EditableTags, allowAnyRatio = false): Promise<{ entry: Photo }> {
 		const meta = btoa(JSON.stringify({ filename: file.name, tags }));
 		return request('/photo', {
 			method: 'POST',
-			headers: { 'x-photo-meta': meta, 'Content-Type': 'application/octet-stream' },
+			headers: {
+				'x-photo-meta': meta,
+				'Content-Type': 'application/octet-stream',
+				...(allowAnyRatio ? { 'x-allow-any-ratio': 'true' } : {}),
+			},
 			body: file,
 		});
 	},
