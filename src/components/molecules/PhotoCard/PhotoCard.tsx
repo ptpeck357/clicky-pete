@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import type { Photo } from '../../../types/photo';
+import { preloadViewerImage } from '../../../utils/imageOptimization';
 
 interface PhotoCardProps {
 	photo: Photo;
@@ -74,6 +75,10 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick, className 
 		<div
 			className={`bg-gray-800 rounded-lg overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer group hover:-translate-y-2 ${className}`}
 			onClick={onClick}
+			// Hovering or touching is intent to open. Starting the full-size fetch here buys
+			// the download a head start over the click, and costs nothing if it never comes.
+			onPointerEnter={() => preloadViewerImage(photo.file)}
+			onTouchStart={() => preloadViewerImage(photo.file)}
 		>
 			<div
 				className={`relative ${getAspectClass()} bg-gray-700 overflow-hidden`}
