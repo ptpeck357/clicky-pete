@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import type { Photo } from '../../types/photo';
 import { adminService } from '../../services/adminService';
 import type { EditableTags, TagValues } from '../../services/adminService';
-import { PhotoForm } from './PhotoForm';
+import { PhotoEditModal } from './PhotoEditModal';
 
 interface PhotoLibraryProps {
 	photos: Photo[];
@@ -14,15 +14,15 @@ interface PhotoLibraryProps {
 const CLOUDFRONT_URL = import.meta.env.VITE_CLOUDFRONT_URL || '';
 const PAGE_SIZE = 60;
 
-/** aspectRatio is deliberately dropped: it is derived from the image, not edited. */
-const toEditable = (photo: Photo): EditableTags => ({
-	category: photo.tags.category,
-	location: photo.tags.location,
-	collection: photo.tags.collection,
-	featured: photo.tags.featured,
-	hero: photo.tags.hero,
-	collectionCover: photo.tags.collectionCover,
-});
+/**
+ * Renders each thumbnail at its own ratio rather than cropping everything to 3:2.
+ * Inline rather than a Tailwind class because the value is data-driven, and Tailwind
+ * only generates classes it can find as literal strings in source.
+ */
+const cssAspect = (aspectRatio: string): string => {
+	const [w, h] = aspectRatio.split(':').map(Number);
+	return w > 0 && h > 0 ? `${w} / ${h}` : '3 / 2';
+};
 
 const FLAG_LABELS: [keyof EditableTags, string][] = [
 	['featured', 'Featured'],
@@ -32,8 +32,7 @@ const FLAG_LABELS: [keyof EditableTags, string][] = [
 
 export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onChanged, onError }) => {
 	const [query, setQuery] = useState('');
-	const [editingId, setEditingId] = useState<string | null>(null);
-	const [draft, setDraft] = useState<EditableTags | null>(null);
+	const [editingIndex, setEditingIndex] = useState<number | null>(null);
 	const [busy, setBusy] = useState(false);
 	const [limit, setLimit] = useState(PAGE_SIZE);
 
@@ -48,26 +47,6 @@ export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onCh
 		);
 	}, [photos, query]);
 
-	const startEdit = (photo: Photo) => {
-		setEditingId(photo.id);
-		setDraft(toEditable(photo));
-	};
-
-	const save = async (id: string) => {
-		if (!draft) return;
-		setBusy(true);
-		try {
-			await adminService.updateTags(id, draft);
-			setEditingId(null);
-			setDraft(null);
-			onChanged();
-		} catch (error) {
-			onError(error instanceof Error ? error.message : String(error));
-		} finally {
-			setBusy(false);
-		}
-	};
-
 	const remove = async (photo: Photo) => {
 		if (!window.confirm(`Remove ${photo.file} from photos.json? The image stays in storage.`)) return;
 		setBusy(true);
@@ -80,6 +59,9 @@ export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onCh
 			setBusy(false);
 		}
 	};
+
+	// Navigation moves through the filtered set, so arrow keys follow what is on screen.
+	const editing = editingIndex !== null ? matches[editingIndex] : undefined;
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -100,94 +82,69 @@ export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onCh
 				</span>
 			</div>
 
-			<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-				{matches.slice(0, limit).map((photo) => {
-					const editing = editingId === photo.id;
-					return (
-						<article
-							key={photo.id}
-							className={`overflow-hidden rounded-lg border bg-gray-900 ${
-								editing ? 'border-blue-600 sm:col-span-2 xl:col-span-3' : 'border-gray-700'
-							}`}
+			{/* items-start keeps a portrait card from stretching its landscape neighbours. */}
+			<div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-2 xl:grid-cols-3">
+				{matches.slice(0, limit).map((photo, index) => (
+					<article key={photo.id} className="overflow-hidden rounded-lg border border-gray-700 bg-gray-900">
+						<button
+							type="button"
+							onClick={() => setEditingIndex(index)}
+							className="block w-full cursor-zoom-in"
+							title="Open full screen to edit"
 						>
-							<div className={editing ? 'flex gap-4 p-3' : ''}>
-								<img
-									src={`${CLOUDFRONT_URL}/photos/400/${photo.file}`}
-									alt={photo.file}
-									loading="lazy"
-									className={
-										editing
-											? 'h-28 w-40 flex-shrink-0 rounded object-cover'
-											: 'aspect-[3/2] w-full object-cover'
-									}
-								/>
+							<img
+								src={`${CLOUDFRONT_URL}/photos/400/${photo.file}`}
+								alt={photo.file}
+								loading="lazy"
+								style={{ aspectRatio: cssAspect(photo.tags.aspectRatio) }}
+								className="w-full object-cover"
+							/>
+						</button>
 
-								<div className={editing ? 'min-w-0 flex-1' : 'p-3'}>
-									<div className="truncate font-mono text-xs text-gray-300">{photo.file}</div>
-									<div className="mt-1 text-sm text-gray-400">
-										{photo.tags.category} · {photo.tags.collection}
-									</div>
-									<div className="truncate text-sm text-gray-500">{photo.tags.location}</div>
+						<div className="p-3">
+							<div className="truncate font-mono text-xs text-gray-300">{photo.file}</div>
+							<div className="mt-1 text-sm text-gray-400">
+								{photo.tags.category} · {photo.tags.collection}
+							</div>
+							<div className="truncate text-sm text-gray-500">{photo.tags.location}</div>
 
-									<div className="mt-2 flex flex-wrap items-center gap-2">
-										<span className="rounded bg-gray-800 px-1.5 py-0.5 font-mono text-xs text-gray-400">
-											{photo.tags.aspectRatio}
+							<div className="mt-2 flex flex-wrap items-center gap-2">
+								<span className="rounded bg-gray-800 px-1.5 py-0.5 font-mono text-xs text-gray-400">
+									{photo.tags.aspectRatio}
+								</span>
+								{FLAG_LABELS.map(([key, label]) =>
+									photo.tags[key] === true ? (
+										<span
+											key={key}
+											className="rounded bg-blue-950 px-1.5 py-0.5 text-xs text-blue-300"
+										>
+											{label}
 										</span>
-										{FLAG_LABELS.map(([key, label]) =>
-											photo.tags[key] === true ? (
-												<span
-													key={key}
-													className="rounded bg-blue-950 px-1.5 py-0.5 text-xs text-blue-300"
-												>
-													{label}
-												</span>
-											) : null,
-										)}
-									</div>
-
-									<div className="mt-3 flex gap-2">
-										<button
-											type="button"
-											disabled={busy}
-											onClick={() => (editing ? setEditingId(null) : startEdit(photo))}
-											className="rounded-md border border-gray-600 px-3 py-1 text-sm text-gray-300 hover:bg-gray-800 disabled:opacity-50"
-										>
-											{editing ? 'Cancel' : 'Edit'}
-										</button>
-										<button
-											type="button"
-											disabled={busy}
-											onClick={() => void remove(photo)}
-											className="rounded-md border border-gray-700 px-3 py-1 text-sm text-gray-500 hover:border-red-800 hover:text-red-400 disabled:opacity-50"
-										>
-											Remove
-										</button>
-									</div>
-								</div>
+									) : null,
+								)}
 							</div>
 
-							{editing && draft && (
-								<div className="border-t border-gray-800 bg-gray-950/40 p-3">
-									<PhotoForm
-										tags={draft}
-										values={values}
-										onChange={setDraft}
-										idPrefix={`lib-${photo.id}`}
-										compact
-									/>
-									<button
-										type="button"
-										disabled={busy}
-										onClick={() => void save(photo.id)}
-										className="mt-3 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
-									>
-										Save changes
-									</button>
-								</div>
-							)}
-						</article>
-					);
-				})}
+							<div className="mt-3 flex gap-2">
+								<button
+									type="button"
+									disabled={busy}
+									onClick={() => setEditingIndex(index)}
+									className="rounded-md border border-gray-600 px-3 py-1 text-sm text-gray-300 hover:bg-gray-800 disabled:opacity-50"
+								>
+									Edit
+								</button>
+								<button
+									type="button"
+									disabled={busy}
+									onClick={() => void remove(photo)}
+									className="rounded-md border border-gray-700 px-3 py-1 text-sm text-gray-500 hover:border-red-800 hover:text-red-400 disabled:opacity-50"
+								>
+									Remove
+								</button>
+							</div>
+						</div>
+					</article>
+				))}
 			</div>
 
 			{matches.length > limit && (
@@ -198,6 +155,25 @@ export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onCh
 				>
 					Show {Math.min(PAGE_SIZE, matches.length - limit)} more
 				</button>
+			)}
+
+			{editing && editingIndex !== null && (
+				<PhotoEditModal
+					photo={editing}
+					values={values}
+					onClose={() => setEditingIndex(null)}
+					onSaved={() => {
+						setEditingIndex(null);
+						onChanged();
+					}}
+					onError={onError}
+					onPrevious={editingIndex > 0 ? () => setEditingIndex(editingIndex - 1) : undefined}
+					onNext={
+						editingIndex < Math.min(limit, matches.length) - 1
+							? () => setEditingIndex(editingIndex + 1)
+							: undefined
+					}
+				/>
 			)}
 		</div>
 	);
