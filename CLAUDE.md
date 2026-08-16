@@ -50,6 +50,23 @@ Rules that are easy to break:
   does one whose objects exist in the bucket without an entry — removing an entry leaves its
   files behind, so that state is normal and silently overwriting them would lose a photo.
 
+### Verify before committing a `photos.json` change
+
+The commit is a record of what is live, so check it against reality first rather than trusting
+the file. For every entry added or changed:
+
+```bash
+# all three renditions exist for each new file
+aws s3 ls s3://clicky-pete-photography/ --recursive --profile clicky-pete | grep "/IMG_0009.webp$"
+
+# the live copy matches the repo copy
+curl -s https://photos.clickypete.photography/data/photos.json | node -e "..."
+```
+
+Entry counts should agree: repo, live, and objects per size prefix. A mismatch means either
+an upload half-finished or the manifest was never published — both worth knowing before the
+change is recorded as done.
+
 ## The admin (`/admin`)
 
 A dev-only tool for adding and retagging photos: resize to three sizes, upload, update
