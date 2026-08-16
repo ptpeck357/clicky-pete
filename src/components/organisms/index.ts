@@ -1,7 +1,9 @@
 export { PhotoGrid } from './PhotoGrid';
+export { CategoryFilter } from './CategoryFilter';
 export { Navigation } from './Navigation';
 export { Header } from './Header';
 export { Footer } from './Footer';
 export { PhotoViewerModal } from './PhotoViewerModal';
 export { CollectionCard } from './CollectionCard';
 export { CollectionsGrid } from './CollectionsGrid';
+export { ContactModal } from './ContactModal';
