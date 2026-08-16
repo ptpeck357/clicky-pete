@@ -28,7 +28,7 @@ const request = async <T>(path: string, init?: RequestInit): Promise<T> => {
 };
 
 export const adminService = {
-	async getPhotos(): Promise<{ photos: Photo[]; values: TagValues }> {
+	async getPhotos(): Promise<{ photos: Photo[]; values: TagValues; expectedRatios: string[] }> {
 		return request('/photos');
 	},
 

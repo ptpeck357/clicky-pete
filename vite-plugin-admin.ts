@@ -60,11 +60,15 @@ const aspectRatio = (width: number, height: number): string => {
 };
 
 /**
- * Only these two are ever shot deliberately, so anything else means the Lightroom export
- * used the wrong crop. Rejecting at upload is cheaper than noticing later and having to
- * remove three objects and a manifest entry.
+ * The crops that are shot deliberately: 3:2 landscape, 4:5 portrait, and 4:3 for horizontal
+ * shots of people, where 3:2 is wide enough to leave dead space. Anything else means the
+ * Lightroom export used the wrong crop. Rejecting at upload is cheaper than noticing later
+ * and having to remove three objects and a manifest entry.
+ *
+ * Served to the client via GET /photos so the pre-upload warning cannot drift from what the
+ * server actually enforces.
  */
-const EXPECTED_RATIOS = ['3:2', '4:5'];
+const EXPECTED_RATIOS = ['3:2', '4:5', '4:3'];
 
 const readConfig = (): AdminConfig => {
 	if (!existsSync(CONFIG_PATH)) {
@@ -152,6 +156,7 @@ export function adminPlugin(): Plugin {
 							[...new Set(photos.map((p) => p.tags[key]).filter(Boolean))].sort();
 						return send(res, 200, {
 							photos,
+							expectedRatios: EXPECTED_RATIOS,
 							values: {
 								categories: distinct('category'),
 								locations: distinct('location'),

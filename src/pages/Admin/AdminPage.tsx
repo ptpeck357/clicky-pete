@@ -19,8 +19,6 @@ interface Pending {
 	allowAnyRatio?: boolean;
 }
 
-const EXPECTED_RATIOS = ['3:2', '4:5'];
-
 const COMMON_RATIOS: [number, number][] = [
 	[3, 2],
 	[2, 3],
@@ -97,12 +95,15 @@ export const AdminPage: React.FC = () => {
 	const [dirty, setDirty] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [notice, setNotice] = useState<string | null>(null);
+	// Supplied by the server so the warning here cannot drift from what upload enforces.
+	const [expectedRatios, setExpectedRatios] = useState<string[]>([]);
 
 	const load = useCallback(async () => {
 		try {
 			const data = await adminService.getPhotos();
 			setPhotos(data.photos);
 			setValues(data.values);
+			setExpectedRatios(data.expectedRatios);
 		} catch (err) {
 			setError(err instanceof Error ? err.message : String(err));
 		}
@@ -375,12 +376,13 @@ export const AdminPage: React.FC = () => {
 														</p>
 													)}
 													{item.ratio &&
-														!EXPECTED_RATIOS.includes(item.ratio) &&
+														expectedRatios.length > 0 &&
+														!expectedRatios.includes(item.ratio) &&
 														item.status !== 'done' && (
 															<div className="mt-2 flex flex-wrap items-center gap-3 rounded-md border border-amber-700 bg-amber-950/40 px-3 py-2">
 																<span className="text-xs text-amber-300">
 																	Crop is <strong>{item.ratio}</strong> — expected{' '}
-																	{EXPECTED_RATIOS.join(' or ')}. Re-export from
+																	{expectedRatios.join(' or ')}. Re-export from
 																	Lightroom, or upload as is.
 																</span>
 																<button
