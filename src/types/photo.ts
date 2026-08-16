@@ -5,9 +5,9 @@ export interface Photo {
 		category: string;
 		location: string;
 		collection: string;
-		featured: boolean;
-		hero: boolean;
 		aspectRatio: string;
+		featured?: boolean;
+		hero?: boolean;
 		collectionCover?: boolean;
 	};
 }
