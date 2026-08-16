@@ -97,6 +97,22 @@ not silently overwritten. If you legitimately need to force a publish, update th
 
 The IAM user is scoped to this one bucket plus `cloudfront:CreateInvalidation`.
 
+## Contact form and headers
+
+`customHttp.yml` sets a Content-Security-Policy listing every external host the app may
+reach: CloudFront for photos, the API Gateway contact endpoint, and Google Analytics.
+**Adding a new external host means adding it there too** — otherwise the request is blocked
+in production only, with nothing failing locally to warn you. `style-src` keeps
+`'unsafe-inline'` because Framer Motion animates through inline style attributes.
+
+The contact form carries a honeypot: a `website` field positioned off-screen. The handler
+answers 200 without sending when it is filled, so a bot learns nothing from the response. The
+field name has to match on both sides — `Contact.tsx` and `lambda/contact-form/index.mjs` —
+and neither validates that it does.
+
+`lambda/contact-form` is not deployed by Amplify. Changes to it need deploying separately, so
+a commit touching the Lambda is not live until that happens.
+
 ## Conventions
 
 Tabs, single quotes, 120 columns, semicolons — enforced by Prettier on commit via Husky and
