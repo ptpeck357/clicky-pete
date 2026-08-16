@@ -73,22 +73,27 @@ export const AdminPage: React.FC = () => {
 		void load();
 	}, [load]);
 
-	const addFiles = useCallback((files: File[]) => {
-		const images = files.filter(isImage);
-		setPending((current) => [
-			...current,
-			...images.map((file, index) => ({
-				key: `${file.name}-${Date.now()}-${index}`,
-				file,
-				preview: URL.createObjectURL(file),
-				tags: { ...EMPTY_TAGS },
-				status: 'ready' as PendingStatus,
-			})),
-		]);
-		if (images.length < files.length) {
-			setNotice(`Skipped ${files.length - images.length} non-image file(s).`);
-		}
-	}, []);
+	const addFiles = useCallback(
+		(files: File[]) => {
+			const images = files.filter(isImage);
+			setPending((current) => [
+				...current,
+				...images.map((file, index) => ({
+					key: `${file.name}-${Date.now()}-${index}`,
+					file,
+					preview: URL.createObjectURL(file),
+					// Start from the batch defaults so anything already typed above carries
+					// down, rather than leaving a second empty form to fill in again.
+					tags: { ...bulk },
+					status: 'ready' as PendingStatus,
+				})),
+			]);
+			if (images.length < files.length) {
+				setNotice(`Skipped ${files.length - images.length} non-image file(s).`);
+			}
+		},
+		[bulk],
+	);
 
 	const onDrop = useCallback(
 		(event: React.DragEvent) => {
@@ -264,19 +269,31 @@ export const AdminPage: React.FC = () => {
 
 						{pending.length > 0 && (
 							<>
-								<section className="rounded-lg border border-gray-700 bg-gray-900 p-4">
-									<h2 className="mb-3 text-sm font-medium text-gray-300">
-										Apply to all {readyCount} pending
-									</h2>
-									<PhotoForm tags={bulk} values={values} onChange={setBulk} idPrefix="bulk" compact />
-									<button
-										type="button"
-										onClick={applyBulk}
-										className="mt-3 rounded-md border border-gray-600 px-4 py-2 text-sm text-gray-200 hover:bg-gray-800"
-									>
-										Apply to all
-									</button>
-								</section>
+								{/* Only worth showing for an actual batch — with one photo it is just a
+								    duplicate of the form below it. */}
+								{readyCount > 1 && (
+									<section className="rounded-lg border border-gray-700 bg-gray-900 p-4">
+										<h2 className="text-sm font-medium text-gray-300">Batch defaults</h2>
+										<p className="mb-3 text-xs text-gray-500">
+											Applied to photos you add from now on. Use the button to overwrite the{' '}
+											{readyCount} already listed below.
+										</p>
+										<PhotoForm
+											tags={bulk}
+											values={values}
+											onChange={setBulk}
+											idPrefix="bulk"
+											compact
+										/>
+										<button
+											type="button"
+											onClick={applyBulk}
+											className="mt-3 rounded-md border border-gray-600 px-4 py-2 text-sm text-gray-200 hover:bg-gray-800"
+										>
+											Overwrite all {readyCount}
+										</button>
+									</section>
+								)}
 
 								<div className="flex flex-col gap-3">
 									{pending.map((item) => (
