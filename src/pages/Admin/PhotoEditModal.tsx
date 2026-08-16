@@ -146,7 +146,7 @@ export const PhotoEditModal: React.FC<PhotoEditModalProps> = ({
 					</button>
 				</div>
 
-				<PhotoForm tags={draft} values={values} onChange={setDraft} idPrefix={`modal-${photo.id}`} />
+				<PhotoForm tags={draft} values={values} onChange={setDraft} />
 
 				<div className="flex gap-2">
 					<button

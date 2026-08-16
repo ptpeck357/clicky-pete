@@ -278,13 +278,7 @@ export const AdminPage: React.FC = () => {
 											Applied to photos you add from now on. Use the button to overwrite the{' '}
 											{readyCount} already listed below.
 										</p>
-										<PhotoForm
-											tags={bulk}
-											values={values}
-											onChange={setBulk}
-											idPrefix="bulk"
-											compact
-										/>
+										<PhotoForm tags={bulk} values={values} onChange={setBulk} compact />
 										<button
 											type="button"
 											onClick={applyBulk}
@@ -340,7 +334,6 @@ export const AdminPage: React.FC = () => {
 															<PhotoForm
 																tags={item.tags}
 																values={values}
-																idPrefix={item.key}
 																compact
 																onChange={(tags) =>
 																	setPending((current) =>
