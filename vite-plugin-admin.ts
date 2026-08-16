@@ -96,6 +96,18 @@ const readBody = (req: IncomingMessage): Promise<Buffer> =>
 		req.on('error', rej);
 	});
 
+/** HeadObject throws rather than returning a flag when the key is absent. */
+const objectExists = async (s3: S3Client, bucket: string, key: string): Promise<boolean> => {
+	try {
+		await s3.send(new HeadObjectCommand({ Bucket: bucket, Key: key }));
+		return true;
+	} catch (error) {
+		const status = (error as { $metadata?: { httpStatusCode?: number } }).$metadata?.httpStatusCode;
+		if (status === 404) return false;
+		throw error;
+	}
+};
+
 const send = (res: ServerResponse, status: number, body: unknown) => {
 	res.statusCode = status;
 	res.setHeader('Content-Type', 'application/json');
@@ -178,6 +190,17 @@ export function adminPlugin(): Plugin {
 						const manifest = readManifest();
 						if (manifest.some((p) => p.file === file || p.id === id)) {
 							return send(res, 409, { error: `${file} already exists in photos.json` });
+						}
+
+						// The manifest check alone would miss an object that exists in storage but was
+						// never listed — /delete leaves files behind by design — and uploading would
+						// then overwrite a different photo without a word.
+						const existing = await objectExists(s3, config.bucket, `photos/2000/${file}`);
+						if (existing) {
+							return send(res, 409, {
+								error: `photos/2000/${file} already exists in storage but is not in photos.json. Rename the file, or delete the stored copy first.`,
+								orphan: true,
+							});
 						}
 
 						// rotate() applies EXIF orientation, then metadata is dropped by default —
