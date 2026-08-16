@@ -5694,5 +5694,15 @@
       "collection": "Arizona",
       "aspectRatio": "3:2"
     }
+  },
+  {
+    "id": "img-0078",
+    "file": "IMG_0078.webp",
+    "tags": {
+      "category": "Portrait",
+      "location": "Big Sky, MT",
+      "collection": "Engagements",
+      "aspectRatio": "4:3"
+    }
   }
 ]
