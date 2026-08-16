@@ -5704,5 +5704,115 @@
       "collection": "Engagements",
       "aspectRatio": "4:3"
     }
+  },
+  {
+    "id": "img-0009",
+    "file": "IMG_0009.webp",
+    "tags": {
+      "category": "Portrait",
+      "location": "Big Sky, MT",
+      "collection": "Engagements",
+      "aspectRatio": "4:5"
+    }
+  },
+  {
+    "id": "img-0011",
+    "file": "IMG_0011.webp",
+    "tags": {
+      "category": "Portrait",
+      "location": "Big Sky, MT",
+      "collection": "Engagements",
+      "aspectRatio": "4:5"
+    }
+  },
+  {
+    "id": "img-9954",
+    "file": "IMG_9954.webp",
+    "tags": {
+      "category": "Landscape",
+      "location": "Grassy Mountain, MT",
+      "collection": "Montana",
+      "aspectRatio": "4:3"
+    }
+  },
+  {
+    "id": "img-9953",
+    "file": "IMG_9953.webp",
+    "tags": {
+      "category": "Landscape",
+      "location": "Grassy Mountain, MT",
+      "collection": "Montana",
+      "aspectRatio": "4:3"
+    }
+  },
+  {
+    "id": "dji-0572",
+    "file": "DJI_0572.webp",
+    "tags": {
+      "category": "Aerial",
+      "location": "Grassy Mountain, MT",
+      "collection": "Montana",
+      "aspectRatio": "4:3"
+    }
+  },
+  {
+    "id": "img-9296",
+    "file": "IMG_9296.webp",
+    "tags": {
+      "category": "Landscape",
+      "location": "Lava Lake, MT",
+      "collection": "Montana",
+      "aspectRatio": "3:2"
+    }
+  },
+  {
+    "id": "img-9301",
+    "file": "IMG_9301.webp",
+    "tags": {
+      "category": "Landscape",
+      "location": "Lava Lake, MT",
+      "collection": "Montana",
+      "aspectRatio": "3:2"
+    }
+  },
+  {
+    "id": "dji-0594",
+    "file": "DJI_0594.webp",
+    "tags": {
+      "category": "Aerial",
+      "location": "Hyalite Reservoir, MT",
+      "collection": "Montana",
+      "aspectRatio": "3:2"
+    }
+  },
+  {
+    "id": "dji-0593",
+    "file": "DJI_0593.webp",
+    "tags": {
+      "category": "Aerial",
+      "location": "Hyalite Reservoir, MT",
+      "collection": "Montana",
+      "aspectRatio": "3:2"
+    }
+  },
+  {
+    "id": "dji-0555",
+    "file": "DJI_0555.webp",
+    "tags": {
+      "category": "Aerial",
+      "location": "Hyalite Reservoir, MT",
+      "collection": "Montana",
+      "aspectRatio": "3:2"
+    }
+  },
+  {
+    "id": "dji-0561",
+    "file": "DJI_0561.webp",
+    "tags": {
+      "category": "Aerial",
+      "location": "Hyalite Reservoir, MT",
+      "collection": "Montana",
+      "aspectRatio": "3:2"
+    }
   }
 ]
