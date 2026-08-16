@@ -14,7 +14,8 @@
     "pre-commit": "lint-staged",
     "prepare": "husky",
     "preview": "vite preview",
-    "ci": "npm run lint:eslint && npm run lint:prettier && npm run build"
+    "verify:no-admin": "! grep -rqE 'AdminPage|__admin|adminService' dist",
+    "ci": "npm run lint:eslint && npm run lint:prettier && npm run build && npm run verify:no-admin"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

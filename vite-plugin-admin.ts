@@ -216,6 +216,23 @@ export function adminPlugin(): Plugin {
 						return send(res, 200, { published: true, entries: readManifest().length, etag: put.ETag });
 					}
 
+					// Retag an existing photo. aspectRatio is not editable: it is derived from the
+					// image, and a hand-typed value is how layout bugs get in.
+					if (req.method === 'POST' && url === '/update') {
+						const { id, tags } = JSON.parse((await readBody(req)).toString('utf8')) as {
+							id: string;
+							tags: Omit<Photo['tags'], 'aspectRatio'>;
+						};
+						const manifest = readManifest();
+						const target = manifest.find((p) => p.id === id);
+						if (!target) return send(res, 404, { error: `no entry ${id}` });
+						const updated = manifest.map((p) =>
+							p.id === id ? { ...p, tags: { ...tags, aspectRatio: p.tags.aspectRatio } } : p,
+						);
+						writeManifest(updated);
+						return send(res, 200, { entry: updated.find((p) => p.id === id) });
+					}
+
 					// Removes the entry only. S3 objects are left alone deliberately: deleting an
 					// object still referenced by the live photos.json breaks the site immediately.
 					if (req.method === 'POST' && url === '/delete') {
