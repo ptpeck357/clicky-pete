@@ -71,8 +71,13 @@ The IAM user is scoped to this one bucket plus `cloudfront:CreateInvalidation`.
 ## Conventions
 
 Tabs, single quotes, 120 columns, semicolons — enforced by Prettier on commit via Husky and
-lint-staged. Conventional Commits, checked by commitlint. Components are organised
-atoms/molecules/organisms/templates and use Tailwind utilities, not CSS modules.
+lint-staged. Components are organised atoms/molecules/organisms/templates and use Tailwind
+utilities, not CSS modules.
+
+Commits follow Conventional Commits, checked by commitlint, and are grouped by what the
+changes have in common — several small commits rather than one covering ten unrelated files.
+Stage explicit paths rather than `git add -A`, so an unrelated edit sitting in the working
+tree does not end up inside a feature commit.
 
 Gallery order is shuffled on every load (`Gallery.tsx`), so array order in `photos.json`
 carries no meaning.
