@@ -167,7 +167,7 @@ export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onCh
 										type="button"
 										disabled={busy}
 										onClick={() => setEditingIndex(index)}
-										className="rounded-md border border-gray-600 px-3 py-1 text-sm text-gray-300 hover:bg-gray-800 disabled:opacity-50"
+										className="rounded-md border border-blue-700 px-3 py-1 text-sm text-blue-300 hover:bg-blue-950 hover:text-blue-200 disabled:opacity-50"
 									>
 										Edit
 									</button>
@@ -175,7 +175,7 @@ export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onCh
 										type="button"
 										disabled={busy}
 										onClick={() => setConfirmingId(photo.id)}
-										className="rounded-md border border-gray-700 px-3 py-1 text-sm text-gray-500 hover:border-red-800 hover:text-red-400 disabled:opacity-50"
+										className="rounded-md border border-red-800 px-3 py-1 text-sm text-red-400 hover:bg-red-950 hover:text-red-300 disabled:opacity-50"
 									>
 										Remove
 									</button>
