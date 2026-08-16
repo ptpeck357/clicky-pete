@@ -115,33 +115,24 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 
 	const getModalDimensions = () => {
 		const aspectRatio = (photo.tags.aspectRatio as string) || '3:2';
-		const isPortrait = aspectRatio === '4:5';
 
-		const viewportWidth = windowDimensions.width;
-		const viewportHeight = windowDimensions.height;
+		// Derived from the photo's own ratio rather than branching on the literal strings
+		// "4:5" and everything-else. Any other crop used to be framed as if it were 3:2,
+		// leaving the rounded border and shadow floating clear of the image edges.
+		const [ratioWidth, ratioHeight] = aspectRatio.split(':').map(Number);
+		const ratio = ratioWidth > 0 && ratioHeight > 0 ? ratioWidth / ratioHeight : 3 / 2;
 
-		let containerWidth: number;
-		let containerHeight: number;
+		// The 1200/800 caps are deliberate and predate this: they keep 3:2 and 4:5 rendering
+		// exactly as before, so only ratios that previously had no correct branch change.
+		const maxWidth = Math.min(windowDimensions.width * 0.9, 1200);
+		const maxHeight = Math.min(windowDimensions.height * 0.8, 800);
 
-		const maxWidth = viewportWidth * 0.9;
-		const maxHeight = viewportHeight * 0.8;
+		let containerWidth = maxWidth;
+		let containerHeight = containerWidth / ratio;
 
-		if (isPortrait) {
-			containerHeight = Math.min(maxHeight, 800);
-			containerWidth = containerHeight * (4 / 5);
-
-			if (containerWidth > maxWidth) {
-				containerWidth = maxWidth;
-				containerHeight = containerWidth * (5 / 4);
-			}
-		} else {
-			containerWidth = Math.min(maxWidth, 1200);
-			containerHeight = containerWidth * (2 / 3);
-
-			if (containerHeight > maxHeight) {
-				containerHeight = maxHeight;
-				containerWidth = containerHeight * (3 / 2);
-			}
+		if (containerHeight > maxHeight) {
+			containerHeight = maxHeight;
+			containerWidth = containerHeight * ratio;
 		}
 
 		return { containerWidth, containerHeight, aspectRatio };
