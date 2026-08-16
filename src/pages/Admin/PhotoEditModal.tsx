@@ -85,7 +85,7 @@ export const PhotoEditModal: React.FC<PhotoEditModalProps> = ({
 					onClick={onClose}
 					aria-label="Close"
 					title="Close (Esc)"
-					className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-xl leading-none text-white hover:bg-black/80 lg:hidden"
+					className="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-black/80 text-2xl leading-none text-white hover:bg-black lg:hidden"
 				>
 					×
 				</button>
@@ -104,7 +104,7 @@ export const PhotoEditModal: React.FC<PhotoEditModalProps> = ({
 							event.stopPropagation();
 							onPrevious();
 						}}
-						className="absolute left-4 rounded-full bg-black/60 px-4 py-3 text-xl text-white hover:bg-black/80"
+						className="absolute left-4 rounded-full border border-white/30 bg-black/80 px-4 py-3 text-xl text-white hover:bg-black"
 					>
 						‹
 					</button>
@@ -117,7 +117,7 @@ export const PhotoEditModal: React.FC<PhotoEditModalProps> = ({
 							event.stopPropagation();
 							onNext();
 						}}
-						className="absolute right-4 rounded-full bg-black/60 px-4 py-3 text-xl text-white hover:bg-black/80"
+						className="absolute right-4 rounded-full border border-white/30 bg-black/80 px-4 py-3 text-xl text-white hover:bg-black"
 					>
 						›
 					</button>
@@ -140,7 +140,7 @@ export const PhotoEditModal: React.FC<PhotoEditModalProps> = ({
 						onClick={onClose}
 						aria-label="Close"
 						title="Close (Esc)"
-						className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-md border border-gray-700 text-lg leading-none text-gray-400 hover:bg-gray-800 hover:text-gray-200"
+						className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md border border-gray-500 bg-gray-800 text-xl leading-none text-gray-100 hover:border-gray-400 hover:bg-gray-700"
 					>
 						×
 					</button>
@@ -160,7 +160,7 @@ export const PhotoEditModal: React.FC<PhotoEditModalProps> = ({
 					<button
 						type="button"
 						onClick={onClose}
-						className="rounded-md border border-gray-700 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800"
+						className="rounded-md border border-gray-500 bg-gray-800 px-4 py-2 text-sm font-medium text-gray-100 hover:border-gray-400 hover:bg-gray-700"
 					>
 						Cancel
 					</button>
