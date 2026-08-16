@@ -28,3 +28,7 @@ plan.md
 *.sw?
 .env
 lambda/function.zip
+
+# Local admin (dev-only): machine-specific AWS targets and publish state
+admin.config.json
+.admin-state.json

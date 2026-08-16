@@ -1,0 +1,6 @@
+{
+	"bucket": "your-photo-bucket",
+	"region": "us-east-1",
+	"profile": "your-aws-profile",
+	"distributionId": "EXXXXXXXXXXXXX"
+}
