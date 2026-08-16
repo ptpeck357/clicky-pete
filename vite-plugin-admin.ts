@@ -41,6 +41,13 @@ const slugify = (filename: string) =>
 const webpName = (filename: string) => `${filename.replace(/\.[^.]+$/, '')}.webp`;
 
 /**
+ * The supplied name becomes both a storage key and a manifest id, so it is checked before
+ * either is derived. Anything outside this is a typo or a paste accident: every camera name
+ * in the manifest fits it, from IMG_8553.jpg to 20220302-DJI_0221.jpg.
+ */
+const SAFE_FILENAME = /^[A-Za-z0-9][A-Za-z0-9_-]*\.[A-Za-z0-9]+$/;
+
+/**
  * Existing entries use tidy ratios like "3:2" and "4:5" rather than the raw pixel ratio,
  * so snap to a known ratio when the image is within 1% of one.
  */
@@ -232,6 +239,12 @@ export function adminPlugin(): Plugin {
 						const meta = JSON.parse(Buffer.from(header, 'base64').toString('utf8')) as PhotoMeta;
 						const source = await readBody(req);
 						if (!source.length) return send(res, 400, { error: 'empty body' });
+
+						if (!SAFE_FILENAME.test(meta.filename)) {
+							return send(res, 400, {
+								error: `"${meta.filename}" is not a usable filename. Use letters, digits, dashes and underscores with a single extension — the name becomes both the stored key and the photo's id.`,
+							});
+						}
 
 						const id = slugify(meta.filename);
 						const file = webpName(meta.filename);
