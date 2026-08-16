@@ -34,6 +34,13 @@ const slugify = (filename: string) =>
 		.replace(/_/g, '-');
 
 /**
+ * The stored filename keeps the original casing — every existing entry pairs a lowercased id
+ * with a filename as the camera wrote it, e.g. `img-8553` / `IMG_8553.webp`. Only the
+ * extension changes.
+ */
+const webpName = (filename: string) => `${filename.replace(/\.[^.]+$/, '')}.webp`;
+
+/**
  * Existing entries use tidy ratios like "3:2" and "4:5" rather than the raw pixel ratio,
  * so snap to a known ratio when the image is within 1% of one.
  */
@@ -227,7 +234,7 @@ export function adminPlugin(): Plugin {
 						if (!source.length) return send(res, 400, { error: 'empty body' });
 
 						const id = slugify(meta.filename);
-						const file = `${id}.webp`;
+						const file = webpName(meta.filename);
 						const manifest = readManifest();
 						if (manifest.some((p) => p.file === file || p.id === id)) {
 							return send(res, 409, { error: `${file} already exists in photos.json` });
