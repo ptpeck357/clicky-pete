@@ -91,6 +91,25 @@ const send = (res: ServerResponse, status: number, body: unknown) => {
 	res.end(JSON.stringify(body));
 };
 
+/**
+ * Keeps the admin's utility classes out of the production stylesheet.
+ *
+ * This has to be build-only. Putting `@source not` directly in globals.css also strips the
+ * classes in dev, which leaves the admin unstyled — thumbnails render at full size because
+ * their sizing utilities were never generated.
+ */
+export function adminCssExcludePlugin(): Plugin {
+	return {
+		name: 'clicky-pete-admin-css-exclude',
+		apply: 'build',
+		enforce: 'pre',
+		transform(code, id) {
+			if (!id.includes('globals.css')) return null;
+			return code.replace("@import 'tailwindcss';", "@import 'tailwindcss';\n@source not '../pages/Admin';");
+		},
+	};
+}
+
 export function adminPlugin(): Plugin {
 	return {
 		name: 'clicky-pete-admin',

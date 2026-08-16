@@ -1,9 +1,5 @@
 @import 'tailwindcss';
 
-/* The dev-only admin never ships, so its utility classes should not be generated
-   into the production stylesheet either. */
-@source not '../pages/Admin';
-
 /* Custom styles for the photography portfolio */
 
 @layer base {

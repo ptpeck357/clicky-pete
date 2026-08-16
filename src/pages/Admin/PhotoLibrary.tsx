@@ -12,6 +12,7 @@ interface PhotoLibraryProps {
 }
 
 const CLOUDFRONT_URL = import.meta.env.VITE_CLOUDFRONT_URL || '';
+const PAGE_SIZE = 60;
 
 /** aspectRatio is deliberately dropped: it is derived from the image, not edited. */
 const toEditable = (photo: Photo): EditableTags => ({
@@ -23,11 +24,18 @@ const toEditable = (photo: Photo): EditableTags => ({
 	collectionCover: photo.tags.collectionCover,
 });
 
+const FLAG_LABELS: [keyof EditableTags, string][] = [
+	['featured', 'Featured'],
+	['hero', 'Hero'],
+	['collectionCover', 'Cover'],
+];
+
 export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onChanged, onError }) => {
 	const [query, setQuery] = useState('');
 	const [editingId, setEditingId] = useState<string | null>(null);
 	const [draft, setDraft] = useState<EditableTags | null>(null);
 	const [busy, setBusy] = useState(false);
+	const [limit, setLimit] = useState(PAGE_SIZE);
 
 	const matches = useMemo(() => {
 		const needle = query.trim().toLowerCase();
@@ -75,87 +83,121 @@ export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onCh
 
 	return (
 		<div className="flex flex-col gap-4">
-			<div className="flex items-baseline gap-3">
+			<div className="flex flex-wrap items-center gap-3">
 				<input
-					className="w-full max-w-md rounded-md border border-gray-600 bg-gray-800 px-3 py-2 text-sm text-gray-100 placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+					className="w-full max-w-md rounded-md border border-gray-600 bg-gray-800 px-3 py-2 text-sm text-gray-100 placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
 					value={query}
-					onChange={(event) => setQuery(event.target.value)}
+					onChange={(event) => {
+						setQuery(event.target.value);
+						setLimit(PAGE_SIZE);
+					}}
 					placeholder="Filter by name, category, location, collection"
 				/>
-				<span className="text-sm text-gray-400 tabular-nums">
-					{matches.length} of {photos.length}
+				<span className="text-sm text-gray-500 tabular-nums">
+					{matches.length === photos.length
+						? `${photos.length} photos`
+						: `${matches.length} of ${photos.length}`}
 				</span>
 			</div>
 
-			<div className="grid grid-cols-1 gap-3">
-				{matches.slice(0, 60).map((photo) => (
-					<div key={photo.id} className="rounded-lg border border-gray-700 bg-gray-900 p-3">
-						<div className="flex gap-4">
-							<img
-								src={`${CLOUDFRONT_URL}/photos/400/${photo.file}`}
-								alt={photo.file}
-								loading="lazy"
-								className="h-20 w-28 flex-shrink-0 rounded object-cover"
-							/>
-							<div className="min-w-0 flex-1">
-								<div className="font-mono text-sm text-gray-200">{photo.file}</div>
-								<div className="mt-1 text-sm text-gray-400">
-									{photo.tags.category} · {photo.tags.location} · {photo.tags.collection}
-								</div>
-								<div className="mt-1 flex flex-wrap gap-2 text-xs text-gray-500">
-									<span>{photo.tags.aspectRatio}</span>
-									{photo.tags.featured === true && <span className="text-blue-400">featured</span>}
-									{photo.tags.hero === true && <span className="text-blue-400">hero</span>}
-									{photo.tags.collectionCover === true && (
-										<span className="text-blue-400">cover</span>
-									)}
-								</div>
-							</div>
-							<div className="flex flex-shrink-0 flex-col gap-2">
-								<button
-									type="button"
-									disabled={busy}
-									onClick={() => (editingId === photo.id ? setEditingId(null) : startEdit(photo))}
-									className="rounded-md border border-gray-600 px-3 py-1 text-sm text-gray-300 hover:bg-gray-800 disabled:opacity-50"
-								>
-									{editingId === photo.id ? 'Cancel' : 'Edit'}
-								</button>
-								<button
-									type="button"
-									disabled={busy}
-									onClick={() => void remove(photo)}
-									className="rounded-md border border-red-800 px-3 py-1 text-sm text-red-400 hover:bg-red-950 disabled:opacity-50"
-								>
-									Remove
-								</button>
-							</div>
-						</div>
-
-						{editingId === photo.id && draft && (
-							<div className="mt-3 border-t border-gray-700 pt-3">
-								<PhotoForm
-									tags={draft}
-									values={values}
-									onChange={setDraft}
-									idPrefix={`lib-${photo.id}`}
-									compact
+			<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+				{matches.slice(0, limit).map((photo) => {
+					const editing = editingId === photo.id;
+					return (
+						<article
+							key={photo.id}
+							className={`overflow-hidden rounded-lg border bg-gray-900 ${
+								editing ? 'border-blue-600 sm:col-span-2 xl:col-span-3' : 'border-gray-700'
+							}`}
+						>
+							<div className={editing ? 'flex gap-4 p-3' : ''}>
+								<img
+									src={`${CLOUDFRONT_URL}/photos/400/${photo.file}`}
+									alt={photo.file}
+									loading="lazy"
+									className={
+										editing
+											? 'h-28 w-40 flex-shrink-0 rounded object-cover'
+											: 'aspect-[3/2] w-full object-cover'
+									}
 								/>
-								<button
-									type="button"
-									disabled={busy}
-									onClick={() => void save(photo.id)}
-									className="mt-3 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
-								>
-									Save changes
-								</button>
+
+								<div className={editing ? 'min-w-0 flex-1' : 'p-3'}>
+									<div className="truncate font-mono text-xs text-gray-300">{photo.file}</div>
+									<div className="mt-1 text-sm text-gray-400">
+										{photo.tags.category} · {photo.tags.collection}
+									</div>
+									<div className="truncate text-sm text-gray-500">{photo.tags.location}</div>
+
+									<div className="mt-2 flex flex-wrap items-center gap-2">
+										<span className="rounded bg-gray-800 px-1.5 py-0.5 font-mono text-xs text-gray-400">
+											{photo.tags.aspectRatio}
+										</span>
+										{FLAG_LABELS.map(([key, label]) =>
+											photo.tags[key] === true ? (
+												<span
+													key={key}
+													className="rounded bg-blue-950 px-1.5 py-0.5 text-xs text-blue-300"
+												>
+													{label}
+												</span>
+											) : null,
+										)}
+									</div>
+
+									<div className="mt-3 flex gap-2">
+										<button
+											type="button"
+											disabled={busy}
+											onClick={() => (editing ? setEditingId(null) : startEdit(photo))}
+											className="rounded-md border border-gray-600 px-3 py-1 text-sm text-gray-300 hover:bg-gray-800 disabled:opacity-50"
+										>
+											{editing ? 'Cancel' : 'Edit'}
+										</button>
+										<button
+											type="button"
+											disabled={busy}
+											onClick={() => void remove(photo)}
+											className="rounded-md border border-gray-700 px-3 py-1 text-sm text-gray-500 hover:border-red-800 hover:text-red-400 disabled:opacity-50"
+										>
+											Remove
+										</button>
+									</div>
+								</div>
 							</div>
-						)}
-					</div>
-				))}
+
+							{editing && draft && (
+								<div className="border-t border-gray-800 bg-gray-950/40 p-3">
+									<PhotoForm
+										tags={draft}
+										values={values}
+										onChange={setDraft}
+										idPrefix={`lib-${photo.id}`}
+										compact
+									/>
+									<button
+										type="button"
+										disabled={busy}
+										onClick={() => void save(photo.id)}
+										className="mt-3 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+									>
+										Save changes
+									</button>
+								</div>
+							)}
+						</article>
+					);
+				})}
 			</div>
 
-			{matches.length > 60 && (
-				<p className="text-sm text-gray-500">Showing the first 60. Narrow the filter to reach the rest.</p>
+			{matches.length > limit && (
+				<button
+					type="button"
+					onClick={() => setLimit((current) => current + PAGE_SIZE)}
+					className="self-start rounded-md border border-gray-600 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800"
+				>
+					Show {Math.min(PAGE_SIZE, matches.length - limit)} more
+				</button>
 			)}
 		</div>
 	);
