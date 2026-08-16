@@ -40,7 +40,10 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick, className 
 		return {
 			src: `${baseUrl}/800/${photo.file}`, // Default/fallback
 			srcSet: `${baseUrl}/400/${photo.file} 400w, ${baseUrl}/800/${photo.file} 800w, ${baseUrl}/2000/${photo.file} 2000w`,
-			sizes: '(max-width: 640px) 400px, (max-width: 1024px) 800px, 2000px',
+			// Widths the thumbnail actually occupies: the masonry runs 2 columns below 640px
+			// and 3–4 above. The previous value claimed 2000px on desktop, so every thumbnail
+			// downloaded the 2000px rendition — 352 KB each, against 16 KB for the 400px.
+			sizes: '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw',
 		};
 	};
 
