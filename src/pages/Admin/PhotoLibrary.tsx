@@ -8,6 +8,7 @@ interface PhotoLibraryProps {
 	photos: Photo[];
 	values: TagValues;
 	onChanged: () => void;
+	onRemoved: (message: string) => void;
 	onError: (message: string) => void;
 }
 
@@ -30,11 +31,12 @@ const FLAG_LABELS: [keyof EditableTags, string][] = [
 	['collectionCover', 'Cover'],
 ];
 
-export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onChanged, onError }) => {
+export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onChanged, onRemoved, onError }) => {
 	const [query, setQuery] = useState('');
 	const [editingIndex, setEditingIndex] = useState<number | null>(null);
 	const [busy, setBusy] = useState(false);
 	const [limit, setLimit] = useState(PAGE_SIZE);
+	const [confirmingId, setConfirmingId] = useState<string | null>(null);
 
 	const matches = useMemo(() => {
 		const needle = query.trim().toLowerCase();
@@ -47,12 +49,16 @@ export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onCh
 		);
 	}, [photos, query]);
 
-	const remove = async (photo: Photo) => {
-		if (!window.confirm(`Remove ${photo.file} from photos.json? The image stays in storage.`)) return;
+	const remove = async (photo: Photo, deleteFiles: boolean) => {
 		setBusy(true);
 		try {
-			await adminService.removePhoto(photo.id);
-			onChanged();
+			const result = await adminService.removePhoto(photo.id, deleteFiles);
+			setConfirmingId(null);
+			onRemoved(
+				result.filesDeleted
+					? `${photo.file} removed and its 3 files deleted from storage.`
+					: `${photo.file} removed from photos.json. Its files are still in storage.`,
+			);
 		} catch (error) {
 			onError(error instanceof Error ? error.message : String(error));
 		} finally {
@@ -124,24 +130,57 @@ export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onCh
 								)}
 							</div>
 
-							<div className="mt-3 flex gap-2">
-								<button
-									type="button"
-									disabled={busy}
-									onClick={() => setEditingIndex(index)}
-									className="rounded-md border border-gray-600 px-3 py-1 text-sm text-gray-300 hover:bg-gray-800 disabled:opacity-50"
-								>
-									Edit
-								</button>
-								<button
-									type="button"
-									disabled={busy}
-									onClick={() => void remove(photo)}
-									className="rounded-md border border-gray-700 px-3 py-1 text-sm text-gray-500 hover:border-red-800 hover:text-red-400 disabled:opacity-50"
-								>
-									Remove
-								</button>
-							</div>
+							{confirmingId === photo.id ? (
+								<div className="mt-3 flex flex-col gap-2 rounded-md border border-red-900 bg-red-950/30 p-2">
+									<button
+										type="button"
+										disabled={busy}
+										onClick={() => void remove(photo, true)}
+										className="rounded-md bg-red-700 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-600 disabled:opacity-50"
+									>
+										Remove and delete files
+									</button>
+									<button
+										type="button"
+										disabled={busy}
+										onClick={() => void remove(photo, false)}
+										className="rounded-md border border-gray-600 px-3 py-1.5 text-sm text-gray-200 hover:bg-gray-800 disabled:opacity-50"
+									>
+										Remove entry only
+									</button>
+									<button
+										type="button"
+										disabled={busy}
+										onClick={() => setConfirmingId(null)}
+										className="px-3 py-1 text-xs text-gray-400 hover:text-gray-200 disabled:opacity-50"
+									>
+										Cancel
+									</button>
+									<p className="text-xs text-gray-500">
+										Deleting files publishes photos.json first, so the site never points at a
+										missing image. That also publishes any other unpublished changes.
+									</p>
+								</div>
+							) : (
+								<div className="mt-3 flex gap-2">
+									<button
+										type="button"
+										disabled={busy}
+										onClick={() => setEditingIndex(index)}
+										className="rounded-md border border-gray-600 px-3 py-1 text-sm text-gray-300 hover:bg-gray-800 disabled:opacity-50"
+									>
+										Edit
+									</button>
+									<button
+										type="button"
+										disabled={busy}
+										onClick={() => setConfirmingId(photo.id)}
+										className="rounded-md border border-gray-700 px-3 py-1 text-sm text-gray-500 hover:border-red-800 hover:text-red-400 disabled:opacity-50"
+									>
+										Remove
+									</button>
+								</div>
+							)}
 						</div>
 					</article>
 				))}

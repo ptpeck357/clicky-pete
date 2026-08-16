@@ -469,6 +469,12 @@ export const AdminPage: React.FC = () => {
 							setDirty(true);
 							void load();
 						}}
+						onRemoved={(message) => {
+							// Deleting files publishes as part of the same action, so nothing is left pending.
+							setNotice(message);
+							setDirty(!message.includes('deleted from storage'));
+							void load();
+						}}
 					/>
 				)}
 			</div>

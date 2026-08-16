@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { Plugin } from 'vite';
 import sharp from 'sharp';
-import { S3Client, PutObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, HeadObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { CloudFrontClient, CreateInvalidationCommand } from '@aws-sdk/client-cloudfront';
 import type { Photo } from './src/types/photo.ts';
 
@@ -96,6 +96,16 @@ const readBody = (req: IncomingMessage): Promise<Buffer> =>
 		req.on('error', rej);
 	});
 
+/** Raised when the live photos.json changed outside this machine since the last publish. */
+class PublishConflict extends Error {
+	constructor(
+		readonly liveETag?: string,
+		readonly expectedETag?: string,
+	) {
+		super('photos.json on S3 changed since the last publish from this machine');
+	}
+}
+
 /** HeadObject throws rather than returning a flag when the key is absent. */
 const objectExists = async (s3: S3Client, bucket: string, key: string): Promise<boolean> => {
 	try {
@@ -153,6 +163,37 @@ export function adminPlugin(): Plugin {
 				process.env.AWS_PROFILE = config.profile;
 				s3 = new S3Client({ region: config.region });
 				cloudfront = new CloudFrontClient({ region: config.region });
+			};
+
+			/** Uploads photos.json and clears the CDN copy. Shared by /publish and /delete. */
+			const publishManifest = async (): Promise<string | undefined> => {
+				const state = readState();
+				const head = await s3.send(new HeadObjectCommand({ Bucket: config.bucket, Key: MANIFEST_KEY }));
+				// Optimistic lock: if the live file changed since our last publish, someone
+				// edited it elsewhere and pushing now would silently discard their change.
+				if (state.lastPublishedETag && head.ETag !== state.lastPublishedETag) {
+					throw new PublishConflict(head.ETag, state.lastPublishedETag);
+				}
+
+				const put = await s3.send(
+					new PutObjectCommand({
+						Bucket: config.bucket,
+						Key: MANIFEST_KEY,
+						Body: readFileSync(MANIFEST_PATH),
+						ContentType: 'application/json',
+					}),
+				);
+				await cloudfront.send(
+					new CreateInvalidationCommand({
+						DistributionId: config.distributionId,
+						InvalidationBatch: {
+							CallerReference: `admin-${Date.now()}`,
+							Paths: { Quantity: 1, Items: [`/${MANIFEST_KEY}`] },
+						},
+					}),
+				);
+				writeState({ lastPublishedETag: put.ETag });
+				return put.ETag;
 			};
 
 			server.middlewares.use('/__admin', (req, res, next) => {
@@ -246,38 +287,19 @@ export function adminPlugin(): Plugin {
 
 					// Push photos.json to S3 and clear the CDN copy.
 					if (req.method === 'POST' && url === '/publish') {
-						const state = readState();
-						const head = await s3.send(new HeadObjectCommand({ Bucket: config.bucket, Key: MANIFEST_KEY }));
-						// Optimistic lock: if the live file changed since our last publish, someone
-						// edited it elsewhere and pushing now would silently discard their change.
-						if (state.lastPublishedETag && head.ETag !== state.lastPublishedETag) {
-							return send(res, 409, {
-								error: 'photos.json on S3 changed since the last publish from this machine',
-								liveETag: head.ETag,
-								expectedETag: state.lastPublishedETag,
-							});
+						try {
+							const etag = await publishManifest();
+							return send(res, 200, { published: true, entries: readManifest().length, etag });
+						} catch (error) {
+							if (error instanceof PublishConflict) {
+								return send(res, 409, {
+									error: error.message,
+									liveETag: error.liveETag,
+									expectedETag: error.expectedETag,
+								});
+							}
+							throw error;
 						}
-
-						const body = readFileSync(MANIFEST_PATH);
-						const put = await s3.send(
-							new PutObjectCommand({
-								Bucket: config.bucket,
-								Key: MANIFEST_KEY,
-								Body: body,
-								ContentType: 'application/json',
-							}),
-						);
-						await cloudfront.send(
-							new CreateInvalidationCommand({
-								DistributionId: config.distributionId,
-								InvalidationBatch: {
-									CallerReference: `admin-${Date.now()}`,
-									Paths: { Quantity: 1, Items: [`/${MANIFEST_KEY}`] },
-								},
-							}),
-						);
-						writeState({ lastPublishedETag: put.ETag });
-						return send(res, 200, { published: true, entries: readManifest().length, etag: put.ETag });
 					}
 
 					// Retag an existing photo. aspectRatio is not editable: it is derived from the
@@ -297,15 +319,54 @@ export function adminPlugin(): Plugin {
 						return send(res, 200, { entry: updated.find((p) => p.id === id) });
 					}
 
-					// Removes the entry only. S3 objects are left alone deliberately: deleting an
-					// object still referenced by the live photos.json breaks the site immediately.
+					// Removes the entry. Stored files are kept unless deleteFiles is set, because
+					// deleting an object the live photos.json still references breaks the site
+					// immediately — so when files do go, the manifest is published first.
 					if (req.method === 'POST' && url === '/delete') {
-						const { id } = JSON.parse((await readBody(req)).toString('utf8')) as { id: string };
+						const { id, deleteFiles } = JSON.parse((await readBody(req)).toString('utf8')) as {
+							id: string;
+							deleteFiles?: boolean;
+						};
 						const manifest = readManifest();
+						const target = manifest.find((p) => p.id === id);
+						if (!target) return send(res, 404, { error: `no entry ${id}` });
+
 						const remaining = manifest.filter((p) => p.id !== id);
-						if (remaining.length === manifest.length) return send(res, 404, { error: `no entry ${id}` });
 						writeManifest(remaining);
-						return send(res, 200, { removed: id, entries: remaining.length });
+
+						if (deleteFiles !== true) {
+							return send(res, 200, { removed: id, entries: remaining.length, filesDeleted: false });
+						}
+
+						try {
+							await publishManifest();
+						} catch (error) {
+							if (error instanceof PublishConflict) {
+								// The entry is already out of the local manifest; leaving the files in
+								// place is the safe half-way state, so report rather than delete blind.
+								return send(res, 409, {
+									error: `${error.message}. The entry was removed locally but the files were kept — publish, then delete again.`,
+									removed: id,
+									entries: remaining.length,
+									filesDeleted: false,
+								});
+							}
+							throw error;
+						}
+
+						const deleted: string[] = [];
+						for (const size of SIZES) {
+							const Key = `photos/${size}/${target.file}`;
+							await s3.send(new DeleteObjectCommand({ Bucket: config.bucket, Key }));
+							deleted.push(Key);
+						}
+						return send(res, 200, {
+							removed: id,
+							entries: remaining.length,
+							filesDeleted: true,
+							published: true,
+							deleted,
+						});
 					}
 
 					next();

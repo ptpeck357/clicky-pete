@@ -57,12 +57,19 @@ export const adminService = {
 		});
 	},
 
-	/** Removes the entry from photos.json. The image files stay in storage. */
-	async removePhoto(id: string): Promise<{ removed: string; entries: number }> {
+	/**
+	 * Removes the entry from photos.json. With deleteFiles, the manifest is published first
+	 * and the three stored renditions are then deleted — that order matters, since the live
+	 * site would show a broken image for any file removed while still referenced.
+	 */
+	async removePhoto(
+		id: string,
+		deleteFiles = false,
+	): Promise<{ removed: string; entries: number; filesDeleted: boolean; deleted?: string[] }> {
 		return request('/delete', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ id }),
+			body: JSON.stringify({ id, deleteFiles }),
 		});
 	},
 
