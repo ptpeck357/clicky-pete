@@ -109,7 +109,10 @@ them, updates `photos.json` and clears the CDN cache.
 Accepted crops are 3:2, 4:5 and 4:3; anything else is flagged as a likely export mistake, with
 an option to upload it anyway. `aspectRatio` is measured from the image, never entered by hand.
 
-The Library tab lists everything already published, for retagging or removing entries.
+The Library tab lists everything already published. Click a photo to open it full screen with
+its tags alongside, where arrow keys move through the list. Removing offers two choices:
+dropping the entry alone, which leaves the image files in storage, or removing it and deleting
+the files — which publishes first, so the site never points at a missing image.
 
 **Tag descriptions:**
 - `category`: Landscape, Portrait, Aerial, or Astro|Night
