@@ -106,6 +106,8 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 		const baseUrl = `${cloudFrontUrl}/photos`;
 		return {
 			src: `${baseUrl}/2000/${photo.file}`,
+			// 16 KB, already fetched by the grid — used as an instant stand-in.
+			placeholder: `${baseUrl}/400/${photo.file}`,
 			srcSet: `${baseUrl}/800/${photo.file} 800w, ${baseUrl}/2000/${photo.file} 2000w`,
 			sizes: '(max-width: 1024px) 800px, 2000px',
 		};
@@ -300,13 +302,30 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 								aspectRatio: aspectRatio.replace(':', '/'),
 							}}
 						>
+							{/*
+							 * The 400px rendition is 16 KB and the grid has just loaded it, so it comes from
+							 * cache and paints immediately. Blurred underneath, it gives the modal something
+							 * to show while the 352 KB full-size arrives, instead of a spinner over an empty box.
+							 */}
+							{!imageError && (
+								<img
+									src={photoUrls.placeholder}
+									alt=""
+									aria-hidden="true"
+									draggable={false}
+									className={`absolute inset-0 w-full h-full object-contain blur-[2px] scale-[1.02] select-none transition-opacity duration-300 ${
+										imageLoaded ? 'opacity-0' : 'opacity-100'
+									}`}
+								/>
+							)}
+
 							<motion.img
 								src={photoUrls.src}
 								srcSet={photoUrls.srcSet}
 								sizes={photoUrls.sizes}
 								alt={(photo.tags.category as string) || 'Photo'}
 								draggable={false}
-								className={`w-full h-full object-contain transition-opacity duration-300 select-none ${
+								className={`relative w-full h-full object-contain transition-opacity duration-300 select-none ${
 									imageLoaded ? 'opacity-100' : 'opacity-0'
 								}`}
 								onLoad={() => setImageLoaded(true)}
