@@ -20,7 +20,19 @@ export const handler = async (event) => {
 
 	try {
 		const body = JSON.parse(event.body || '{}');
-		const { name, email, subject, message } = body;
+		const { name, email, subject, message, website } = body;
+
+		// Honeypot: the form's `website` field is positioned off-screen, so a person never
+		// sees it and a bot filling every field does. Answer 200 rather than an error —
+		// a rejection tells the sender which field gave them away.
+		if (website) {
+			console.log('Honeypot triggered, dropping submission');
+			return {
+				statusCode: 200,
+				headers: corsHeaders,
+				body: JSON.stringify({ success: true, message: 'Email sent successfully' }),
+			};
+		}
 
 		// Validate required fields
 		if (!name || !email || !subject || !message) {

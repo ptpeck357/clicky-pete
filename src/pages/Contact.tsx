@@ -7,6 +7,9 @@ export const Contact: React.FC = () => {
 		email: '',
 		subject: '',
 		message: '',
+		// Honeypot. Hidden from people, so anything here came from a bot filling in
+		// every field it found. The server drops those silently.
+		website: '',
 	});
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [isSubmitted, setIsSubmitted] = useState(false);
@@ -40,7 +43,7 @@ export const Contact: React.FC = () => {
 			setIsSubmitted(true);
 			setTimeout(() => {
 				setIsSubmitted(false);
-				setFormData({ name: '', email: '', subject: '', message: '' });
+				setFormData({ name: '', email: '', subject: '', message: '', website: '' });
 			}, 3000);
 		} catch (error) {
 			console.error('Contact form error:', error);
@@ -114,6 +117,27 @@ export const Contact: React.FC = () => {
 								</motion.div>
 							) : (
 								<form onSubmit={handleSubmit} className="space-y-5">
+									{/*
+									 * Positioned off-screen rather than display:none — some bots skip fields
+									 * they can tell are hidden, but will fill anything they can read. aria-hidden
+									 * and tabIndex keep it away from screen readers and keyboard users.
+									 */}
+									<div
+										className="absolute -left-[9999px] h-px w-px overflow-hidden"
+										aria-hidden="true"
+									>
+										<label htmlFor="website">Website (leave this empty)</label>
+										<input
+											type="text"
+											id="website"
+											name="website"
+											value={formData.website}
+											onChange={handleInputChange}
+											tabIndex={-1}
+											autoComplete="off"
+										/>
+									</div>
+
 									<div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
 										<div>
 											<label htmlFor="name" className={labelClass}>
