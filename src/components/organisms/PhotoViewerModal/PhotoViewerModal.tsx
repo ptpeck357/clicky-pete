@@ -150,7 +150,7 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
 					exit={{ opacity: 0 }}
-					transition={{ duration: 0.3 }}
+					transition={{ duration: 0.15 }}
 				>
 					<motion.div
 						className="absolute inset-0 bg-black/60 backdrop-blur-md"
@@ -325,14 +325,18 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 								sizes={photoUrls.sizes}
 								alt={(photo.tags.category as string) || 'Photo'}
 								draggable={false}
-								className={`relative w-full h-full object-contain transition-opacity duration-300 select-none ${
+								className={`relative w-full h-full object-contain transition-opacity duration-150 select-none ${
 									imageLoaded ? 'opacity-100' : 'opacity-0'
 								}`}
+								// The photo is the only thing on screen — it should not queue behind
+								// thumbnails still loading in the grid underneath.
+								fetchPriority="high"
+								decoding="async"
 								onLoad={() => setImageLoaded(true)}
 								onError={() => setImageError(true)}
 								initial={{ opacity: 0 }}
 								animate={{ opacity: imageLoaded ? 1 : 0 }}
-								transition={{ duration: 0.3 }}
+								transition={{ duration: 0.15 }}
 							/>
 
 							{/* Mobile: arrows inside image, centered on photo */}
