@@ -15,7 +15,8 @@
     "prepare": "husky",
     "preview": "vite preview",
     "verify:no-admin": "! grep -rqE 'AdminPage|__admin|adminService' dist",
-    "ci": "npm run lint:eslint && npm run lint:prettier && npm run build && npm run verify:no-admin"
+    "validate:manifest": "node scripts/validate-manifest.mjs",
+    "ci": "npm run validate:manifest && npm run lint:eslint && npm run lint:prettier && npm run build && npm run verify:no-admin"
   },
   "dependencies": {
     "framer-motion": "^13.1.0",
