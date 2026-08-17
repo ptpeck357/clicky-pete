@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Photo } from '../../../types/photo';
+import { preloadViewerImage } from '../../../utils/imageOptimization';
 
 interface PhotoViewerModalProps {
 	photo: Photo | null;
@@ -8,9 +9,19 @@ interface PhotoViewerModalProps {
 	onClose: () => void;
 	onNext?: () => void;
 	onPrevious?: () => void;
+	nextPhoto?: Photo | null;
+	previousPhoto?: Photo | null;
 }
 
-export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpen, onClose, onNext, onPrevious }) => {
+export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({
+	photo,
+	isOpen,
+	onClose,
+	onNext,
+	onPrevious,
+	nextPhoto,
+	previousPhoto,
+}) => {
 	const [imageLoaded, setImageLoaded] = useState(false);
 	const [imageError, setImageError] = useState(false);
 	const [windowDimensions, setWindowDimensions] = useState({
@@ -83,6 +94,17 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 			document.body.style.overflow = 'unset';
 		};
 	}, [isOpen, onClose, onNext, onPrevious]);
+
+	// The arrows and arrow keys only ever move one step, so fetch both neighbours while the
+	// current photo is being looked at. Without this, pressing → starts a 350 KB download from
+	// cold and the blurred 400px stand-in is on screen until it finishes.
+	const nextFile = nextPhoto?.file;
+	const previousFile = previousPhoto?.file;
+	useEffect(() => {
+		if (!isOpen) return;
+		if (nextFile) preloadViewerImage(nextFile);
+		if (previousFile) preloadViewerImage(previousFile);
+	}, [isOpen, nextFile, previousFile]);
 
 	const currentPhotoId = photo?.id;
 	const [lastPhotoId, setLastPhotoId] = useState<string | undefined>();
