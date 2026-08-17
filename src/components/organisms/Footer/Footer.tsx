@@ -48,6 +48,8 @@ export const Footer: React.FC = () => {
 						transition={{ duration: 0.6, delay: 0.9 }}
 						viewport={{ once: true }}
 					>
+						{/* p-2 with a matching negative margin: nothing shifts, but the tap target grows
+					    from the 20px icon to something a thumb can hit. */}
 						{SOCIALS.map((social) => (
 							<a
 								key={social.label}
@@ -55,7 +57,7 @@ export const Footer: React.FC = () => {
 								target="_blank"
 								rel="noopener noreferrer"
 								aria-label={social.label}
-								className={`text-gray-400 transition-colors ${social.hoverClass}`}
+								className={`p-2 -m-2 text-gray-400 transition-colors ${social.hoverClass}`}
 							>
 								<svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
 									<path d={social.path} />

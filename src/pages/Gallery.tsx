@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback, useDeferredValue } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { useParams, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import { Link, useParams, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { PhotoGrid, PhotoViewerModal, CollectionsGrid } from '../components/organisms';
 import { usePhotos } from '../hooks/usePhotos';
 import { photoService } from '../services/photoService';
@@ -606,6 +606,37 @@ export const Gallery: React.FC = () => {
 								>
 									<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400" />
 								</div>
+							)}
+
+							{/* Only once the grid has paged everything in — otherwise it sits above the
+							    loader and anyone who keeps scrolling walks straight past it. */}
+							{!hasMorePhotos && !loading && displayedPhotos.length > 0 && (
+								<motion.div
+									className="max-w-2xl mx-auto text-center px-6 pt-12 pb-16 sm:pt-16 sm:pb-20"
+									initial={{ opacity: 0, y: 20 }}
+									whileInView={{ opacity: 1, y: 0 }}
+									viewport={{ once: true, amount: 0.3 }}
+									transition={{ duration: 0.7 }}
+								>
+									<svg
+										viewBox="0 0 24 24"
+										className="w-7 h-7 mx-auto mb-6 text-blue-400"
+										fill="currentColor"
+										aria-hidden="true"
+									>
+										<path d="M3 18L10 7l4 6 3-4 7 9H3z" />
+									</svg>
+									<p className="text-gray-300 text-lg sm:text-xl leading-relaxed mb-7">
+										Portraits, graduations, families and engagements around Bozeman, at introductory
+										rates.
+									</p>
+									<Link
+										to="/contact"
+										className="inline-block px-6 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+									>
+										See sessions &amp; pricing
+									</Link>
+								</motion.div>
 							)}
 						</motion.div>
 					)}

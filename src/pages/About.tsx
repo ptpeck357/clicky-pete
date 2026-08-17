@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
 const HERO_IMAGES = [
@@ -91,13 +92,14 @@ export const About: React.FC = () => {
 						</motion.div>
 					</motion.div>
 
-					<div
+					<button
+						type="button"
 						className="absolute bottom-[12%] left-1/2 -translate-x-1/2 z-10 cursor-pointer"
 						onClick={() => document.getElementById('about-content')?.scrollIntoView({ behavior: 'smooth' })}
 						aria-label="Scroll down"
 					>
 						<div className="scroll-arrow" />
-					</div>
+					</button>
 
 					{HERO_IMAGES.length > 1 && (
 						<>
@@ -225,7 +227,7 @@ export const About: React.FC = () => {
 											<div className="text-gray-300">
 												&lt;<span className="text-red-400">Title</span>&gt;
 											</div>
-											<div className="ml-4 text-white-400">ABOUT ME</div>
+											<div className="ml-4 text-white">ABOUT ME</div>
 											<div className="text-gray-300">
 												&lt;/<span className="text-red-400">Title</span>&gt;
 											</div>
@@ -235,9 +237,9 @@ export const About: React.FC = () => {
 											</div>
 											<div className="ml-4 text-gray-300 leading-relaxed text-xs sm:text-sm">
 												For my 12th birthday, I received a digital Kodak camera which then sat
-												on top of dresser for a year... The following summer, I felt guilty not
-												putting my camera to use. So that's when I started taking hundreds of
-												bad photos — perhaps even millions. You could say I got a little
+												on top of my dresser for a year... The following summer, I felt guilty
+												not putting my camera to use. So that's when I started taking hundreds
+												of bad photos — perhaps even millions. You could say I got a little
 												"clicky-happy" with the shutter release. How can you not when you grew
 												up in Montana?
 												<br />
@@ -260,16 +262,27 @@ export const About: React.FC = () => {
 					</div>
 				</section>
 
-				<div className="flex justify-center px-4 sm:px-6 lg:px-8 pb-12 sm:pb-16 lg:pb-20">
+				{/* The quote carries itself at this size — boxing it made the page end on a grey
+				    panel that read as a placeholder. The peak is public/mountain.svg, inlined so
+				    it can take currentColor. */}
+				<div className="px-6 pb-12 sm:pb-16 lg:pb-20">
 					<motion.div
-						className="w-full max-w-lg bg-gray-800 rounded-2xl px-10 py-12 text-center"
+						className="w-full max-w-3xl mx-auto text-center"
 						initial={{ opacity: 0, y: 20 }}
 						whileInView={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.8 }}
 						viewport={{ once: true }}
 					>
+						<svg
+							viewBox="0 0 24 24"
+							className="w-7 h-7 mx-auto mb-6 text-blue-400"
+							fill="currentColor"
+							aria-hidden="true"
+						>
+							<path d="M3 18L10 7l4 6 3-4 7 9H3z" />
+						</svg>
 						<motion.blockquote
-							className="text-lg md:text-xl font-light text-gray-300 leading-relaxed"
+							className="text-2xl sm:text-3xl font-light text-gray-200 leading-relaxed"
 							initial={{ opacity: 0, y: 30 }}
 							whileInView={{ opacity: 1, y: 0 }}
 							transition={{ duration: 0.8, delay: 0.2 }}
@@ -278,7 +291,7 @@ export const About: React.FC = () => {
 							Climb mountains not so the world can see you, but so you can see the world.
 						</motion.blockquote>
 						<motion.cite
-							className="block mt-6 text-gray-500"
+							className="block mt-6 text-gray-500 not-italic"
 							initial={{ opacity: 0 }}
 							whileInView={{ opacity: 1 }}
 							transition={{ duration: 0.6, delay: 0.5 }}
@@ -286,6 +299,30 @@ export const About: React.FC = () => {
 						>
 							— David McCullough Jr.
 						</motion.cite>
+					</motion.div>
+				</div>
+
+				{/* The page used to end here with nowhere to go. */}
+				<div className="px-6 pb-16 sm:pb-20 lg:pb-24">
+					<motion.div
+						className="w-full max-w-2xl mx-auto text-center"
+						initial={{ opacity: 0, y: 20 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.7 }}
+						viewport={{ once: true, amount: 0.3 }}
+					>
+						<h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
+							Let's shoot <span className="text-blue-400">something</span>
+						</h2>
+						<p className="text-gray-400 text-base sm:text-lg leading-relaxed mb-7">
+							Portraits, graduations, families and engagements around Bozeman, at introductory rates.
+						</p>
+						<Link
+							to="/contact"
+							className="inline-block px-6 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+						>
+							See sessions &amp; pricing
+						</Link>
 					</motion.div>
 				</div>
 			</div>
