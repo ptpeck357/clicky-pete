@@ -15,7 +15,8 @@
     "prepare": "husky",
     "preview": "vite preview",
     "verify:no-admin": "! grep -rqE 'AdminPage|__admin|adminService' dist",
-    "ci": "npm run lint:eslint && npm run lint:prettier && npm run build && npm run verify:no-admin"
+    "validate:manifest": "node scripts/validate-manifest.mjs",
+    "ci": "npm run validate:manifest && npm run lint:eslint && npm run lint:prettier && npm run build && npm run verify:no-admin"
   },
   "dependencies": {
     "framer-motion": "^13.1.0",
@@ -40,6 +41,7 @@
     "eslint": "^10.8.1",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.4",
+    "exif-reader": "^2.0.3",
     "globals": "^17.11.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.3.0",

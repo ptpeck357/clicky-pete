@@ -14,6 +14,18 @@ export interface TagValues {
 	collections: string[];
 }
 
+export interface PublishState {
+	/** False for a multipart ETag, which is not an MD5 and so cannot be compared. */
+	comparable: boolean;
+	inSync: boolean;
+	/** The live file changed since our last publish — publishing will be refused with 409. */
+	drifted: boolean;
+	liveModified?: string;
+	entries: number;
+	/** Only present when out of sync — counting it means downloading the live manifest. */
+	pending?: { added: number; removed: number; retagged: number };
+}
+
 const request = async <T>(path: string, init?: RequestInit): Promise<T> => {
 	const response = await fetch(`/__admin${path}`, init);
 	const body: unknown = await response.json().catch(() => ({}));
@@ -30,6 +42,18 @@ const request = async <T>(path: string, init?: RequestInit): Promise<T> => {
 export const adminService = {
 	async getPhotos(): Promise<{ photos: Photo[]; values: TagValues; expectedRatios: string[] }> {
 		return request('/photos');
+	},
+
+	/**
+	 * Reads the capture date out of a file's EXIF. Nothing is stored or uploaded — this only
+	 * exists so the date is on screen and editable before the photo goes anywhere.
+	 */
+	async probeDate(file: File): Promise<{ date?: string }> {
+		return request('/probe', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/octet-stream' },
+			body: file,
+		});
 	},
 
 	/**
@@ -71,6 +95,15 @@ export const adminService = {
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ id, deleteFiles }),
 		});
+	},
+
+	/**
+	 * Compares the local photos.json against the copy S3 is serving. Answers the question the
+	 * session's own change-tracking cannot: whether edits made in an earlier session, or by
+	 * hand, are still unpublished.
+	 */
+	async getPublishState(): Promise<PublishState> {
+		return request('/state');
 	},
 
 	/** Pushes photos.json live and clears the CDN cache. */

@@ -42,6 +42,12 @@ Rules that are easy to break:
   the whole file on every publish.
 - **`aspectRatio` is derived from the image, never typed.** It is not an editable field
   anywhere in the admin, and `/__admin/update` refuses to change it.
+- **`date` is optional and typed, and an absent one means "unknown".** Stored as `YYYY-MM-DD`,
+  which is what makes a string compare chronological — the gallery order depends on that.
+  Nothing backfills it: most entries predate the field and stay without one. The admin
+  pre-fills EXIF `DateTimeOriginal`, or today when the file carries none, but the server only
+  validates what it is sent and never invents a value. Clearing the field drops the key rather
+  than storing `""`.
 - **Never delete an S3 object that the live `photos.json` still references.** The site breaks
   immediately, regardless of what the repo copy says. Publish first, then delete — which is
   what the admin's "Remove and delete files" does, and why it refuses to delete when the
@@ -128,8 +134,10 @@ Committing is its own step, asked for separately — never the automatic end of 
 Changes get tested and approved first, so finishing an edit means running `npm run ci` and
 saying it is ready, then waiting. Approval to commit covers that commit, not the next one.
 
-Gallery order is shuffled on every load (`Gallery.tsx`), so array order in `photos.json`
-carries no meaning.
+Gallery order is by `date`, newest first (`Gallery.tsx` through `utils/photoOrder.ts`), with a
+control for oldest and random; `Home.tsx` still shuffles its featured photos on every load.
+Array position in `photos.json` carries no meaning either way — the file is kept sorted oldest
+to newest so a diff reads chronologically, and nothing depends on that.
 
 ## Branching
 
@@ -148,6 +156,15 @@ branch that has fallen behind before pushing or opening a PR.
 git fetch origin
 git log --oneline HEAD..origin/dev   # empty means up to date
 git rebase origin/dev                # only if it is not
+```
+
+**Name the branch on the first push.** Cutting one from `origin/dev` — `git switch -c <branch>
+origin/dev` — sets its upstream to `dev`, so a later bare `git push` aims your commits at `dev`
+rather than at the branch, and the first sign of it is a rejection. Push it by name once, which
+also repoints the upstream:
+
+```bash
+git push -u origin <branch>
 ```
 
 If work has already been committed on `dev` by mistake, move it to a branch before pushing:

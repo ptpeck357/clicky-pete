@@ -6,6 +6,11 @@ export interface Photo {
 		location: string;
 		collection: string;
 		aspectRatio: string;
+		/**
+		 * YYYY-MM-DD, so a string compare is also a chronological one. Absent means the date is
+		 * unknown: entries predating the field are never backfilled with a guess.
+		 */
+		date?: string;
 		featured?: boolean;
 		hero?: boolean;
 		collectionCover?: boolean;
