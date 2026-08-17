@@ -166,6 +166,11 @@ to newest so a diff reads chronologically, and nothing depends on that.
 `dev` and `prod` are never worked on directly. Every change starts as a new branch cut from
 `dev`, and lands through a pull request — never a commit or a push straight to either branch.
 
+Neither is ever deleted, and neither is `main` — this repo's `main` was renamed to `dev`, so a
+tool or doc still naming `main` is pointing at something that no longer exists here rather than
+at a branch that is safe to remove. Exclude all three by name from any branch cleanup instead
+of trusting a `--merged` listing.
+
 ```bash
 git switch dev && git pull
 git switch -c <type>/<short-description>
