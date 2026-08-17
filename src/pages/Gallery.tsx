@@ -4,7 +4,8 @@ import { useParams, useNavigate, useSearchParams, useLocation } from 'react-rout
 import { PhotoGrid, PhotoViewerModal, CollectionsGrid } from '../components/organisms';
 import { usePhotos } from '../hooks/usePhotos';
 import { photoService } from '../services/photoService';
-import { shuffleArray } from '../utils/array';
+import { SORT_OPTIONS, parseSortOrder, sortPhotos } from '../utils/photoOrder';
+import type { SortOrder } from '../utils/photoOrder';
 import type { Photo, PhotoFilter } from '../types/photo';
 
 const filterButtonVariants = {
@@ -27,6 +28,41 @@ const filterButtonVariants = {
 	},
 };
 
+const sortIconProps: React.SVGProps<SVGSVGElement> = {
+	className: 'w-3.5 h-3.5',
+	fill: 'none',
+	stroke: 'currentColor',
+	strokeWidth: 2,
+	strokeLinecap: 'round',
+	strokeLinejoin: 'round',
+	viewBox: '0 0 24 24',
+	'aria-hidden': true,
+};
+
+/**
+ * Drawn inline rather than pulled from an icon package, matching the other SVGs in the app.
+ * The arrow points the way the dates run: down for newest first, up for oldest first.
+ */
+const SortIcon: React.FC<{ order: SortOrder }> = ({ order }) => {
+	if (order === 'random') {
+		return (
+			<svg {...sortIconProps}>
+				<path d="M16 3h5v5" />
+				<path d="M4 20 21 3" />
+				<path d="M16 21h5v-5" />
+				<path d="m15 15 6 6" />
+				<path d="M4 4l5 5" />
+			</svg>
+		);
+	}
+
+	return (
+		<svg {...sortIconProps}>
+			<path d={order === 'newest' ? 'M12 5v14m0 0l-6-6m6 6l6-6' : 'M12 19V5m0 0l-6 6m6-6l6 6'} />
+		</svg>
+	);
+};
+
 const headerVariants = {
 	hidden: { opacity: 0, y: -20 },
 	visible: {
@@ -47,7 +83,7 @@ const filterSectionVariants = {
 
 export const Gallery: React.FC = () => {
 	const { collection: urlCollection } = useParams<{ collection: string }>();
-	const [searchParams] = useSearchParams();
+	const [searchParams, setSearchParams] = useSearchParams();
 	const navigate = useNavigate();
 	const location = useLocation();
 
@@ -86,9 +122,10 @@ export const Gallery: React.FC = () => {
 	);
 	const { photos, loading, error, refetch } = usePhotos(fetchFilter);
 
-	const shuffledPhotos = useMemo(() => shuffleArray(photos), [photos]);
-	const displayedPhotos = useMemo(() => shuffledPhotos.slice(0, photosToShow), [shuffledPhotos, photosToShow]);
-	const hasMorePhotos = photosToShow < shuffledPhotos.length;
+	const sortOrder = parseSortOrder(searchParams.get('sort'));
+	const orderedPhotos = useMemo(() => sortPhotos(photos, sortOrder), [photos, sortOrder]);
+	const displayedPhotos = useMemo(() => orderedPhotos.slice(0, photosToShow), [orderedPhotos, photosToShow]);
+	const hasMorePhotos = photosToShow < orderedPhotos.length;
 
 	const { scrollY } = useScroll();
 	const heroParallaxY = useTransform(scrollY, [0, 700], [0, -200]);
@@ -115,10 +152,12 @@ export const Gallery: React.FC = () => {
 
 	const isLoadingMoreRef = useRef(false);
 	const observerRef = useRef<IntersectionObserver | null>(null);
+	// sortOrder belongs here too: re-sorting rebuilds the whole list, so a page count carried
+	// over from the previous order would page in from the wrong place.
 	useEffect(() => {
 		setPhotosToShow(15);
 		isLoadingMoreRef.current = false;
-	}, [urlCollection, showAllPhotos]);
+	}, [urlCollection, showAllPhotos, sortOrder]);
 
 	useEffect(() => {
 		setIsModalOpen(false);
@@ -218,7 +257,7 @@ export const Gallery: React.FC = () => {
 			// Load more photos and navigate to the next one
 			const nextIndex = currentIndex + 1;
 			setPhotosToShow((prev) => Math.max(prev + 12, nextIndex + 1));
-			setSelectedPhoto(shuffledPhotos[nextIndex]);
+			setSelectedPhoto(orderedPhotos[nextIndex]);
 		}
 	};
 
@@ -227,6 +266,17 @@ export const Gallery: React.FC = () => {
 		if (currentIndex > 0) {
 			setSelectedPhoto(displayedPhotos[currentIndex - 1]);
 		}
+	};
+
+	const handleSortChange = (order: SortOrder) => {
+		const next = new URLSearchParams(searchParams);
+		// Newest is the default, so it stays out of the URL rather than pinning a redundant param.
+		if (order === 'newest') {
+			next.delete('sort');
+		} else {
+			next.set('sort', order);
+		}
+		setSearchParams(next, { replace: true });
 	};
 
 	const handleBackToCollections = () => {
@@ -410,75 +460,99 @@ export const Gallery: React.FC = () => {
 							exit={{ opacity: 0, y: -20 }}
 							transition={{ duration: 0.3 }}
 						>
-							{showAllPhotos && (
-								<motion.div
-									className="mb-4 sm:mb-6"
-									variants={filterSectionVariants}
-									initial="hidden"
-									animate="visible"
-								>
-									<motion.h3
-										className="text-base sm:text-lg font-medium text-white mb-3"
-										initial={{ opacity: 0 }}
-										animate={{ opacity: 1 }}
-										transition={{ delay: 0.1 }}
-									>
-										Category
-									</motion.h3>
-									<motion.div
-										className="flex flex-wrap gap-2"
-										initial={{ opacity: 0 }}
-										animate={{ opacity: 1 }}
-										transition={{ delay: 0.2 }}
-									>
-										<motion.button
-											onClick={() => handleCategoryChange(undefined)}
-											variants={filterButtonVariants}
-											initial="inactive"
-											animate={!localFilter.category ? 'active' : 'inactive'}
-											whileHover="hover"
-											whileTap={{ scale: 0.98 }}
-											className="px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors cursor-pointer"
+							{/* Stacked on a phone, side by side from sm: — sorting must never push the
+							    category pills onto an extra line. */}
+							<div className="mb-4 flex flex-col gap-4 sm:mb-6 sm:flex-row sm:items-end sm:justify-between">
+								{showAllPhotos && (
+									<motion.div variants={filterSectionVariants} initial="hidden" animate="visible">
+										<motion.h3
+											className="text-base sm:text-lg font-medium text-white mb-3"
+											initial={{ opacity: 0 }}
+											animate={{ opacity: 1 }}
+											transition={{ delay: 0.1 }}
 										>
-											All
-										</motion.button>
+											Category
+										</motion.h3>
+										<motion.div
+											className="flex flex-wrap gap-2"
+											initial={{ opacity: 0 }}
+											animate={{ opacity: 1 }}
+											transition={{ delay: 0.2 }}
+										>
+											<motion.button
+												onClick={() => handleCategoryChange(undefined)}
+												variants={filterButtonVariants}
+												initial="inactive"
+												animate={!localFilter.category ? 'active' : 'inactive'}
+												whileHover="hover"
+												whileTap={{ scale: 0.98 }}
+												className="px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors cursor-pointer"
+											>
+												All
+											</motion.button>
 
-										{categoriesLoading ? (
-											<motion.div
-												className="px-3 py-2 text-xs sm:text-sm text-gray-400"
-												initial={{ opacity: 0 }}
-												animate={{ opacity: 1 }}
-											>
-												Loading categories...
-											</motion.div>
-										) : categories.length > 0 ? (
-											categories.map((category, index) => (
-												<motion.button
-													key={category}
-													onClick={() => handleCategoryChange(category)}
-													variants={filterButtonVariants}
-													initial="inactive"
-													animate={localFilter.category === category ? 'active' : 'inactive'}
-													whileHover="hover"
-													whileTap={{ scale: 0.98 }}
-													className="px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors cursor-pointer"
-													style={{ animationDelay: `${index * 0.05}s` }}
+											{categoriesLoading ? (
+												<motion.div
+													className="px-3 py-2 text-xs sm:text-sm text-gray-400"
+													initial={{ opacity: 0 }}
+													animate={{ opacity: 1 }}
 												>
-													{formatCategoryName(category)}
-												</motion.button>
-											))
-										) : (
-											<motion.div
-												className="px-3 py-2 text-xs sm:text-sm text-gray-400"
-												initial={{ opacity: 0 }}
-												animate={{ opacity: 1 }}
-											>
-												No categories available
-											</motion.div>
-										)}
+													Loading categories...
+												</motion.div>
+											) : categories.length > 0 ? (
+												categories.map((category, index) => (
+													<motion.button
+														key={category}
+														onClick={() => handleCategoryChange(category)}
+														variants={filterButtonVariants}
+														initial="inactive"
+														animate={
+															localFilter.category === category ? 'active' : 'inactive'
+														}
+														whileHover="hover"
+														whileTap={{ scale: 0.98 }}
+														className="px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors cursor-pointer"
+														style={{ animationDelay: `${index * 0.05}s` }}
+													>
+														{formatCategoryName(category)}
+													</motion.button>
+												))
+											) : (
+												<motion.div
+													className="px-3 py-2 text-xs sm:text-sm text-gray-400"
+													initial={{ opacity: 0 }}
+													animate={{ opacity: 1 }}
+												>
+													No categories available
+												</motion.div>
+											)}
+										</motion.div>
 									</motion.div>
+								)}
+
+								<motion.div variants={filterSectionVariants} initial="hidden" animate="visible">
+									<h3 className="text-base sm:text-lg font-medium text-white mb-3">Sort</h3>
+									<div className="flex flex-wrap gap-2" role="group" aria-label="Sort photos">
+										{SORT_OPTIONS.map(({ value, label }) => (
+											<motion.button
+												key={value}
+												onClick={() => handleSortChange(value)}
+												aria-pressed={sortOrder === value}
+												variants={filterButtonVariants}
+												initial="inactive"
+												animate={sortOrder === value ? 'active' : 'inactive'}
+												whileHover="hover"
+												whileTap={{ scale: 0.98 }}
+												// min-h-11 clears the 44px touch target; the pills' own padding does not.
+												className="min-h-11 inline-flex items-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors cursor-pointer"
+											>
+												<SortIcon order={value} />
+												{label}
+											</motion.button>
+										))}
+									</div>
 								</motion.div>
-							)}
+							</div>
 
 							<PhotoGrid
 								photos={displayedPhotos}
@@ -505,12 +579,12 @@ export const Gallery: React.FC = () => {
 				photo={selectedPhoto}
 				isOpen={isModalOpen}
 				onClose={handleModalClose}
-				onNext={getCurrentPhotoIndex() < shuffledPhotos.length - 1 ? handleNextPhoto : undefined}
+				onNext={getCurrentPhotoIndex() < orderedPhotos.length - 1 ? handleNextPhoto : undefined}
 				onPrevious={getCurrentPhotoIndex() > 0 ? handlePreviousPhoto : undefined}
-				// shuffledPhotos, not displayedPhotos: the next photo can sit past the end of
+				// orderedPhotos, not displayedPhotos: the next photo can sit past the end of
 				// what the grid has paged in, and that is exactly the one worth prefetching.
-				nextPhoto={shuffledPhotos[getCurrentPhotoIndex() + 1]}
-				previousPhoto={shuffledPhotos[getCurrentPhotoIndex() - 1]}
+				nextPhoto={orderedPhotos[getCurrentPhotoIndex() + 1]}
+				previousPhoto={orderedPhotos[getCurrentPhotoIndex() - 1]}
 			/>
 		</div>
 	);
