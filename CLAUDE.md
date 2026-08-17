@@ -126,3 +126,25 @@ tree does not end up inside a feature commit.
 
 Gallery order is shuffled on every load (`Gallery.tsx`), so array order in `photos.json`
 carries no meaning.
+
+## Branching
+
+`dev` and `prod` are never worked on directly. Every change starts as a new branch cut from
+`dev`, and lands through a pull request — never a commit or a push straight to either branch.
+
+```bash
+git switch dev && git pull
+git switch -c <type>/<short-description>
+```
+
+Branch off the remote, not whatever `dev` happens to be locally: fetch first, and rebase a
+branch that has fallen behind before pushing or opening a PR.
+
+```bash
+git fetch origin
+git log --oneline HEAD..origin/dev   # empty means up to date
+git rebase origin/dev                # only if it is not
+```
+
+If work has already been committed on `dev` by mistake, move it to a branch before pushing:
+`git switch -c <branch>` keeps the commits, then reset `dev` back to `origin/dev`.
