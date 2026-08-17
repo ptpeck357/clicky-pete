@@ -567,8 +567,7 @@ export const Gallery: React.FC = () => {
 											animate={sortOrder === 'random' ? 'inactive' : 'active'}
 											whileHover="hover"
 											whileTap={{ scale: 0.98 }}
-											// min-h-11 clears the 44px touch target; the pills' own padding does not.
-											className="min-h-11 inline-flex items-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors cursor-pointer capitalize"
+											className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer capitalize"
 										>
 											<SortIcon order={dateDirection} />
 											{dateDirection}
@@ -583,7 +582,7 @@ export const Gallery: React.FC = () => {
 											animate={sortOrder === 'random' ? 'active' : 'inactive'}
 											whileHover="hover"
 											whileTap={{ scale: 0.98 }}
-											className="min-h-11 inline-flex items-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors cursor-pointer"
+											className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer"
 										>
 											<SortIcon order="random" />
 											Random
