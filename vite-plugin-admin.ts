@@ -1,10 +1,17 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { Plugin } from 'vite';
 import sharp from 'sharp';
 import exifReader from 'exif-reader';
-import { S3Client, PutObjectCommand, HeadObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import {
+	S3Client,
+	PutObjectCommand,
+	HeadObjectCommand,
+	GetObjectCommand,
+	DeleteObjectCommand,
+} from '@aws-sdk/client-s3';
 import { CloudFrontClient, CreateInvalidationCommand } from '@aws-sdk/client-cloudfront';
 import type { Photo } from './src/types/photo.ts';
 
@@ -153,6 +160,12 @@ const readManifest = (): Photo[] => JSON.parse(readFileSync(MANIFEST_PATH, 'utf8
 /** Format must match .prettierignore'd on-disk style exactly, or every publish churns the whole file. */
 const writeManifest = (photos: Photo[]) => writeFileSync(MANIFEST_PATH, JSON.stringify(photos, null, 2) + '\n');
 
+/**
+ * S3 returns the MD5 of a single-part object as its ETag, quotes included, so hashing the
+ * local file is enough to tell whether the live copy is this copy — no download needed.
+ */
+const manifestETag = () => `"${createHash('md5').update(readFileSync(MANIFEST_PATH)).digest('hex')}"`;
+
 const readState = (): { lastPublishedETag?: string } =>
 	existsSync(STATE_PATH) ? JSON.parse(readFileSync(STATE_PATH, 'utf8')) : {};
 
@@ -176,6 +189,33 @@ class PublishConflict extends Error {
 		super('photos.json on S3 changed since the last publish from this machine');
 	}
 }
+
+/**
+ * What publishing would actually change, by entry: added and removed are counted by id, and
+ * an entry present on both sides counts as retagged when anything inside it differs.
+ * Comparing the serialised entry rather than named fields means a field added later is
+ * covered without touching this.
+ */
+const countPending = async (
+	s3: S3Client,
+	bucket: string,
+): Promise<{ added: number; removed: number; retagged: number }> => {
+	const live = await s3.send(new GetObjectCommand({ Bucket: bucket, Key: MANIFEST_KEY }));
+	const published = JSON.parse(await live.Body!.transformToString()) as Photo[];
+	const byId = new Map(published.map((photo) => [photo.id, JSON.stringify(photo)]));
+	const local = readManifest();
+
+	let added = 0;
+	let retagged = 0;
+	for (const photo of local) {
+		const before = byId.get(photo.id);
+		if (before === undefined) added += 1;
+		else if (before !== JSON.stringify(photo)) retagged += 1;
+	}
+
+	const localIds = new Set(local.map((photo) => photo.id));
+	return { added, retagged, removed: published.filter((photo) => !localIds.has(photo.id)).length };
+};
 
 /** HeadObject throws rather than returning a flag when the key is absent. */
 const objectExists = async (s3: S3Client, bucket: string, key: string): Promise<boolean> => {
@@ -292,6 +332,28 @@ export function adminPlugin(): Plugin {
 								locations: distinct('location'),
 								collections: distinct('collection'),
 							},
+						});
+					}
+
+					// Whether the local photos.json is what the site is serving. Read-only, and it
+					// downloads the live copy only when the hashes already disagree, so the common
+					// in-sync case costs one HeadObject and can be called after every change.
+					if (req.method === 'GET' && url === '/state') {
+						const local = manifestETag();
+						const head = await s3.send(new HeadObjectCommand({ Bucket: config.bucket, Key: MANIFEST_KEY }));
+						const { lastPublishedETag } = readState();
+						// A multipart ETag is not an MD5, so a comparison would be meaningless.
+						// photos.json is far below the threshold, but say so rather than guess.
+						const comparable = !head.ETag?.includes('-');
+						const inSync = head.ETag === local;
+						return send(res, 200, {
+							comparable,
+							inSync,
+							// The live file moved without us: publishing would 409 on the same check.
+							drifted: Boolean(lastPublishedETag) && head.ETag !== lastPublishedETag,
+							liveModified: head.LastModified?.toISOString(),
+							entries: readManifest().length,
+							pending: comparable && !inSync ? await countPending(s3, config.bucket) : undefined,
 						});
 					}
 
