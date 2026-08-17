@@ -52,9 +52,9 @@ const PACKAGES = [
 	},
 	{
 		name: 'Engagement',
-		price: 425,
+		price: 375,
 		blurb: 'Golden hour, wherever suits the two of you.',
-		details: ['2 hours', '2 locations', '50+ edited photos'],
+		details: ['1.5 hours', '2 locations', '50+ edited photos'],
 		prompts: ['Preferred date(s)', 'Location ideas', 'Wedding date, if you have one', 'Anything else'],
 		icon: <path d="M12 20.5S4.5 15.6 4.5 10.2A3.7 3.7 0 0 1 12 8a3.7 3.7 0 0 1 7.5 2.2c0 5.4-7.5 10.3-7.5 10.3z" />,
 	},
