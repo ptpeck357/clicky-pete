@@ -3,6 +3,7 @@ import type { Photo } from '../../types/photo';
 import { adminService } from '../../services/adminService';
 import type { EditableTags, TagValues } from '../../services/adminService';
 import { PhotoEditModal } from './PhotoEditModal';
+import { Icon, PENCIL_PATH, TRASH_PATH } from './icons';
 
 interface PhotoLibraryProps {
 	photos: Photo[];
@@ -37,6 +38,7 @@ export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onCh
 	const [busy, setBusy] = useState(false);
 	const [limit, setLimit] = useState(PAGE_SIZE);
 	const [confirmingId, setConfirmingId] = useState<string | null>(null);
+	const [newestFirst, setNewestFirst] = useState(true);
 
 	const matches = useMemo(() => {
 		const needle = query.trim().toLowerCase();
@@ -48,6 +50,13 @@ export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onCh
 				.includes(needle),
 		);
 	}, [photos, query]);
+
+	/**
+	 * Newest means most recently added, not most recently taken: entries are appended on upload,
+	 * so reversing puts the latest additions first without depending on `date`, which most
+	 * entries do not have.
+	 */
+	const ordered = useMemo(() => (newestFirst ? [...matches].reverse() : matches), [matches, newestFirst]);
 
 	const remove = async (photo: Photo, deleteFiles: boolean) => {
 		setBusy(true);
@@ -67,7 +76,7 @@ export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onCh
 	};
 
 	// Navigation moves through the filtered set, so arrow keys follow what is on screen.
-	const editing = editingIndex !== null ? matches[editingIndex] : undefined;
+	const editing = editingIndex !== null ? ordered[editingIndex] : undefined;
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -81,6 +90,18 @@ export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onCh
 					}}
 					placeholder="Filter by name, category, location, collection"
 				/>
+				{/* The label names the order in effect, not the one a click would switch to. */}
+				<button
+					type="button"
+					onClick={() => {
+						setNewestFirst((current) => !current);
+						setLimit(PAGE_SIZE);
+					}}
+					className="flex items-center gap-1.5 rounded-md border border-blue-600 px-3 py-2 text-sm text-blue-100 hover:bg-blue-950"
+				>
+					<span aria-hidden="true">{newestFirst ? '↓' : '↑'}</span>
+					{newestFirst ? 'Newest first' : 'Oldest first'}
+				</button>
 				<span className="text-sm text-gray-500 tabular-nums">
 					{matches.length === photos.length
 						? `${photos.length} photos`
@@ -90,7 +111,7 @@ export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onCh
 
 			{/* items-start keeps a portrait card from stretching its landscape neighbours. */}
 			<div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-2 xl:grid-cols-3">
-				{matches.slice(0, limit).map((photo, index) => (
+				{ordered.slice(0, limit).map((photo, index) => (
 					<article key={photo.id} className="overflow-hidden rounded-lg border border-gray-700 bg-gray-900">
 						<button
 							type="button"
@@ -172,16 +193,22 @@ export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onCh
 										type="button"
 										disabled={busy}
 										onClick={() => setEditingIndex(index)}
-										className="rounded-md border border-blue-700 px-3 py-1 text-sm text-blue-300 hover:bg-blue-950 hover:text-blue-200 disabled:opacity-50"
+										className="flex items-center gap-1.5 rounded-md border border-gray-600 px-3 py-1 text-sm text-gray-200 hover:border-blue-700 hover:bg-blue-950 disabled:opacity-50"
 									>
+										<span className="text-blue-400">
+											<Icon path={PENCIL_PATH} />
+										</span>
 										Edit
 									</button>
 									<button
 										type="button"
 										disabled={busy}
 										onClick={() => setConfirmingId(photo.id)}
-										className="rounded-md border border-red-800 px-3 py-1 text-sm text-red-400 hover:bg-red-950 hover:text-red-300 disabled:opacity-50"
+										className="flex items-center gap-1.5 rounded-md border border-gray-600 px-3 py-1 text-sm text-gray-200 hover:border-red-700 hover:bg-red-950 disabled:opacity-50"
 									>
+										<span className="text-red-400">
+											<Icon path={TRASH_PATH} />
+										</span>
 										Remove
 									</button>
 								</div>
