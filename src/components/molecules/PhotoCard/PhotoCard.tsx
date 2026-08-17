@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import type { Photo } from '../../../types/photo';
+import { preloadViewerImage } from '../../../utils/imageOptimization';
 
 interface PhotoCardProps {
 	photo: Photo;
@@ -40,7 +41,10 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick, className 
 		return {
 			src: `${baseUrl}/800/${photo.file}`, // Default/fallback
 			srcSet: `${baseUrl}/400/${photo.file} 400w, ${baseUrl}/800/${photo.file} 800w, ${baseUrl}/2000/${photo.file} 2000w`,
-			sizes: '(max-width: 640px) 400px, (max-width: 1024px) 800px, 2000px',
+			// Widths the thumbnail actually occupies: the masonry runs 2 columns below 640px
+			// and 3–4 above. The previous value claimed 2000px on desktop, so every thumbnail
+			// downloaded the 2000px rendition — 352 KB each, against 16 KB for the 400px.
+			sizes: '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw',
 		};
 	};
 
@@ -71,6 +75,10 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick, className 
 		<div
 			className={`bg-gray-800 rounded-lg overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer group hover:-translate-y-2 ${className}`}
 			onClick={onClick}
+			// Hovering or touching is intent to open. Starting the full-size fetch here buys
+			// the download a head start over the click, and costs nothing if it never comes.
+			onPointerEnter={() => preloadViewerImage(photo.file)}
+			onTouchStart={() => preloadViewerImage(photo.file)}
 		>
 			<div
 				className={`relative ${getAspectClass()} bg-gray-700 overflow-hidden`}

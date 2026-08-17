@@ -507,6 +507,10 @@ export const Gallery: React.FC = () => {
 				onClose={handleModalClose}
 				onNext={getCurrentPhotoIndex() < shuffledPhotos.length - 1 ? handleNextPhoto : undefined}
 				onPrevious={getCurrentPhotoIndex() > 0 ? handlePreviousPhoto : undefined}
+				// shuffledPhotos, not displayedPhotos: the next photo can sit past the end of
+				// what the grid has paged in, and that is exactly the one worth prefetching.
+				nextPhoto={shuffledPhotos[getCurrentPhotoIndex() + 1]}
+				previousPhoto={shuffledPhotos[getCurrentPhotoIndex() - 1]}
 			/>
 		</div>
 	);

@@ -14,11 +14,10 @@
     "pre-commit": "lint-staged",
     "prepare": "husky",
     "preview": "vite preview",
-    "ci": "npm run lint:eslint && npm run lint:prettier && npm run build"
+    "verify:no-admin": "! grep -rqE 'AdminPage|__admin|adminService' dist",
+    "ci": "npm run lint:eslint && npm run lint:prettier && npm run build && npm run verify:no-admin"
   },
   "dependencies": {
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.1",
     "framer-motion": "^13.1.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
@@ -27,6 +26,8 @@
     "react-router-dom": "^7.18.2"
   },
   "devDependencies": {
+    "@aws-sdk/client-cloudfront": "^3.1111.0",
+    "@aws-sdk/client-s3": "^3.1111.0",
     "@commitlint/cli": "^21.2.2",
     "@commitlint/config-conventional": "^21.2.2",
     "@eslint/js": "^10.0.1",
@@ -44,6 +45,7 @@
     "lint-staged": "^17.3.0",
     "postcss": "^8.5.26",
     "prettier": "^3.9.6",
+    "sharp": "^0.35.3",
     "tailwindcss": "^4.3.3",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.67.0",

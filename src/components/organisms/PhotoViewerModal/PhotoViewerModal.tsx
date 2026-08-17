@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Photo } from '../../../types/photo';
+import { preloadViewerImage } from '../../../utils/imageOptimization';
 
 interface PhotoViewerModalProps {
 	photo: Photo | null;
@@ -8,9 +9,19 @@ interface PhotoViewerModalProps {
 	onClose: () => void;
 	onNext?: () => void;
 	onPrevious?: () => void;
+	nextPhoto?: Photo | null;
+	previousPhoto?: Photo | null;
 }
 
-export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpen, onClose, onNext, onPrevious }) => {
+export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({
+	photo,
+	isOpen,
+	onClose,
+	onNext,
+	onPrevious,
+	nextPhoto,
+	previousPhoto,
+}) => {
 	const [imageLoaded, setImageLoaded] = useState(false);
 	const [imageError, setImageError] = useState(false);
 	const [windowDimensions, setWindowDimensions] = useState({
@@ -84,6 +95,17 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 		};
 	}, [isOpen, onClose, onNext, onPrevious]);
 
+	// The arrows and arrow keys only ever move one step, so fetch both neighbours while the
+	// current photo is being looked at. Without this, pressing → starts a 350 KB download from
+	// cold and the blurred 400px stand-in is on screen until it finishes.
+	const nextFile = nextPhoto?.file;
+	const previousFile = previousPhoto?.file;
+	useEffect(() => {
+		if (!isOpen) return;
+		if (nextFile) preloadViewerImage(nextFile);
+		if (previousFile) preloadViewerImage(previousFile);
+	}, [isOpen, nextFile, previousFile]);
+
 	const currentPhotoId = photo?.id;
 	const [lastPhotoId, setLastPhotoId] = useState<string | undefined>();
 
@@ -106,6 +128,8 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 		const baseUrl = `${cloudFrontUrl}/photos`;
 		return {
 			src: `${baseUrl}/2000/${photo.file}`,
+			// 16 KB, already fetched by the grid — used as an instant stand-in.
+			placeholder: `${baseUrl}/400/${photo.file}`,
 			srcSet: `${baseUrl}/800/${photo.file} 800w, ${baseUrl}/2000/${photo.file} 2000w`,
 			sizes: '(max-width: 1024px) 800px, 2000px',
 		};
@@ -115,33 +139,24 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 
 	const getModalDimensions = () => {
 		const aspectRatio = (photo.tags.aspectRatio as string) || '3:2';
-		const isPortrait = aspectRatio === '4:5';
 
-		const viewportWidth = windowDimensions.width;
-		const viewportHeight = windowDimensions.height;
+		// Derived from the photo's own ratio rather than branching on the literal strings
+		// "4:5" and everything-else. Any other crop used to be framed as if it were 3:2,
+		// leaving the rounded border and shadow floating clear of the image edges.
+		const [ratioWidth, ratioHeight] = aspectRatio.split(':').map(Number);
+		const ratio = ratioWidth > 0 && ratioHeight > 0 ? ratioWidth / ratioHeight : 3 / 2;
 
-		let containerWidth: number;
-		let containerHeight: number;
+		// The 1200/800 caps are deliberate and predate this: they keep 3:2 and 4:5 rendering
+		// exactly as before, so only ratios that previously had no correct branch change.
+		const maxWidth = Math.min(windowDimensions.width * 0.9, 1200);
+		const maxHeight = Math.min(windowDimensions.height * 0.8, 800);
 
-		const maxWidth = viewportWidth * 0.9;
-		const maxHeight = viewportHeight * 0.8;
+		let containerWidth = maxWidth;
+		let containerHeight = containerWidth / ratio;
 
-		if (isPortrait) {
-			containerHeight = Math.min(maxHeight, 800);
-			containerWidth = containerHeight * (4 / 5);
-
-			if (containerWidth > maxWidth) {
-				containerWidth = maxWidth;
-				containerHeight = containerWidth * (5 / 4);
-			}
-		} else {
-			containerWidth = Math.min(maxWidth, 1200);
-			containerHeight = containerWidth * (2 / 3);
-
-			if (containerHeight > maxHeight) {
-				containerHeight = maxHeight;
-				containerWidth = containerHeight * (3 / 2);
-			}
+		if (containerHeight > maxHeight) {
+			containerHeight = maxHeight;
+			containerWidth = containerHeight * ratio;
 		}
 
 		return { containerWidth, containerHeight, aspectRatio };
@@ -157,7 +172,7 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
 					exit={{ opacity: 0 }}
-					transition={{ duration: 0.3 }}
+					transition={{ duration: 0.15 }}
 				>
 					<motion.div
 						className="absolute inset-0 bg-black/60 backdrop-blur-md"
@@ -309,20 +324,45 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 								aspectRatio: aspectRatio.replace(':', '/'),
 							}}
 						>
+							{/*
+							 * The 400px rendition is 16 KB and the grid has just loaded it, so it comes from
+							 * cache and paints immediately. Blurred underneath, it gives the modal something
+							 * to show while the 352 KB full-size arrives, instead of a spinner over an empty box.
+							 *
+							 * The scale is tied to the blur radius: blur samples past the image edge and
+							 * fades it to transparent, so the overscan has to cover roughly 3x the radius
+							 * or a soft halo shows against the backdrop. Raise them together.
+							 */}
+							{!imageError && (
+								<img
+									src={photoUrls.placeholder}
+									alt=""
+									aria-hidden="true"
+									draggable={false}
+									className={`absolute inset-0 w-full h-full object-contain blur-[12px] scale-[1.06] select-none transition-opacity duration-300 ${
+										imageLoaded ? 'opacity-0' : 'opacity-100'
+									}`}
+								/>
+							)}
+
 							<motion.img
 								src={photoUrls.src}
 								srcSet={photoUrls.srcSet}
 								sizes={photoUrls.sizes}
 								alt={(photo.tags.category as string) || 'Photo'}
 								draggable={false}
-								className={`w-full h-full object-contain transition-opacity duration-300 select-none ${
+								className={`relative w-full h-full object-contain transition-opacity duration-150 select-none ${
 									imageLoaded ? 'opacity-100' : 'opacity-0'
 								}`}
+								// The photo is the only thing on screen — it should not queue behind
+								// thumbnails still loading in the grid underneath.
+								fetchPriority="high"
+								decoding="async"
 								onLoad={() => setImageLoaded(true)}
 								onError={() => setImageError(true)}
 								initial={{ opacity: 0 }}
 								animate={{ opacity: imageLoaded ? 1 : 0 }}
-								transition={{ duration: 0.3 }}
+								transition={{ duration: 0.15 }}
 							/>
 
 							{/* Mobile: arrows inside image, centered on photo */}

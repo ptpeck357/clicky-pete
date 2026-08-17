@@ -21,3 +21,4 @@ tsconfig.json
 tsconfig.node.json
 **/appsettings.json
 **/appsettings.Development.json
+src/data/photos.json
