@@ -21,6 +21,7 @@ const toEditable = (photo: Photo): EditableTags => ({
 	category: photo.tags.category,
 	location: photo.tags.location,
 	collection: photo.tags.collection,
+	date: photo.tags.date,
 	featured: photo.tags.featured,
 	hero: photo.tags.hero,
 	collectionCover: photo.tags.collectionCover,

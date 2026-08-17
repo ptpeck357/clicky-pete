@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { Plugin } from 'vite';
 import sharp from 'sharp';
+import exifReader from 'exif-reader';
 import { S3Client, PutObjectCommand, HeadObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { CloudFrontClient, CreateInvalidationCommand } from '@aws-sdk/client-cloudfront';
 import type { Photo } from './src/types/photo.ts';
@@ -83,6 +84,62 @@ const aspectRatio = (width: number, height: number): string => {
  * server actually enforces.
  */
 const EXPECTED_RATIOS = ['3:2', '4:5', '4:3'];
+
+const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * The round-trip through UTC is what rejects 2026-02-31: the pattern alone accepts it and
+ * Date rolls it silently forward to 3 March. A month like 13 does not round-trip at all —
+ * toISOString() throws on an invalid date rather than returning a value that differs.
+ */
+const isCalendarDate = (value: string): boolean => {
+	if (!DATE_PATTERN.test(value)) return false;
+	const parsed = new Date(`${value}T00:00:00Z`);
+	return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
+};
+
+/** exif-reader parses date tags as UTC, so the local getters would shift a 00:30 capture back a day. */
+const isoDate = (date: Date): string | undefined => {
+	if (Number.isNaN(date.getTime())) return undefined;
+	const month = `${date.getUTCMonth() + 1}`.padStart(2, '0');
+	const day = `${date.getUTCDate()}`.padStart(2, '0');
+	return `${date.getUTCFullYear()}-${month}-${day}`;
+};
+
+/**
+ * DateTimeOriginal is when the shutter fired. Image.DateTime is when the file was last
+ * written, so a Lightroom export would report the export date as the capture date — it is
+ * deliberately not consulted.
+ */
+const captureDate = (exif?: Buffer): string | undefined => {
+	if (!exif) return undefined;
+	try {
+		const tags = exifReader(exif);
+		const taken = tags.Photo?.DateTimeOriginal ?? tags.Photo?.DateTimeDigitized;
+		return taken instanceof Date ? isoDate(taken) : undefined;
+	} catch {
+		// A camera writing a malformed block is not a reason to refuse the photo.
+		return undefined;
+	}
+};
+
+/** Raised when a supplied date is not a real calendar date. */
+class InvalidDate extends Error {
+	constructor(readonly value: string) {
+		super(`"${value}" is not a date. Use YYYY-MM-DD — 2026-02-31 and 08-16-2026 are both rejected.`);
+	}
+}
+
+/**
+ * A cleared date field arrives as an empty string, which means "unknown" — the key is dropped
+ * rather than stored, so those entries stay identical to the ones that never had a date.
+ */
+const withValidatedDate = <T extends { date?: string }>(tags: T): T => {
+	if (tags.date && !isCalendarDate(tags.date)) throw new InvalidDate(tags.date);
+	const cleaned = { ...tags };
+	if (!cleaned.date) delete cleaned.date;
+	return cleaned;
+};
 
 const readConfig = (): AdminConfig => {
 	if (!existsSync(CONFIG_PATH)) {
@@ -165,6 +222,12 @@ export function adminPlugin(): Plugin {
 		apply: 'serve',
 
 		configureServer(server) {
+			// The admin writes photos.json on every retag. Nothing imports it, so Vite has no
+			// module to update and should stay quiet — but leaving it watched means a save and a
+			// reload are one file event apart, and a reload mid-way through tagging the back
+			// catalogue loses your place in the list. Unwatching removes the possibility.
+			server.watcher.unwatch(MANIFEST_PATH);
+
 			let config: AdminConfig;
 			let s3: S3Client;
 			let cloudfront: CloudFrontClient;
@@ -232,6 +295,15 @@ export function adminPlugin(): Plugin {
 						});
 					}
 
+					// Capture date out of the source bytes, so the form can show it before anything is
+					// uploaded. Reads only — nothing is stored, resized or sent to S3 here.
+					if (req.method === 'POST' && url === '/probe') {
+						const source = await readBody(req);
+						if (!source.length) return send(res, 400, { error: 'empty body' });
+						const { exif } = await sharp(source).metadata();
+						return send(res, 200, { date: captureDate(exif) });
+					}
+
 					// One photo: raw bytes in the body, metadata in a header. Avoids multipart parsing.
 					if (req.method === 'POST' && url === '/photo') {
 						const header = req.headers['x-photo-meta'];
@@ -245,6 +317,10 @@ export function adminPlugin(): Plugin {
 								error: `"${meta.filename}" is not a usable filename. Use letters, digits, dashes and underscores with a single extension — the name becomes both the stored key and the photo's id.`,
 							});
 						}
+
+						// Before any upload: a date rejected further down would otherwise fail the
+						// request with all three renditions already sitting in the bucket.
+						const tags = withValidatedDate(meta.tags);
 
 						const id = slugify(meta.filename);
 						const file = webpName(meta.filename);
@@ -299,7 +375,7 @@ export function adminPlugin(): Plugin {
 						const entry: Photo = {
 							id,
 							file,
-							tags: { ...meta.tags, aspectRatio: ratio },
+							tags: { ...tags, aspectRatio: ratio },
 						};
 						writeManifest([...manifest, entry]);
 						return send(res, 200, { entry, dimensions: { width, height } });
@@ -332,8 +408,9 @@ export function adminPlugin(): Plugin {
 						const manifest = readManifest();
 						const target = manifest.find((p) => p.id === id);
 						if (!target) return send(res, 404, { error: `no entry ${id}` });
+						const validated = withValidatedDate(tags);
 						const updated = manifest.map((p) =>
-							p.id === id ? { ...p, tags: { ...tags, aspectRatio: p.tags.aspectRatio } } : p,
+							p.id === id ? { ...p, tags: { ...validated, aspectRatio: p.tags.aspectRatio } } : p,
 						);
 						writeManifest(updated);
 						return send(res, 200, { entry: updated.find((p) => p.id === id) });
@@ -393,6 +470,7 @@ export function adminPlugin(): Plugin {
 				};
 
 				handle().catch((err: unknown) => {
+					if (err instanceof InvalidDate) return send(res, 400, { error: err.message });
 					const message = err instanceof Error ? err.message : String(err);
 					server.config.logger.error(`[admin] ${message}`);
 					send(res, 500, { error: message });

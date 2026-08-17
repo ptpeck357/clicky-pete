@@ -4,6 +4,7 @@
 
 - **Photo Gallery**: View and organize photos with dynamic categories
 - **Dynamic Filtering**: Filter photos by category, location, and collection
+- **Date Sorting**: Gallery and collections run newest first, with a date button that flips to oldest and a Random shuffle
 - **Responsive Design**: Works beautifully on desktop, tablet, and mobile
 - **CloudFront CDN**: Fast global content delivery with multiple image sizes
 - **Modern UI**: Clean, professional interface with Tailwind CSS and animations
@@ -96,6 +97,9 @@ appear on the site as soon as they are published, with no rebuild or deploy.
 
 Each photo is stored as three WebP renditions at `photos/{400,800,2000}/<file>`.
 
+Entries are kept in date order, oldest first, so a diff reads chronologically. Nothing depends
+on that order — the gallery sorts by the `date` tag, not by position in the file.
+
 ### Adding photos
 
 ```bash
@@ -110,6 +114,10 @@ them, updates `photos.json` and clears the CDN cache.
 Accepted crops are 3:2, 4:5 and 4:3; anything else is flagged as a likely export mistake, with
 an option to upload it anyway. `aspectRatio` is measured from the image, never entered by hand.
 
+The date field arrives filled in: the capture date from the file's EXIF where there is one,
+otherwise today. Both are editable before upload, and clearing the field is how you say the
+date is unknown — nothing is stored in that case, and nothing is ever guessed on the server.
+
 The Library tab lists everything already published. Click a photo to open it full screen with
 its tags alongside, where arrow keys move through the list. Removing offers two choices:
 dropping the entry alone, which leaves the image files in storage, or removing it and deleting
@@ -119,6 +127,8 @@ the files — which publishes first, so the site never points at a missing image
 - `category`: Landscape, Portrait, Aerial, or Astro|Night
 - `location`: where it was taken, as `Place, ST` or `Place, Country`
 - `collection`: the group it belongs to (Montana, Engagements, Graduations, Idaho, …)
+- `date`: when it was taken, as `YYYY-MM-DD`. Optional — an absent date means unknown, and the
+  photos that predate the field keep none rather than being given a guess
 - `featured`: show in the homepage featured section
 - `hero`: use as a hero/banner image
 - `collectionCover`: use as the cover photo for this collection
@@ -138,7 +148,8 @@ The admin exists only under `npm run dev`. It is excluded from production builds
 ### Browsing Photos
 
 - **Home**: Featured photos with progressive loading
-- **Gallery**: View all photos with filtering options
+- **Gallery**: View all photos, with category filters and a sort control
+- **Sorting**: Newest first by default. The date button flips between newest and oldest and shows which is in force; Random shuffles, and reshuffles each time it is clicked. Undated photos sit below the dated ones, shuffled, and the choice is held in the URL as `?sort=` so a sorted view can be shared
 - **Collections**: Browse photos by group — Montana, Graduations, Engagements, Idaho, Portraits, Fragments, Washington, San Luis Obispo, Arizona, Wyoming, Utah
 - **Categories**: Filter by photo type — Landscape, Portrait, Aerial, Astro|Night
 - **Photo Modal**: Click any photo for full-screen view with navigation

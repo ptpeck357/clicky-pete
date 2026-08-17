@@ -13,12 +13,15 @@ if (GA_MEASUREMENT_ID) {
 function AppContent() {
 	const location = useLocation();
 
+	// Keyed on pathname, not the whole location: a query-string change is a filter or a sort
+	// within the page you are already on, and yanking the viewport to the top mid-browse is not
+	// what that click asked for. It also stops one pageview being sent per sort change.
 	useEffect(() => {
 		window.scrollTo(0, 0);
 		if (GA_MEASUREMENT_ID) {
 			ReactGA.send({ hitType: 'pageview', page: location.pathname });
 		}
-	}, [location]);
+	}, [location.pathname]);
 
 	return (
 		<div className="min-h-screen bg-gray-900">
