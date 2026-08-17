@@ -47,7 +47,7 @@ const PACKAGES = [
 	},
 	{
 		name: 'Engagement',
-		price: 325,
+		price: 425,
 		blurb: 'Golden hour in the mountains, usually.',
 		details: ['2 hours', '2 locations', '50+ edited photos'],
 		prompts: ['Preferred date(s)', 'Location ideas', 'Wedding date, if you have one', 'Anything else'],
@@ -201,7 +201,8 @@ export const Contact: React.FC = () => {
 							Sessions &amp; <span className="text-blue-400">Pricing</span>
 						</h2>
 						<p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">
-							Based in Bozeman, Montana. Simple pricing — pick one and tell me what you have in mind.
+							Based in Bozeman, Montana. Introductory rates while I build my local client list — pick one
+							and tell me what you have in mind.
 						</p>
 					</motion.div>
 
