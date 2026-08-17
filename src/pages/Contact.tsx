@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
 // `prompts` become the blank lines the message field is pre-filled with, so they only ask
@@ -78,6 +78,9 @@ const SectionDivider: React.FC = () => (
 
 export const Contact: React.FC = () => {
 	const formRef = useRef<HTMLDivElement>(null);
+	const messageRef = useRef<HTMLTextAreaElement>(null);
+	const autoSizedHeightRef = useRef<number | null>(null);
+	const userResizedRef = useRef(false);
 	const lastPrefillRef = useRef('');
 	const [formData, setFormData] = useState({
 		name: '',
@@ -90,6 +93,40 @@ export const Contact: React.FC = () => {
 	});
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [isSubmitted, setIsSubmitted] = useState(false);
+
+	// The textarea grows with what is in it, so nobody has to find the drag handle — which is
+	// all but invisible on a dark field, and absent entirely on a phone. Capped at most of the
+	// screen so a long message cannot push the send button out of reach; past that the textarea
+	// scrolls itself. The min-height classes set the floor, since min-height beats an inline
+	// height — which is why the floor is folded into the height recorded below.
+	useEffect(() => {
+		const field = messageRef.current;
+		if (!field || userResizedRef.current) return;
+
+		field.style.height = 'auto';
+		const fitted = Math.min(field.scrollHeight, window.innerHeight * 0.6);
+		field.style.height = `${fitted}px`;
+
+		const floor = parseFloat(getComputedStyle(field).minHeight) || 0;
+		autoSizedHeightRef.current = Math.max(fitted, floor);
+	}, [formData.message]);
+
+	// Dragging the corner still works, and wins: a height that is not the one just set can only
+	// have come from the person, and auto-sizing would otherwise undo it on the next keystroke.
+	useEffect(() => {
+		const field = messageRef.current;
+		if (!field) return;
+
+		const observer = new ResizeObserver(() => {
+			const height = field.getBoundingClientRect().height;
+			if (autoSizedHeightRef.current !== null && Math.abs(height - autoSizedHeightRef.current) > 1) {
+				userResizedRef.current = true;
+			}
+		});
+		observer.observe(field);
+
+		return () => observer.disconnect();
+	}, []);
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		const { name, value } = e.target;
@@ -157,6 +194,7 @@ export const Contact: React.FC = () => {
 				setIsSubmitted(false);
 				setFormData({ name: '', email: '', subject: '', message: '', website: '' });
 				lastPrefillRef.current = '';
+				userResizedRef.current = false;
 			}, 3000);
 		} catch (error) {
 			console.error('Contact form error:', error);
@@ -417,8 +455,9 @@ export const Contact: React.FC = () => {
 										value={formData.message}
 										onChange={handleInputChange}
 										required
+										ref={messageRef}
 										rows={7}
-										className={`${inputClass} resize-y sm:min-h-72`}
+										className={`${inputClass} resize-y overflow-y-auto min-h-48 sm:min-h-72`}
 										placeholder="Tell me about your project"
 									/>
 								</div>
