@@ -270,8 +270,9 @@ export const AdminPage: React.FC = () => {
 
 	const readyCount = pending.filter((item) => item.status !== 'done').length;
 
+	// Same vertical gradient the public pages use, so the admin does not read as a different app.
 	return (
-		<div className="min-h-screen bg-gray-950 px-6 py-8 text-gray-100">
+		<div className="min-h-screen bg-[linear-gradient(to_bottom,#111827_0%,#0a1120_15%,#0d1a33_30%,#12274c_50%,#17325f_70%,#1b3a6b_80%,#0e1c38_90%,#111827_100%)] px-6 py-8 text-gray-100">
 			<div className="mx-auto flex max-w-5xl flex-col gap-6">
 				<header className="flex flex-wrap items-center justify-between gap-4">
 					<div>
