@@ -142,8 +142,8 @@ export const About: React.FC = () => {
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 md:items-stretch">
 							<motion.div
 								className="flex justify-center w-full md:h-full"
-								initial={{ opacity: 0, x: 50 }}
-								animate={{ opacity: 1, x: 0 }}
+								initial={{ opacity: 0, y: 30 }}
+								animate={{ opacity: 1, y: 0 }}
 								transition={{ duration: 0.8, delay: 0.2 }}
 							>
 								<div className="relative w-full max-w-md md:max-w-2xl md:h-full my-4 md:my-0">
@@ -165,8 +165,8 @@ export const About: React.FC = () => {
 
 							<motion.div
 								className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden w-full max-w-2xl"
-								initial={{ opacity: 0, x: -50 }}
-								animate={{ opacity: 1, x: 0 }}
+								initial={{ opacity: 0, y: 30 }}
+								animate={{ opacity: 1, y: 0 }}
 								transition={{ duration: 0.8 }}
 							>
 								<div className="bg-gray-700 px-4 py-2 flex items-center space-x-2">
