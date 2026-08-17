@@ -125,6 +125,14 @@ its tags alongside, where arrow keys move through the list. Removing offers two 
 dropping the entry alone, which leaves the image files in storage, or removing it and deleting
 the files — which publishes first, so the site never points at a missing image.
 
+Search filters by name, category, location or collection, and the list pages in as you scroll.
+Sort by date added, category, location or collection, in either direction. Group by category,
+collection or featured to get a grid of cover cards instead — open one to see its photos, where
+the sort then applies within the group. The featured split offers a second level, since it only
+ever divides the library in two: inside Featured or Not featured you can group again by category
+or collection. Which group is open is held in the URL, so the browser's back button steps out one
+level at a time and a refresh reopens where you were.
+
 **Tag descriptions:**
 - `category`: Landscape, Portrait, Aerial, or Astro|Night
 - `location`: where it was taken, as `Place, ST` or `Place, Country`

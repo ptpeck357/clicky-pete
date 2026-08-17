@@ -55,6 +55,17 @@
     }
   },
   {
+    "id": "psx-20170228-190747-1",
+    "file": "PSX_20170228_190747-1.webp",
+    "tags": {
+      "category": "Landscape",
+      "location": "Horse Prairie, MT",
+      "collection": "Montana",
+      "date": "2015-04-17",
+      "aspectRatio": "3:2"
+    }
+  },
+  {
     "id": "psx-20170228-194849",
     "file": "PSX_20170228_194849.webp",
     "tags": {
@@ -149,7 +160,6 @@
       "category": "Astro|Night",
       "location": "Montana Wilderness School of the Bible, MT",
       "collection": "Montana",
-      "featured": true,
       "date": "2017-04-04",
       "aspectRatio": "3:2"
     }
@@ -304,7 +314,6 @@
       "category": "Landscape",
       "location": "Banff National Park, AB",
       "collection": "Fragments",
-      "featured": true,
       "date": "2017-08-18",
       "aspectRatio": "3:2"
     }
@@ -505,7 +514,6 @@
       "category": "Landscape",
       "location": "North Avenue Beach Pier, IL",
       "collection": "Fragments",
-      "featured": true,
       "date": "2018-05-23",
       "aspectRatio": "3:2"
     }
@@ -917,7 +925,6 @@
       "category": "Portrait",
       "location": "Paradise Ridge, ID",
       "collection": "Portraits",
-      "featured": true,
       "date": "2020-06-07",
       "aspectRatio": "3:2"
     }
@@ -1213,17 +1220,6 @@
     }
   },
   {
-    "id": "img-4397",
-    "file": "IMG_4397.webp",
-    "tags": {
-      "category": "Astro|Night",
-      "location": "Clark Canyon Reservoir, MT",
-      "collection": "Montana",
-      "date": "2020-07-11",
-      "aspectRatio": "3:2"
-    }
-  },
-  {
     "id": "img-4400",
     "file": "IMG_4400.webp",
     "tags": {
@@ -1308,7 +1304,6 @@
       "category": "Astro|Night",
       "location": "Steptoe Butte, WA",
       "collection": "Washington",
-      "featured": true,
       "date": "2020-07-24",
       "aspectRatio": "3:2"
     }
@@ -1375,7 +1370,6 @@
       "category": "Portrait",
       "location": "Lawson Gardens, WA",
       "collection": "Engagements",
-      "featured": true,
       "date": "2020-08-22",
       "aspectRatio": "4:5"
     }
@@ -1707,7 +1701,6 @@
       "category": "Portrait",
       "location": "Arboretum & Botanical Garden, ID",
       "collection": "Engagements",
-      "featured": true,
       "date": "2020-11-15",
       "aspectRatio": "4:5"
     }
@@ -2073,7 +2066,6 @@
       "category": "Portrait",
       "location": "Grand Canyon National Park, AZ",
       "collection": "Portraits",
-      "featured": true,
       "date": "2021-04-03",
       "aspectRatio": "3:2"
     }
@@ -2602,7 +2594,6 @@
       "category": "Portrait",
       "location": "Washington State University",
       "collection": "Graduations",
-      "featured": true,
       "date": "2021-04-30",
       "aspectRatio": "4:5"
     }
@@ -2812,7 +2803,6 @@
       "category": "Portrait",
       "location": "Washington State University",
       "collection": "Graduations",
-      "featured": true,
       "date": "2021-05-18",
       "aspectRatio": "4:5"
     }
@@ -2847,6 +2837,7 @@
       "location": "Washington State University",
       "collection": "Graduations",
       "date": "2021-05-18",
+      "featured": true,
       "aspectRatio": "4:5"
     }
   },
@@ -3302,7 +3293,6 @@
       "category": "Landscape",
       "location": "Oceano Dunes, CA",
       "collection": "San Luis Obispo, CA",
-      "featured": true,
       "date": "2021-09-04",
       "aspectRatio": "3:2"
     }
@@ -3669,6 +3659,7 @@
       "location": "Avila Beach, CA",
       "collection": "San Luis Obispo, CA",
       "date": "2021-09-04",
+      "featured": true,
       "aspectRatio": "3:2"
     }
   },
@@ -3834,7 +3825,6 @@
       "category": "Portrait",
       "location": "Arboretum & Botanical Garden, ID",
       "collection": "Portraits",
-      "featured": true,
       "date": "2021-10-05",
       "aspectRatio": "3:2"
     }
@@ -4679,7 +4669,6 @@
       "category": "Aerial",
       "location": "Horse Prairie, MT",
       "collection": "Montana",
-      "featured": true,
       "date": "2024-03-29",
       "aspectRatio": "3:2"
     }
@@ -4718,30 +4707,8 @@
     }
   },
   {
-    "id": "dji-0302",
-    "file": "DJI_0302.webp",
-    "tags": {
-      "category": "Aerial",
-      "location": "Montana State University",
-      "collection": "Montana",
-      "date": "2024-04-30",
-      "aspectRatio": "3:2"
-    }
-  },
-  {
     "id": "dji-0303",
     "file": "DJI_0303.webp",
-    "tags": {
-      "category": "Aerial",
-      "location": "Montana State University",
-      "collection": "Montana",
-      "date": "2024-04-30",
-      "aspectRatio": "3:2"
-    }
-  },
-  {
-    "id": "dji-0304",
-    "file": "DJI_0304.webp",
     "tags": {
       "category": "Aerial",
       "location": "Montana State University",
@@ -4857,6 +4824,7 @@
       "location": "Glacier National Park, MT",
       "collection": "Montana",
       "date": "2024-09-13",
+      "featured": true,
       "aspectRatio": "3:2"
     }
   },
@@ -5051,17 +5019,6 @@
     }
   },
   {
-    "id": "psx-20170228-190747-1",
-    "file": "PSX_20170228_190747-1.webp",
-    "tags": {
-      "category": "Landscape",
-      "location": "Horse Prairie, MT",
-      "collection": "Montana",
-      "date": "2025-04-17",
-      "aspectRatio": "3:2"
-    }
-  },
-  {
     "id": "img-7629",
     "file": "IMG_7629.webp",
     "tags": {
@@ -5147,6 +5104,7 @@
       "location": "Montana State University",
       "collection": "Graduations",
       "date": "2025-05-04",
+      "featured": true,
       "aspectRatio": "4:5"
     }
   },
@@ -5202,6 +5160,7 @@
       "location": "Mammoth, MT",
       "collection": "Engagements",
       "date": "2025-05-21",
+      "featured": true,
       "aspectRatio": "3:2"
     }
   },
@@ -5247,6 +5206,7 @@
       "location": "Mammoth, MT",
       "collection": "Engagements",
       "date": "2025-05-21",
+      "featured": true,
       "aspectRatio": "3:2"
     }
   },
@@ -5302,6 +5262,7 @@
       "location": "Mammoth, MT",
       "collection": "Engagements",
       "date": "2025-05-21",
+      "featured": true,
       "aspectRatio": "3:2"
     }
   },
@@ -5713,6 +5674,7 @@
       "location": "Missouri Headwaters State Park, MT",
       "collection": "Engagements",
       "date": "2025-10-04",
+      "featured": true,
       "aspectRatio": "4:5"
     }
   },
@@ -5734,7 +5696,6 @@
       "category": "Portrait",
       "location": "Missouri Headwaters State Park, MT",
       "collection": "Engagements",
-      "featured": true,
       "date": "2025-10-04",
       "aspectRatio": "3:2"
     }
@@ -5823,7 +5784,6 @@
       "category": "Astro|Night",
       "location": "Grassy Mountain, MT",
       "collection": "Montana",
-      "featured": true,
       "date": "2025-11-13",
       "aspectRatio": "3:2"
     }
@@ -5868,8 +5828,9 @@
       "category": "Landscape",
       "location": "Gardiner, MT",
       "collection": "Montana",
-      "collectionCover": true,
       "date": "2025-12-12",
+      "featured": true,
+      "collectionCover": true,
       "aspectRatio": "3:2"
     }
   },
@@ -5973,28 +5934,6 @@
     }
   },
   {
-    "id": "img-8642",
-    "file": "IMG_8642.webp",
-    "tags": {
-      "category": "Landscape",
-      "location": "Gardiner, MT",
-      "collection": "Montana",
-      "date": "2025-12-12",
-      "aspectRatio": "3:2"
-    }
-  },
-  {
-    "id": "img-8975",
-    "file": "IMG_8975.webp",
-    "tags": {
-      "category": "Portrait",
-      "location": "Logan, MT",
-      "collection": "Portraits",
-      "date": "2025-12-21",
-      "aspectRatio": "3:2"
-    }
-  },
-  {
     "id": "img-8938",
     "file": "IMG_8938.webp",
     "tags": {
@@ -6025,17 +5964,6 @@
       "collection": "Portraits",
       "date": "2025-12-21",
       "aspectRatio": "4:5"
-    }
-  },
-  {
-    "id": "img-8937",
-    "file": "IMG_8937.webp",
-    "tags": {
-      "category": "Portrait",
-      "location": "Logan, MT",
-      "collection": "Portraits",
-      "date": "2025-12-21",
-      "aspectRatio": "3:2"
     }
   },
   {
@@ -6134,6 +6062,7 @@
       "location": "Hyalite Reservoir, MT",
       "collection": "Montana",
       "date": "2026-02-12",
+      "featured": true,
       "aspectRatio": "3:2"
     }
   },
@@ -6326,6 +6255,18 @@
     }
   },
   {
+    "id": "img-9950",
+    "file": "IMG_9950.webp",
+    "tags": {
+      "category": "Landscape",
+      "location": "Grassy Mountain, MT",
+      "collection": "Montana",
+      "date": "2026-07-31",
+      "featured": true,
+      "aspectRatio": "4:3"
+    }
+  },
+  {
     "id": "dji-0594",
     "file": "DJI_0594.webp",
     "tags": {
@@ -6333,6 +6274,7 @@
       "location": "Hyalite Reservoir, MT",
       "collection": "Montana",
       "date": "2026-08-01",
+      "featured": true,
       "aspectRatio": "3:2"
     }
   },
@@ -6361,17 +6303,6 @@
   {
     "id": "img-0009",
     "file": "IMG_0009.webp",
-    "tags": {
-      "category": "Portrait",
-      "location": "Big Sky, MT",
-      "collection": "Engagements",
-      "date": "2026-08-02",
-      "aspectRatio": "4:5"
-    }
-  },
-  {
-    "id": "img-0011",
-    "file": "IMG_0011.webp",
     "tags": {
       "category": "Portrait",
       "location": "Big Sky, MT",
@@ -6448,14 +6379,14 @@
     }
   },
   {
-    "id": "img-0073",
-    "file": "IMG_0073.webp",
+    "id": "img-0015",
+    "file": "IMG_0015.webp",
     "tags": {
       "category": "Portrait",
       "location": "Big Sky, MT",
       "collection": "Engagements",
       "date": "2026-08-02",
-      "aspectRatio": "4:3"
+      "aspectRatio": "4:5"
     }
   }
 ]
