@@ -1,7 +1,80 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
+// `prompts` become the blank lines the message field is pre-filled with, so they only ask
+// what actually varies for that shoot — headcount matters for a family, not for a headshot.
+const PACKAGES = [
+	{
+		name: 'Portrait',
+		price: 225,
+		blurb: 'Headshots, seniors, solo sessions.',
+		details: ['1 hour', '1 location', '25+ edited photos'],
+		prompts: ['Preferred date(s)', 'Location ideas', 'What the photos are for', 'Anything else'],
+		icon: (
+			<>
+				<circle cx="12" cy="8" r="3.5" />
+				<path d="M5 20a7 7 0 0 1 14 0" />
+			</>
+		),
+	},
+	{
+		name: 'Graduation',
+		price: 250,
+		blurb: 'Cap and gown, campus, or somewhere with a view.',
+		details: ['1 hour', '2 locations', '30+ edited photos'],
+		prompts: ['Preferred date(s)', 'Location ideas', 'School', 'Anything else'],
+		icon: (
+			<>
+				<path d="M2 9l10-5 10 5-10 5z" />
+				<path d="M6 11.5V16c0 1.7 2.7 3 6 3s6-1.3 6-3v-4.5" />
+			</>
+		),
+	},
+	{
+		name: 'Family',
+		price: 300,
+		blurb: 'Up to 6 people, kids welcome.',
+		details: ['1.5 hours', '1 location', '40+ edited photos'],
+		prompts: ['Preferred date(s)', 'Location ideas', 'How many people', 'Ages of any kids', 'Anything else'],
+		icon: (
+			<>
+				<circle cx="8" cy="8" r="3" />
+				<circle cx="16.5" cy="9.5" r="2.5" />
+				<path d="M2.5 20a5.5 5.5 0 0 1 11 0" />
+				<path d="M15 20a4.5 4.5 0 0 1 6.5-4" />
+			</>
+		),
+	},
+	{
+		name: 'Engagement',
+		price: 325,
+		blurb: 'Golden hour in the mountains, usually.',
+		details: ['2 hours', '2 locations', '50+ edited photos'],
+		prompts: ['Preferred date(s)', 'Location ideas', 'Wedding date, if you have one', 'Anything else'],
+		icon: <path d="M12 20.5S4.5 15.6 4.5 10.2A3.7 3.7 0 0 1 12 8a3.7 3.7 0 0 1 7.5 2.2c0 5.4-7.5 10.3-7.5 10.3z" />,
+	},
+];
+
+const CUSTOM_PROMPTS = ['What I have in mind', 'Preferred date(s)', 'Location ideas', 'How many people'];
+
+// The peak is the same path as public/mountain.svg, inlined so it can take currentColor —
+// the file itself is a black fill, which would vanish against this background.
+const SectionDivider: React.FC = () => (
+	<div className="px-6" aria-hidden="true">
+		<div className="max-w-6xl mx-auto flex items-center gap-4">
+			<div className="h-px flex-1 bg-gradient-to-r from-transparent to-gray-600" />
+			<svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0 text-gray-500" fill="currentColor">
+				<path d="M3 18L10 7l4 6 3-4 7 9H3z" />
+			</svg>
+			<div className="h-px flex-1 bg-gradient-to-l from-transparent to-gray-600" />
+		</div>
+	</div>
+);
+
 export const Contact: React.FC = () => {
+	const formRef = useRef<HTMLDivElement>(null);
+	const nameRef = useRef<HTMLInputElement>(null);
+	const lastPrefillRef = useRef('');
 	const [formData, setFormData] = useState({
 		name: '',
 		email: '',
@@ -17,6 +90,32 @@ export const Contact: React.FC = () => {
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		const { name, value } = e.target;
 		setFormData((prev) => ({ ...prev, [name]: value }));
+	};
+
+	const handleSelectPackage = (label: string, prompts: string[]) => {
+		const intro =
+			label === 'Custom'
+				? "Hi Pete — I'd like a quote for something that isn't listed."
+				: `Hi Pete — I'm interested in the ${label} session.`;
+		// Blank line between each prompt so there is room to answer under it.
+		const prefill = `${intro}\n\n${prompts.map((prompt) => `${prompt}:`).join('\n\n')}`;
+
+		// Read the ref before reassigning it: the updater below runs after this function
+		// returns, so comparing against lastPrefillRef.current there would compare the old
+		// message with the new template and never match.
+		const previousPrefill = lastPrefillRef.current;
+		lastPrefillRef.current = prefill;
+
+		setFormData((prev) => ({
+			...prev,
+			subject: label === 'Custom' ? 'Custom session' : `${label} session`,
+			// Replace the message only when it is still empty or untouched since the last
+			// time a button filled it in — never overwrite something they typed themselves.
+			message: prev.message === '' || prev.message === previousPrefill ? prefill : prev.message,
+		}));
+
+		formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		nameRef.current?.focus({ preventScroll: true });
 	};
 
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -44,6 +143,7 @@ export const Contact: React.FC = () => {
 			setTimeout(() => {
 				setIsSubmitted(false);
 				setFormData({ name: '', email: '', subject: '', message: '', website: '' });
+				lastPrefillRef.current = '';
 			}, 3000);
 		} catch (error) {
 			console.error('Contact form error:', error);
@@ -60,244 +160,303 @@ export const Contact: React.FC = () => {
 
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-black via-gray-900 via-slate-800 via-blue-900 via-blue-700 via-sky-600 via-cyan-500 via-blue-600 via-indigo-700 via-indigo-900 via-slate-900 to-black flex flex-col">
-			<div className="flex-1 flex items-center justify-center px-6 py-12 sm:py-16 md:py-14 lg:py-32">
-				<div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-12 md:gap-14 lg:gap-24 items-center">
-					{/* Left — headline + socials */}
-					<motion.div
-						initial={{ opacity: 0, x: -30 }}
-						animate={{ opacity: 1, x: 0 }}
-						transition={{ duration: 0.7 }}
-					>
-						<div className="relative block py-8 px-8 mb-8">
-							<div className="absolute top-0 left-0 w-10 h-10 border-l-2 border-t-2 border-gray-600" />
-							<div className="absolute top-0 right-0 w-10 h-10 border-r-2 border-t-2 border-gray-600" />
-							<div className="absolute bottom-0 left-0 w-10 h-10 border-l-2 border-b-2 border-gray-600" />
-							<div className="absolute bottom-0 right-0 w-10 h-10 border-r-2 border-b-2 border-gray-600" />
-							<h1 className="text-4xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight max-w-xs md:max-w-sm text-center mx-auto">
-								Let's capture <span className="text-blue-400">something</span> neat
-							</h1>
-						</div>
+			{/* Intro */}
+			<div className="px-6 pt-8 sm:pt-14 lg:pt-24 pb-8 sm:pb-12">
+				<motion.div
+					initial={{ opacity: 0, y: -20 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.7 }}
+					className="w-full max-w-3xl mx-auto text-center"
+				>
+					<div className="relative block py-5 px-6 mb-5 sm:py-8 sm:px-8 sm:mb-8">
+						<div className="absolute top-0 left-0 w-8 h-8 sm:w-10 sm:h-10 border-l-2 border-t-2 border-gray-600" />
+						<div className="absolute top-0 right-0 w-8 h-8 sm:w-10 sm:h-10 border-r-2 border-t-2 border-gray-600" />
+						<div className="absolute bottom-0 left-0 w-8 h-8 sm:w-10 sm:h-10 border-l-2 border-b-2 border-gray-600" />
+						<div className="absolute bottom-0 right-0 w-8 h-8 sm:w-10 sm:h-10 border-r-2 border-b-2 border-gray-600" />
+						<h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight max-w-xs md:max-w-2xl text-center mx-auto">
+							Let's capture <span className="text-blue-400">something</span> neat
+						</h1>
+					</div>
 
-						<p className="text-gray-400 text-lg leading-relaxed">
-							Have a shoot in mind? Want to collaborate? <br />
-							Fill out the form and I'll get back to you.
+					<p className="text-gray-400 text-base sm:text-lg leading-relaxed">
+						Have a shoot in mind? Want to collaborate? <br className="hidden sm:inline" />
+						Pick a session below, or just send me a message.
+					</p>
+				</motion.div>
+			</div>
+
+			<SectionDivider />
+
+			{/* Packages */}
+			<section id="packages" className="px-6 pt-12 sm:pt-16 pb-16 sm:pb-20">
+				<div className="w-full max-w-6xl mx-auto">
+					<motion.div
+						initial={{ opacity: 0, y: 20 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true, amount: 0.2 }}
+						transition={{ duration: 0.6 }}
+						className="text-center mb-8 sm:mb-10"
+					>
+						<h2 className="text-3xl sm:text-4xl font-bold text-white mb-3">
+							Sessions &amp; <span className="text-blue-400">Pricing</span>
+						</h2>
+						<p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">
+							Based in Bozeman, Montana. Simple pricing — pick one and tell me what you have in mind.
 						</p>
 					</motion.div>
 
-					{/* Right — form */}
-					<motion.div
-						initial={{ opacity: 0, x: 30 }}
-						animate={{ opacity: 1, x: 0 }}
-						transition={{ duration: 0.7, delay: 0.15 }}
-					>
-						<div className="bg-gray-800 border border-gray-600 rounded-2xl p-6 sm:p-8 md:p-10 shadow-lg shadow-blue-950/20 ring-1 ring-white/5">
-							{isSubmitted ? (
-								<motion.div
-									className="text-center py-12"
-									initial={{ opacity: 0, scale: 0.9 }}
-									animate={{ opacity: 1, scale: 1 }}
-								>
-									<div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-										<svg
-											className="w-8 h-8 text-white"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M5 13l4 4L19 7"
-											/>
-										</svg>
-									</div>
-									<h3 className="text-xl font-semibold text-white mb-2">Message Sent!</h3>
-									<p className="text-gray-400">Thanks for reaching out. I'll get back to you soon!</p>
-								</motion.div>
-							) : (
-								<form onSubmit={handleSubmit} className="space-y-5">
-									{/*
-									 * Positioned off-screen rather than display:none — some bots skip fields
-									 * they can tell are hidden, but will fill anything they can read. aria-hidden
-									 * and tabIndex keep it away from screen readers and keyboard users.
-									 */}
-									<div
-										className="absolute -left-[9999px] h-px w-px overflow-hidden"
+					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+						{PACKAGES.map((pkg, i) => (
+							<motion.div
+								key={pkg.name}
+								initial={{ opacity: 0, y: 20 }}
+								whileInView={{ opacity: 1, y: 0 }}
+								viewport={{ once: true, amount: 0.2 }}
+								transition={{ duration: 0.5, delay: i * 0.08 }}
+								className="flex flex-col bg-gray-800 border border-gray-600 rounded-2xl p-6 ring-1 ring-white/5 shadow-lg shadow-blue-950/20"
+							>
+								<div className="flex items-center gap-2">
+									<svg
+										viewBox="0 0 24 24"
+										className="w-5 h-5 shrink-0 text-blue-400"
+										fill="none"
+										stroke="currentColor"
+										strokeWidth={1.5}
+										strokeLinecap="round"
+										strokeLinejoin="round"
 										aria-hidden="true"
 									>
-										<label htmlFor="website">Website (leave this empty)</label>
-										<input
-											type="text"
-											id="website"
-											name="website"
-											value={formData.website}
-											onChange={handleInputChange}
-											tabIndex={-1}
-											autoComplete="off"
+										{pkg.icon}
+									</svg>
+									<h3 className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+										{pkg.name}
+									</h3>
+								</div>
+								<p className="mt-3 text-white">
+									<span className="text-sm text-gray-400">Starting at </span>
+									<span className="text-3xl font-bold">${pkg.price}</span>
+								</p>
+								<p className="mt-3 text-sm text-gray-400 leading-relaxed">{pkg.blurb}</p>
+								<ul className="mt-4 space-y-2 text-sm text-gray-300">
+									{pkg.details.map((detail) => (
+										<li key={detail} className="flex items-start gap-2">
+											<svg
+												className="w-4 h-4 mt-0.5 shrink-0 text-blue-400"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+												aria-hidden="true"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth={2}
+													d="M5 13l4 4L19 7"
+												/>
+											</svg>
+											{detail}
+										</li>
+									))}
+								</ul>
+								<button
+									type="button"
+									onClick={() => handleSelectPackage(pkg.name, pkg.prompts)}
+									className="mt-6 w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer font-medium text-sm"
+								>
+									Book {pkg.name}
+								</button>
+							</motion.div>
+						))}
+					</div>
+
+					<div className="mt-8 text-center max-w-2xl mx-auto">
+						<p className="text-sm text-gray-400 leading-relaxed">
+							Every session includes an online gallery and a print release. Travel outside the Bozeman
+							area, larger groups and extra time are quoted per shoot.
+						</p>
+						<button
+							type="button"
+							onClick={() => handleSelectPackage('Custom', CUSTOM_PROMPTS)}
+							className="mt-4 px-5 py-3 bg-gray-800 border border-gray-600 text-gray-200 rounded-lg hover:border-blue-500 hover:text-white transition-colors cursor-pointer font-medium text-sm"
+						>
+							Something else? Get a custom quote
+						</button>
+					</div>
+				</div>
+			</section>
+
+			<SectionDivider />
+
+			{/* Contact form. scroll-mt on the card clears the fixed header, which would
+			    otherwise cover its top when a package button scrolls it into view. */}
+			<section className="px-6 pt-12 sm:pt-16 pb-16 sm:pb-20">
+				<motion.div
+					ref={formRef}
+					initial={{ opacity: 0, y: 20 }}
+					whileInView={{ opacity: 1, y: 0 }}
+					viewport={{ once: true, amount: 0.15 }}
+					transition={{ duration: 0.6 }}
+					className="w-full max-w-2xl mx-auto scroll-mt-24"
+				>
+					<div className="bg-gray-800 border border-gray-600 rounded-2xl p-6 sm:p-8 md:p-10 shadow-lg shadow-blue-950/20 ring-1 ring-white/5">
+						{isSubmitted ? (
+							<motion.div
+								className="text-center py-12"
+								initial={{ opacity: 0, scale: 0.9 }}
+								animate={{ opacity: 1, scale: 1 }}
+							>
+								<div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+									<svg
+										className="w-8 h-8 text-white"
+										fill="none"
+										stroke="currentColor"
+										viewBox="0 0 24 24"
+									>
+										<path
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											strokeWidth={2}
+											d="M5 13l4 4L19 7"
 										/>
-									</div>
+									</svg>
+								</div>
+								<h3 className="text-xl font-semibold text-white mb-2">Message Sent!</h3>
+								<p className="text-gray-400">Thanks for reaching out. I'll get back to you soon!</p>
+							</motion.div>
+						) : (
+							<form onSubmit={handleSubmit} className="space-y-5">
+								{/*
+								 * Positioned off-screen rather than display:none — some bots skip fields
+								 * they can tell are hidden, but will fill anything they can read. aria-hidden
+								 * and tabIndex keep it away from screen readers and keyboard users.
+								 */}
+								<div className="absolute -left-[9999px] h-px w-px overflow-hidden" aria-hidden="true">
+									<label htmlFor="website">Website (leave this empty)</label>
+									<input
+										type="text"
+										id="website"
+										name="website"
+										value={formData.website}
+										onChange={handleInputChange}
+										tabIndex={-1}
+										autoComplete="off"
+									/>
+								</div>
 
-									<div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-										<div>
-											<label htmlFor="name" className={labelClass}>
-												Name
-											</label>
-											<input
-												type="text"
-												id="name"
-												name="name"
-												value={formData.name}
-												onChange={handleInputChange}
-												required
-												className={inputClass}
-												placeholder="John Doe"
-											/>
-										</div>
-										<div>
-											<label htmlFor="email" className={labelClass}>
-												Email
-											</label>
-											<input
-												type="email"
-												id="email"
-												name="email"
-												value={formData.email}
-												onChange={handleInputChange}
-												required
-												className={inputClass}
-												placeholder="you@example.com"
-											/>
-										</div>
-									</div>
-
+								<div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
 									<div>
-										<label htmlFor="subject" className={labelClass}>
-											Subject
+										<label htmlFor="name" className={labelClass}>
+											Name
 										</label>
 										<input
+											ref={nameRef}
 											type="text"
-											id="subject"
-											name="subject"
-											value={formData.subject}
+											id="name"
+											name="name"
+											value={formData.name}
 											onChange={handleInputChange}
 											required
 											className={inputClass}
-											placeholder="Grad photos, landscape prints, etc."
+											placeholder="John Doe"
 										/>
 									</div>
-
 									<div>
-										<label htmlFor="message" className={labelClass}>
-											Message
+										<label htmlFor="email" className={labelClass}>
+											Email
 										</label>
-										<textarea
-											id="message"
-											name="message"
-											value={formData.message}
+										<input
+											type="email"
+											id="email"
+											name="email"
+											value={formData.email}
 											onChange={handleInputChange}
 											required
-											rows={6}
-											className={`${inputClass} resize-none`}
-											placeholder="Tell me about your project"
+											className={inputClass}
+											placeholder="you@example.com"
 										/>
 									</div>
+								</div>
 
-									<button
-										type="submit"
-										disabled={isSubmitting}
-										className="w-full px-6 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-3 cursor-pointer font-medium text-base"
-									>
-										{isSubmitting ? (
-											<>
-												<svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-													<circle
-														className="opacity-25"
-														cx="12"
-														cy="12"
-														r="10"
-														stroke="currentColor"
-														strokeWidth="4"
-													/>
-													<path
-														className="opacity-75"
-														fill="currentColor"
-														d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-													/>
-												</svg>
-												Sending...
-											</>
-										) : (
-											<>
-												Send Message
-												<svg
-													className="w-4 h-4"
-													fill="none"
+								<div>
+									<label htmlFor="subject" className={labelClass}>
+										Subject
+									</label>
+									<input
+										type="text"
+										id="subject"
+										name="subject"
+										value={formData.subject}
+										onChange={handleInputChange}
+										required
+										className={inputClass}
+										placeholder="Grad photos, landscape prints, etc."
+									/>
+								</div>
+
+								<div>
+									<label htmlFor="message" className={labelClass}>
+										Message
+									</label>
+									<textarea
+										id="message"
+										name="message"
+										value={formData.message}
+										onChange={handleInputChange}
+										required
+										rows={7}
+										className={`${inputClass} resize-y sm:min-h-72`}
+										placeholder="Tell me about your project"
+									/>
+								</div>
+
+								<button
+									type="submit"
+									disabled={isSubmitting}
+									className="w-full px-6 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-3 cursor-pointer font-medium text-base"
+								>
+									{isSubmitting ? (
+										<>
+											<svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+												<circle
+													className="opacity-25"
+													cx="12"
+													cy="12"
+													r="10"
 													stroke="currentColor"
-													viewBox="0 0 24 24"
-												>
-													<path
-														strokeLinecap="round"
-														strokeLinejoin="round"
-														strokeWidth={2}
-														d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-													/>
-												</svg>
-											</>
-										)}
-									</button>
-								</form>
-							)}
-						</div>
-					</motion.div>
-				</div>
-			</div>
-			<motion.div
-				initial={{ opacity: 0, y: 10 }}
-				animate={{ opacity: 1, y: 0 }}
-				transition={{ duration: 0.5, delay: 0.3 }}
-				className="flex items-center justify-center gap-4 pb-8"
-			>
-				<a
-					href="https://instagram.com/clicky_pete"
-					target="_blank"
-					rel="noopener noreferrer"
-					className="group"
-					aria-label="Instagram"
-				>
-					<div className="w-10 h-10 bg-gray-800 border border-gray-700 rounded-lg flex items-center justify-center group-hover:border-pink-500 transition-colors text-gray-400 group-hover:text-pink-500">
-						<svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-							<path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-						</svg>
+													strokeWidth="4"
+												/>
+												<path
+													className="opacity-75"
+													fill="currentColor"
+													d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+												/>
+											</svg>
+											Sending...
+										</>
+									) : (
+										<>
+											Send Message
+											<svg
+												className="w-4 h-4"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth={2}
+													d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+												/>
+											</svg>
+										</>
+									)}
+								</button>
+							</form>
+						)}
 					</div>
-				</a>
-				<a
-					href="https://www.youtube.com/@ptpeck357"
-					target="_blank"
-					rel="noopener noreferrer"
-					className="group"
-					aria-label="YouTube"
-				>
-					<div className="w-10 h-10 bg-gray-800 border border-gray-700 rounded-lg flex items-center justify-center group-hover:border-red-500 transition-colors text-gray-400 group-hover:text-red-500">
-						<svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-							<path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-						</svg>
-					</div>
-				</a>
-				<a
-					href="https://www.linkedin.com/in/petertpeck/"
-					target="_blank"
-					rel="noopener noreferrer"
-					className="group"
-					aria-label="LinkedIn"
-				>
-					<div className="w-10 h-10 bg-gray-800 border border-gray-700 rounded-lg flex items-center justify-center group-hover:border-blue-500 transition-colors text-gray-400 group-hover:text-blue-500">
-						<svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-							<path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-						</svg>
-					</div>
-				</a>
-			</motion.div>
+				</motion.div>
+			</section>
 		</div>
 	);
 };
