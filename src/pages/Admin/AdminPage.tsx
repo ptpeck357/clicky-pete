@@ -5,6 +5,7 @@ import { adminService } from '../../services/adminService';
 import type { EditableTags, TagValues } from '../../services/adminService';
 import { PhotoForm } from './PhotoForm';
 import { PhotoLibrary } from './PhotoLibrary';
+import { Icon, TRASH_PATH } from './icons';
 
 type PendingStatus = 'ready' | 'uploading' | 'done' | 'error';
 
@@ -485,8 +486,11 @@ export const AdminPage: React.FC = () => {
 															current.filter((p) => p.key !== item.key),
 														)
 													}
-													className="h-8 flex-shrink-0 rounded-md border border-gray-600 px-3 text-sm text-gray-400 hover:bg-gray-800"
+													className="flex h-8 flex-shrink-0 items-center gap-1.5 rounded-md border border-gray-600 px-3 text-sm text-gray-200 hover:border-red-700 hover:bg-red-950"
 												>
+													<span className="text-red-400">
+														<Icon path={TRASH_PATH} />
+													</span>
 													Remove
 												</button>
 											</div>
