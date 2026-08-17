@@ -42,6 +42,12 @@ Rules that are easy to break:
   the whole file on every publish.
 - **`aspectRatio` is derived from the image, never typed.** It is not an editable field
   anywhere in the admin, and `/__admin/update` refuses to change it.
+- **`date` is optional and typed, and an absent one means "unknown".** Stored as `YYYY-MM-DD`,
+  which is what makes a string compare chronological — the gallery order depends on that.
+  Nothing backfills it: most entries predate the field and stay without one. The admin
+  pre-fills EXIF `DateTimeOriginal`, or today when the file carries none, but the server only
+  validates what it is sent and never invents a value. Clearing the field drops the key rather
+  than storing `""`.
 - **Never delete an S3 object that the live `photos.json` still references.** The site breaks
   immediately, regardless of what the repo copy says. Publish first, then delete — which is
   what the admin's "Remove and delete files" does, and why it refuses to delete when the
