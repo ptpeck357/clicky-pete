@@ -627,7 +627,7 @@ export const Gallery: React.FC = () => {
 										<path d="M3 18L10 7l4 6 3-4 7 9H3z" />
 									</svg>
 									<h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-										Want photos like <span className="text-blue-400">these</span>?
+										I shoot <span className="text-blue-400">people</span>, too
 									</h2>
 									<p className="text-gray-400 text-base sm:text-lg leading-relaxed mb-7">
 										Portraits, graduations, families and engagements around Bozeman, at introductory
