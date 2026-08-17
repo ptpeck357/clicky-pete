@@ -328,6 +328,10 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({
 							 * The 400px rendition is 16 KB and the grid has just loaded it, so it comes from
 							 * cache and paints immediately. Blurred underneath, it gives the modal something
 							 * to show while the 352 KB full-size arrives, instead of a spinner over an empty box.
+							 *
+							 * The scale is tied to the blur radius: blur samples past the image edge and
+							 * fades it to transparent, so the overscan has to cover roughly 3x the radius
+							 * or a soft halo shows against the backdrop. Raise them together.
 							 */}
 							{!imageError && (
 								<img
@@ -335,7 +339,7 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({
 									alt=""
 									aria-hidden="true"
 									draggable={false}
-									className={`absolute inset-0 w-full h-full object-contain blur-[2px] scale-[1.02] select-none transition-opacity duration-300 ${
+									className={`absolute inset-0 w-full h-full object-contain blur-[12px] scale-[1.06] select-none transition-opacity duration-300 ${
 										imageLoaded ? 'opacity-0' : 'opacity-100'
 									}`}
 								/>
