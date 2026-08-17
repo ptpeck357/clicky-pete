@@ -35,7 +35,12 @@ const PACKAGES = [
 		price: 300,
 		blurb: 'Up to 6 people, kids welcome.',
 		details: ['1.5 hours', '1 location', '40+ edited photos'],
-		prompts: ['Preferred date(s)', 'Location ideas', 'How many people', 'Ages of any kids', 'Anything else'],
+		prompts: [
+			'Preferred date(s)',
+			'Location ideas',
+			"Who's coming (how many, and ages if there are kids)",
+			'Anything else',
+		],
 		icon: (
 			<>
 				<circle cx="8" cy="8" r="3" />
