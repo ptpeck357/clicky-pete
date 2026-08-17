@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
 // `prompts` become the blank lines the message field is pre-filled with, so they only ask
@@ -78,6 +78,7 @@ const SectionDivider: React.FC = () => (
 
 export const Contact: React.FC = () => {
 	const formRef = useRef<HTMLDivElement>(null);
+	const messageRef = useRef<HTMLTextAreaElement>(null);
 	const lastPrefillRef = useRef('');
 	const [formData, setFormData] = useState({
 		name: '',
@@ -90,6 +91,18 @@ export const Contact: React.FC = () => {
 	});
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [isSubmitted, setIsSubmitted] = useState(false);
+
+	// The textarea grows with what is in it, so nobody has to find the drag handle — which is
+	// all but invisible on a dark field. Capped at most of the screen so a long message cannot
+	// push the send button out of reach; past that the textarea scrolls itself. The min-height
+	// classes still set the floor, since min-height beats an inline height.
+	useEffect(() => {
+		const field = messageRef.current;
+		if (!field) return;
+
+		field.style.height = 'auto';
+		field.style.height = `${Math.min(field.scrollHeight, window.innerHeight * 0.6)}px`;
+	}, [formData.message]);
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		const { name, value } = e.target;
@@ -417,8 +430,9 @@ export const Contact: React.FC = () => {
 										value={formData.message}
 										onChange={handleInputChange}
 										required
+										ref={messageRef}
 										rows={7}
-										className={`${inputClass} resize-y sm:min-h-72`}
+										className={`${inputClass} resize-none overflow-y-auto min-h-48 sm:min-h-72`}
 										placeholder="Tell me about your project"
 									/>
 								</div>
