@@ -78,7 +78,6 @@ const SectionDivider: React.FC = () => (
 
 export const Contact: React.FC = () => {
 	const formRef = useRef<HTMLDivElement>(null);
-	const nameRef = useRef<HTMLInputElement>(null);
 	const lastPrefillRef = useRef('');
 	const [formData, setFormData] = useState({
 		name: '',
@@ -119,8 +118,17 @@ export const Contact: React.FC = () => {
 			message: prev.message === '' || prev.message === previousPrefill ? prefill : prev.message,
 		}));
 
-		formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-		nameRef.current?.focus({ preventScroll: true });
+		// Scroll only. Focusing the name field opened the browser's autofill list over the
+		// form on phones, which is worse than letting them tap the field themselves.
+		//
+		// A card taller than the screen — which is every phone — is aligned by its bottom, so
+		// the filled-in message and the send button are what comes into view rather than the
+		// top of a form whose point is off screen.
+		const card = formRef.current;
+		if (card) {
+			const tallerThanViewport = card.getBoundingClientRect().height > window.innerHeight;
+			card.scrollIntoView({ behavior: 'smooth', block: tallerThanViewport ? 'end' : 'start' });
+		}
 	};
 
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -354,13 +362,13 @@ export const Contact: React.FC = () => {
 											Name
 										</label>
 										<input
-											ref={nameRef}
 											type="text"
 											id="name"
 											name="name"
 											value={formData.name}
 											onChange={handleInputChange}
 											required
+											autoComplete="off"
 											className={inputClass}
 											placeholder="John Doe"
 										/>
@@ -376,6 +384,7 @@ export const Contact: React.FC = () => {
 											value={formData.email}
 											onChange={handleInputChange}
 											required
+											autoComplete="off"
 											className={inputClass}
 											placeholder="you@example.com"
 										/>
