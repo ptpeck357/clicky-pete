@@ -5,7 +5,6 @@ import { PhotoGrid, PhotoViewerModal, CollectionsGrid } from '../components/orga
 import { usePhotos } from '../hooks/usePhotos';
 import { photoService } from '../services/photoService';
 import { shuffleArray } from '../utils/array';
-import { preloadViewerImage } from '../utils/imageOptimization';
 import type { Photo, PhotoFilter } from '../types/photo';
 
 const filterButtonVariants = {
@@ -199,17 +198,6 @@ export const Gallery: React.FC = () => {
 	const handlePhotoClick = (photo: Photo) => {
 		setSelectedPhoto(photo);
 		setIsModalOpen(true);
-		preloadNeighbours(photo);
-	};
-
-	// Arrow keys and the on-screen arrows move to the next photo, so fetch those two while
-	// the current one is being looked at. Both are usually already cached by the time
-	// anyone presses anything.
-	const preloadNeighbours = (photo: Photo) => {
-		const index = shuffledPhotos.findIndex((p) => p.id === photo.id);
-		for (const neighbour of [shuffledPhotos[index - 1], shuffledPhotos[index + 1]]) {
-			if (neighbour) preloadViewerImage(neighbour.file);
-		}
 	};
 
 	const handleModalClose = () => {
@@ -226,7 +214,6 @@ export const Gallery: React.FC = () => {
 		const currentIndex = getCurrentPhotoIndex();
 		if (currentIndex < displayedPhotos.length - 1) {
 			setSelectedPhoto(displayedPhotos[currentIndex + 1]);
-			preloadNeighbours(displayedPhotos[currentIndex + 1]);
 		} else if (hasMorePhotos) {
 			// Load more photos and navigate to the next one
 			const nextIndex = currentIndex + 1;
@@ -239,7 +226,6 @@ export const Gallery: React.FC = () => {
 		const currentIndex = getCurrentPhotoIndex();
 		if (currentIndex > 0) {
 			setSelectedPhoto(displayedPhotos[currentIndex - 1]);
-			preloadNeighbours(displayedPhotos[currentIndex - 1]);
 		}
 	};
 
@@ -521,6 +507,10 @@ export const Gallery: React.FC = () => {
 				onClose={handleModalClose}
 				onNext={getCurrentPhotoIndex() < shuffledPhotos.length - 1 ? handleNextPhoto : undefined}
 				onPrevious={getCurrentPhotoIndex() > 0 ? handlePreviousPhoto : undefined}
+				// shuffledPhotos, not displayedPhotos: the next photo can sit past the end of
+				// what the grid has paged in, and that is exactly the one worth prefetching.
+				nextPhoto={shuffledPhotos[getCurrentPhotoIndex() + 1]}
+				previousPhoto={shuffledPhotos[getCurrentPhotoIndex() - 1]}
 			/>
 		</div>
 	);

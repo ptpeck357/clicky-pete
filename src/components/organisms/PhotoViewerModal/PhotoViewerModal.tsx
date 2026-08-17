@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Photo } from '../../../types/photo';
+import { preloadViewerImage } from '../../../utils/imageOptimization';
 
 interface PhotoViewerModalProps {
 	photo: Photo | null;
@@ -8,9 +9,19 @@ interface PhotoViewerModalProps {
 	onClose: () => void;
 	onNext?: () => void;
 	onPrevious?: () => void;
+	nextPhoto?: Photo | null;
+	previousPhoto?: Photo | null;
 }
 
-export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpen, onClose, onNext, onPrevious }) => {
+export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({
+	photo,
+	isOpen,
+	onClose,
+	onNext,
+	onPrevious,
+	nextPhoto,
+	previousPhoto,
+}) => {
 	const [imageLoaded, setImageLoaded] = useState(false);
 	const [imageError, setImageError] = useState(false);
 	const [windowDimensions, setWindowDimensions] = useState({
@@ -83,6 +94,17 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 			document.body.style.overflow = 'unset';
 		};
 	}, [isOpen, onClose, onNext, onPrevious]);
+
+	// The arrows and arrow keys only ever move one step, so fetch both neighbours while the
+	// current photo is being looked at. Without this, pressing → starts a 350 KB download from
+	// cold and the blurred 400px stand-in is on screen until it finishes.
+	const nextFile = nextPhoto?.file;
+	const previousFile = previousPhoto?.file;
+	useEffect(() => {
+		if (!isOpen) return;
+		if (nextFile) preloadViewerImage(nextFile);
+		if (previousFile) preloadViewerImage(previousFile);
+	}, [isOpen, nextFile, previousFile]);
 
 	const currentPhotoId = photo?.id;
 	const [lastPhotoId, setLastPhotoId] = useState<string | undefined>();
@@ -306,6 +328,10 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 							 * The 400px rendition is 16 KB and the grid has just loaded it, so it comes from
 							 * cache and paints immediately. Blurred underneath, it gives the modal something
 							 * to show while the 352 KB full-size arrives, instead of a spinner over an empty box.
+							 *
+							 * The scale is tied to the blur radius: blur samples past the image edge and
+							 * fades it to transparent, so the overscan has to cover roughly 3x the radius
+							 * or a soft halo shows against the backdrop. Raise them together.
 							 */}
 							{!imageError && (
 								<img
@@ -313,7 +339,7 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({ photo, isOpe
 									alt=""
 									aria-hidden="true"
 									draggable={false}
-									className={`absolute inset-0 w-full h-full object-contain blur-[2px] scale-[1.02] select-none transition-opacity duration-300 ${
+									className={`absolute inset-0 w-full h-full object-contain blur-[12px] scale-[1.06] select-none transition-opacity duration-300 ${
 										imageLoaded ? 'opacity-0' : 'opacity-100'
 									}`}
 								/>

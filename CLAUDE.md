@@ -124,6 +124,10 @@ changes have in common — several small commits rather than one covering ten un
 Stage explicit paths rather than `git add -A`, so an unrelated edit sitting in the working
 tree does not end up inside a feature commit.
 
+Committing is its own step, asked for separately — never the automatic end of making a change.
+Changes get tested and approved first, so finishing an edit means running `npm run ci` and
+saying it is ready, then waiting. Approval to commit covers that commit, not the next one.
+
 Gallery order is shuffled on every load (`Gallery.tsx`), so array order in `photos.json`
 carries no meaning.
 
