@@ -2,13 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
-const HERO_IMAGES = [
-	'mountain_landscape.webp',
-	'canyon_land.webp',
-	'motorcycle.webp',
-	'northern_lights.webp',
-	'cover_photo.webp',
-];
+const HERO_IMAGES = ['canyon_land.webp', 'motorcycle.webp', 'northern_lights.webp', 'cover_photo.webp'];
 const PROFILE_BASE = '/photos/aboutme/profile/web';
 const PROFILE_FILE = 'IMG_2993.webp';
 
