@@ -11,6 +11,7 @@
 - **Photo Modal**: Full-screen photo viewing with navigation
 - **Collection Browsing**: Explore photos organized by location and theme
 - **Contact Form**: Get in touch directly through the site, powered by AWS SES and Lambda
+- **Session Pricing**: Portrait, graduation, family and engagement rates listed on the contact page, each with a button that fills the enquiry form in
 - **Photo Admin**: Drag-and-drop publishing at `/admin` — resize, tag, upload and publish, available only in development
 - **Hero Carousel**: Auto-rotating hero images with dot indicators and parallax scrolling
 - **Infinite Scroll**: Photos load progressively as you scroll down the page
@@ -39,7 +40,7 @@
 
 ```bash
 npm install
-cp .env.example .env    # set VITE_CLOUDFRONT_URL
+cp .env.example .env    # set VITE_CLOUDFRONT_URL and VITE_CONTACT_API_URL
 npm run dev             # http://localhost:5173
 ```
 
@@ -47,7 +48,8 @@ npm run dev             # http://localhost:5173
 | --- | --- |
 | `npm run dev` | Dev server, and the only place the photo admin exists |
 | `npm run build` | Type-check and build to `dist/` |
-| `npm run ci` | Lint, format check, build, and verify no admin code shipped |
+| `npm run validate:manifest` | Check `photos.json` — id/filename convention, known tags, duplicate entries |
+| `npm run ci` | Validate the manifest, lint, format check, build, and verify no admin code shipped |
 | `npm run fix` | Auto-fix lint and formatting |
 
 ## 📁 Project Structure
@@ -159,7 +161,7 @@ The admin exists only under `npm run dev`. It is excluded from production builds
 - **Home** → Featured photos and hero carousel
 - **Gallery** → All photos with collection and category filters
 - **About** → Photographer information
-- **Contact** → Contact form (sends via AWS SES Lambda)
+- **Contact** → Session pricing and contact form (sends via AWS SES Lambda)
 
 ### Code Quality
 
