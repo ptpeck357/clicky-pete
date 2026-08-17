@@ -7,13 +7,15 @@ S3 behind CloudFront; the site reads a single JSON index at runtime.
 
 ```
 npm run dev     # dev server, and the only place /admin exists
-npm run ci      # eslint + prettier + build + verify:no-admin
+npm run ci      # validate:manifest + eslint + prettier + build + verify:no-admin
 npm run fix     # eslint --fix + prettier --write
 ```
 
 `npm run ci` must pass before committing. Lint runs with `--max-warnings=10`; there are
-currently 9, all the pre-existing `react-hooks/set-state-in-effect` pattern in `usePhotos`,
-`Gallery`, `Home` and `AdminPage`.
+currently 9, all pre-existing: seven are `react-hooks/set-state-in-effect` in `usePhotos`,
+`Gallery`, `Home`, `AdminPage` and `PhotoEditModal`, one is the `Math.random` shuffle in
+`Gallery` reported as an impure call during render, and one is a skipped-memoization notice in
+`usePhotos`. A tenth warning means something new was added.
 
 ## How photos work
 
@@ -72,6 +74,26 @@ curl -s https://photos.clickypete.photography/data/photos.json | node -e "..."
 Entry counts should agree: repo, live, and objects per size prefix. A mismatch means either
 an upload half-finished or the manifest was never published — both worth knowing before the
 change is recorded as done.
+
+Removals need the opposite check, and nothing does it for you: an id gone from the repo copy
+but still in the live one means the site is still serving that photo, so the commit would
+record a removal that has not happened. Compare by id in both directions rather than by count,
+since an add and a removal in the same session cancel out.
+
+```bash
+# ids in one copy and not the other, both ways
+curl -s https://photos.clickypete.photography/data/photos.json > /tmp/live.json
+node -e "const l=require('/tmp/live.json'),r=require('./src/data/photos.json');
+const L=new Set(l.map(p=>p.id)),R=new Set(r.map(p=>p.id));
+console.log('only in repo:',[...R].filter(id=>!L.has(id)));
+console.log('only in live:',[...L].filter(id=>!R.has(id)));"
+```
+
+Objects left in the bucket for a removed entry are expected — "Remove entry only" keeps them
+on purpose, and re-uploading that filename is refused with 409 precisely because they are
+still there. Compare entry tags with keys sorted, too: the admin writes `featured` in a
+different position than an older hand edit, so a raw string compare reports differences that
+are not there.
 
 ## The admin (`/admin`)
 
@@ -143,6 +165,11 @@ to newest so a diff reads chronologically, and nothing depends on that.
 
 `dev` and `prod` are never worked on directly. Every change starts as a new branch cut from
 `dev`, and lands through a pull request — never a commit or a push straight to either branch.
+
+Neither is ever deleted, and neither is `main` — this repo's `main` was renamed to `dev`, so a
+tool or doc still naming `main` is pointing at something that no longer exists here rather than
+at a branch that is safe to remove. Exclude all three by name from any branch cleanup instead
+of trusting a `--merged` listing.
 
 ```bash
 git switch dev && git pull
