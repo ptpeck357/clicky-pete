@@ -156,5 +156,14 @@ git log --oneline HEAD..origin/dev   # empty means up to date
 git rebase origin/dev                # only if it is not
 ```
 
+**Name the branch on the first push.** Cutting one from `origin/dev` — `git switch -c <branch>
+origin/dev` — sets its upstream to `dev`, so a later bare `git push` aims your commits at `dev`
+rather than at the branch, and the first sign of it is a rejection. Push it by name once, which
+also repoints the upstream:
+
+```bash
+git push -u origin <branch>
+```
+
 If work has already been committed on `dev` by mistake, move it to a branch before pushing:
 `git switch -c <branch>` keeps the commits, then reset `dev` back to `origin/dev`.
