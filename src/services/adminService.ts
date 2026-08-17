@@ -33,6 +33,18 @@ export const adminService = {
 	},
 
 	/**
+	 * Reads the capture date out of a file's EXIF. Nothing is stored or uploaded — this only
+	 * exists so the date is on screen and editable before the photo goes anywhere.
+	 */
+	async probeDate(file: File): Promise<{ date?: string }> {
+		return request('/probe', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/octet-stream' },
+			body: file,
+		});
+	},
+
+	/**
 	 * Uploads one image: resized to three sizes, stored, and appended to photos.json.
 	 * Rejected with 422 if the crop is not 3:2 or 4:5, unless allowAnyRatio is set.
 	 */

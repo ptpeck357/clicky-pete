@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 import type { EditableTags, TagValues } from '../../services/adminService';
 import { Combobox } from './Combobox';
 
@@ -21,33 +21,53 @@ const FIELDS = [
 	{ key: 'collection', label: 'Collection', list: 'collections' },
 ] as const;
 
-export const PhotoForm: React.FC<PhotoFormProps> = ({ tags, values, onChange, compact = false }) => (
-	<div className="flex flex-col gap-3">
-		<div className={compact ? 'grid grid-cols-1 gap-3 sm:grid-cols-3' : 'flex flex-col gap-3'}>
-			{FIELDS.map(({ key, label, list }) => (
-				<Combobox
-					key={key}
-					label={label}
-					value={tags[key]}
-					options={values[list]}
-					onChange={(value) => onChange({ ...tags, [key]: value })}
-					placeholder={`Pick or type a ${label.toLowerCase()}`}
-				/>
-			))}
-		</div>
+export const PhotoForm: React.FC<PhotoFormProps> = ({ tags, values, onChange, compact = false }) => {
+	const dateId = useId();
 
-		<div className="flex flex-wrap gap-4">
-			{FLAGS.map(({ key, label, hint }) => (
-				<label key={key} className="flex items-center gap-2 text-sm text-gray-300" title={hint}>
-					<input
-						type="checkbox"
-						className="h-4 w-4 rounded border-gray-600 bg-gray-800 text-blue-600 focus:ring-blue-500"
-						checked={tags[key] === true}
-						onChange={(event) => onChange({ ...tags, [key]: event.target.checked || undefined })}
+	return (
+		<div className="flex flex-col gap-3">
+			<div className={compact ? 'grid grid-cols-1 gap-3 sm:grid-cols-3' : 'flex flex-col gap-3'}>
+				{FIELDS.map(({ key, label, list }) => (
+					<Combobox
+						key={key}
+						label={label}
+						value={tags[key]}
+						options={values[list]}
+						onChange={(value) => onChange({ ...tags, [key]: value })}
+						placeholder={`Pick or type a ${label.toLowerCase()}`}
 					/>
-					{label}
+				))}
+			</div>
+
+			<div className="flex flex-col gap-1">
+				<label htmlFor={dateId} className="text-xs font-medium tracking-wide text-gray-400 uppercase">
+					Date
 				</label>
-			))}
+				{/* color-scheme:dark is what makes the native picker and its icon legible on this background. */}
+				<input
+					id={dateId}
+					type="date"
+					value={tags.date ?? ''}
+					// Empty means unknown, so drop the key rather than storing "".
+					onChange={(event) => onChange({ ...tags, date: event.target.value || undefined })}
+					className="w-44 rounded-md border border-gray-600 bg-gray-800 px-3 py-2 text-sm text-gray-100 [color-scheme:dark] focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+				/>
+				<span className="text-xs text-gray-600">Leave empty if the date is unknown</span>
+			</div>
+
+			<div className="flex flex-wrap gap-4">
+				{FLAGS.map(({ key, label, hint }) => (
+					<label key={key} className="flex items-center gap-2 text-sm text-gray-300" title={hint}>
+						<input
+							type="checkbox"
+							className="h-4 w-4 rounded border-gray-600 bg-gray-800 text-blue-600 focus:ring-blue-500"
+							checked={tags[key] === true}
+							onChange={(event) => onChange({ ...tags, [key]: event.target.checked || undefined })}
+						/>
+						{label}
+					</label>
+				))}
+			</div>
 		</div>
-	</div>
-);
+	);
+};

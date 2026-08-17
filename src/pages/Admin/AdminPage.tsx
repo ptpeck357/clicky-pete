@@ -53,6 +53,18 @@ const measure = async (file: File): Promise<string | undefined> => {
 	}
 };
 
+/**
+ * Local date, not UTC: toISOString() reports tomorrow for anything dropped after 5pm Pacific,
+ * which is exactly when a day's photos get published. Built by hand rather than through a
+ * locale, so the field order cannot depend on ICU data.
+ */
+const todayLocal = (): string => {
+	const now = new Date();
+	const month = `${now.getMonth() + 1}`.padStart(2, '0');
+	const day = `${now.getDate()}`.padStart(2, '0');
+	return `${now.getFullYear()}-${month}-${day}`;
+};
+
 const EMPTY_TAGS: EditableTags = { category: '', location: '', collection: '' };
 const EMPTY_VALUES: TagValues = { categories: [], locations: [], collections: [] };
 
@@ -113,16 +125,35 @@ export const AdminPage: React.FC = () => {
 		void load();
 	}, [load]);
 
+	/**
+	 * Swaps the pre-filled date for the real capture date on files that carry one. Sequential
+	 * on purpose: a dropped folder would otherwise start a sharp read per photo at once.
+	 */
+	const applyCaptureDates = useCallback(async (items: Pending[], prefilled: string) => {
+		for (const item of items) {
+			const { date } = await adminService.probeDate(item.file).catch(() => ({ date: undefined }));
+			if (!date || date === prefilled) continue;
+			setPending((current) =>
+				current.map((p) =>
+					// Only the value we filled in is replaced — a date typed while the probe was
+					// in flight was typed on purpose and wins.
+					p.key === item.key && p.tags.date === prefilled ? { ...p, tags: { ...p.tags, date } } : p,
+				),
+			);
+		}
+	}, []);
+
 	const addFiles = useCallback(
 		(files: File[]) => {
 			const images = files.filter(isImage);
+			const seededDate = bulk.date || todayLocal();
 			const added = images.map((file, index) => ({
 				key: `${file.name}-${Date.now()}-${index}`,
 				file,
 				preview: URL.createObjectURL(file),
 				// Start from the batch defaults so anything already typed above carries
 				// down, rather than leaving a second empty form to fill in again.
-				tags: { ...bulk },
+				tags: { ...bulk, date: seededDate },
 				status: 'ready' as PendingStatus,
 			}));
 			setPending((current) => [...current, ...added]);
@@ -134,11 +165,14 @@ export const AdminPage: React.FC = () => {
 				);
 			}
 
+			// A batch date was typed deliberately, so EXIF should not talk it back down.
+			if (!bulk.date) void applyCaptureDates(added, seededDate);
+
 			if (images.length < files.length) {
 				setNotice(`Skipped ${files.length - images.length} non-image file(s).`);
 			}
 		},
-		[bulk],
+		[bulk, applyCaptureDates],
 	);
 
 	const onDrop = useCallback(
@@ -162,6 +196,7 @@ export const AdminPage: React.FC = () => {
 								...(bulk.category ? { category: bulk.category } : {}),
 								...(bulk.location ? { location: bulk.location } : {}),
 								...(bulk.collection ? { collection: bulk.collection } : {}),
+								...(bulk.date ? { date: bulk.date } : {}),
 							},
 						},
 			),

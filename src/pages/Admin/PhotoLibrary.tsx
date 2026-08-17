@@ -42,7 +42,7 @@ export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onCh
 		const needle = query.trim().toLowerCase();
 		if (!needle) return photos;
 		return photos.filter((photo) =>
-			[photo.id, photo.file, photo.tags.category, photo.tags.location, photo.tags.collection]
+			[photo.id, photo.file, photo.tags.category, photo.tags.location, photo.tags.collection, photo.tags.date]
 				.join(' ')
 				.toLowerCase()
 				.includes(needle),
@@ -118,6 +118,11 @@ export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onCh
 								<span className="rounded bg-gray-800 px-1.5 py-0.5 font-mono text-xs text-gray-400">
 									{photo.tags.aspectRatio}
 								</span>
+								{photo.tags.date && (
+									<span className="rounded bg-gray-800 px-1.5 py-0.5 font-mono text-xs text-gray-400">
+										{photo.tags.date}
+									</span>
+								)}
 								{FLAG_LABELS.map(([key, label]) =>
 									photo.tags[key] === true ? (
 										<span
