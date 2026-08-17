@@ -97,6 +97,9 @@ appear on the site as soon as they are published, with no rebuild or deploy.
 
 Each photo is stored as three WebP renditions at `photos/{400,800,2000}/<file>`.
 
+Entries are kept in date order, oldest first, so a diff reads chronologically. Nothing depends
+on that order — the gallery sorts by the `date` tag, not by position in the file.
+
 ### Adding photos
 
 ```bash

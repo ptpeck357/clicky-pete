@@ -134,8 +134,10 @@ Committing is its own step, asked for separately — never the automatic end of 
 Changes get tested and approved first, so finishing an edit means running `npm run ci` and
 saying it is ready, then waiting. Approval to commit covers that commit, not the next one.
 
-Gallery order is shuffled on every load (`Gallery.tsx`), so array order in `photos.json`
-carries no meaning.
+Gallery order is by `date`, newest first (`Gallery.tsx` through `utils/photoOrder.ts`), with a
+control for oldest and random; `Home.tsx` still shuffles its featured photos on every load.
+Array position in `photos.json` carries no meaning either way — the file is kept sorted oldest
+to newest so a diff reads chronologically, and nothing depends on that.
 
 ## Branching
 
