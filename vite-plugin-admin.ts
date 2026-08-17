@@ -222,6 +222,12 @@ export function adminPlugin(): Plugin {
 		apply: 'serve',
 
 		configureServer(server) {
+			// The admin writes photos.json on every retag. Nothing imports it, so Vite has no
+			// module to update and should stay quiet — but leaving it watched means a save and a
+			// reload are one file event apart, and a reload mid-way through tagging the back
+			// catalogue loses your place in the list. Unwatching removes the possibility.
+			server.watcher.unwatch(MANIFEST_PATH);
+
 			let config: AdminConfig;
 			let s3: S3Client;
 			let cloudfront: CloudFrontClient;
