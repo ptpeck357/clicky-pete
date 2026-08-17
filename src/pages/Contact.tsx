@@ -48,7 +48,7 @@ const PACKAGES = [
 	{
 		name: 'Engagement',
 		price: 425,
-		blurb: 'Golden hour in the mountains, usually.',
+		blurb: 'Golden hour, wherever suits the two of you.',
 		details: ['2 hours', '2 locations', '50+ edited photos'],
 		prompts: ['Preferred date(s)', 'Location ideas', 'Wedding date, if you have one', 'Anything else'],
 		icon: <path d="M12 20.5S4.5 15.6 4.5 10.2A3.7 3.7 0 0 1 12 8a3.7 3.7 0 0 1 7.5 2.2c0 5.4-7.5 10.3-7.5 10.3z" />,
@@ -61,12 +61,12 @@ const CUSTOM_PROMPTS = ['What I have in mind', 'Preferred date(s)', 'Location id
 // the file itself is a black fill, which would vanish against this background.
 const SectionDivider: React.FC = () => (
 	<div className="px-6" aria-hidden="true">
-		<div className="max-w-6xl mx-auto flex items-center gap-4">
-			<div className="h-px flex-1 bg-gradient-to-r from-transparent to-gray-600" />
-			<svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0 text-gray-500" fill="currentColor">
+		<div className="max-w-4xl mx-auto flex items-center gap-5">
+			<div className="h-px flex-1 bg-gradient-to-r from-transparent to-gray-400" />
+			<svg viewBox="0 0 24 24" className="w-7 h-7 shrink-0 text-blue-400" fill="currentColor">
 				<path d="M3 18L10 7l4 6 3-4 7 9H3z" />
 			</svg>
-			<div className="h-px flex-1 bg-gradient-to-l from-transparent to-gray-600" />
+			<div className="h-px flex-1 bg-gradient-to-l from-transparent to-gray-400" />
 		</div>
 	</div>
 );
