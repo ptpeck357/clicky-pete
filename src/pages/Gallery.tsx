@@ -4,7 +4,7 @@ import { useParams, useNavigate, useSearchParams, useLocation } from 'react-rout
 import { PhotoGrid, PhotoViewerModal, CollectionsGrid } from '../components/organisms';
 import { usePhotos } from '../hooks/usePhotos';
 import { photoService } from '../services/photoService';
-import { SORT_OPTIONS, parseSortOrder, sortPhotos } from '../utils/photoOrder';
+import { parseSortOrder, sortPhotos } from '../utils/photoOrder';
 import type { SortOrder } from '../utils/photoOrder';
 import type { Photo, PhotoFilter } from '../types/photo';
 
@@ -123,7 +123,13 @@ export const Gallery: React.FC = () => {
 	const { photos, loading, error, refetch } = usePhotos(fetchFilter);
 
 	const sortOrder = parseSortOrder(searchParams.get('sort'));
-	const orderedPhotos = useMemo(() => sortPhotos(photos, sortOrder), [photos, sortOrder]);
+	// What the date button reads and does. Random has no direction of its own, so the button
+	// falls back to newest — which is also what a click from Random then applies.
+	const dateDirection: Exclude<SortOrder, 'random'> = sortOrder === 'oldest' ? 'oldest' : 'newest';
+	// Fresh per page load, so the gallery still arrives differently arranged, and bumped by a
+	// click on Random — which is what makes clicking it again deal a new order.
+	const [shuffleSeed, setShuffleSeed] = useState(() => Math.floor(Math.random() * 2 ** 31));
+	const orderedPhotos = useMemo(() => sortPhotos(photos, sortOrder, shuffleSeed), [photos, sortOrder, shuffleSeed]);
 	const displayedPhotos = useMemo(() => orderedPhotos.slice(0, photosToShow), [orderedPhotos, photosToShow]);
 	const hasMorePhotos = photosToShow < orderedPhotos.length;
 
@@ -152,12 +158,14 @@ export const Gallery: React.FC = () => {
 
 	const isLoadingMoreRef = useRef(false);
 	const observerRef = useRef<IntersectionObserver | null>(null);
-	// sortOrder belongs here too: re-sorting rebuilds the whole list, so a page count carried
-	// over from the previous order would page in from the wrong place.
+	// Deliberately not keyed on sortOrder. Re-sorting reorders the same photos, and
+	// displayedPhotos always slices the current order from the start, so the count stays
+	// meaningful — while resetting it would shorten the page under a reader who has scrolled
+	// and let the browser clamp them somewhere they did not ask to be.
 	useEffect(() => {
 		setPhotosToShow(15);
 		isLoadingMoreRef.current = false;
-	}, [urlCollection, showAllPhotos, sortOrder]);
+	}, [urlCollection, showAllPhotos]);
 
 	useEffect(() => {
 		setIsModalOpen(false);
@@ -268,7 +276,18 @@ export const Gallery: React.FC = () => {
 		}
 	};
 
+	/**
+	 * Active: flip the direction. Showing Random: come back to date sorting in the direction
+	 * the button is already displaying, so the click does what its label says.
+	 */
+	const handleDateSortClick = () => handleSortChange(sortOrder === 'newest' ? 'oldest' : 'newest');
+
 	const handleSortChange = (order: SortOrder) => {
+		// Clicking Random reshuffles, including when it is already the current order — that
+		// repeat click is the only way to ask for a different arrangement. Incrementing is
+		// enough: any seed the shuffle has not seen produces a different one.
+		if (order === 'random') setShuffleSeed((seed) => seed + 1);
+
 		const next = new URLSearchParams(searchParams);
 		// Newest is the default, so it stays out of the URL rather than pinning a redundant param.
 		if (order === 'newest') {
@@ -533,23 +552,42 @@ export const Gallery: React.FC = () => {
 								<motion.div variants={filterSectionVariants} initial="hidden" animate="visible">
 									<h3 className="text-base sm:text-lg font-medium text-white mb-3">Sort</h3>
 									<div className="flex flex-wrap gap-2" role="group" aria-label="Sort photos">
-										{SORT_OPTIONS.map(({ value, label }) => (
-											<motion.button
-												key={value}
-												onClick={() => handleSortChange(value)}
-												aria-pressed={sortOrder === value}
-												variants={filterButtonVariants}
-												initial="inactive"
-												animate={sortOrder === value ? 'active' : 'inactive'}
-												whileHover="hover"
-												whileTap={{ scale: 0.98 }}
-												// min-h-11 clears the 44px touch target; the pills' own padding does not.
-												className="min-h-11 inline-flex items-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors cursor-pointer"
-											>
-												<SortIcon order={value} />
-												{label}
-											</motion.button>
-										))}
+										{/* One date button that flips direction, rather than two that mostly duplicate
+										    each other. Its label is the order in force, so it doubles as the readout. */}
+										<motion.button
+											onClick={handleDateSortClick}
+											aria-pressed={sortOrder !== 'random'}
+											title={
+												sortOrder === 'random'
+													? 'Sort by date'
+													: `Sorted ${dateDirection} first — click for ${dateDirection === 'newest' ? 'oldest' : 'newest'}`
+											}
+											variants={filterButtonVariants}
+											initial="inactive"
+											animate={sortOrder === 'random' ? 'inactive' : 'active'}
+											whileHover="hover"
+											whileTap={{ scale: 0.98 }}
+											// min-h-11 clears the 44px touch target; the pills' own padding does not.
+											className="min-h-11 inline-flex items-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors cursor-pointer capitalize"
+										>
+											<SortIcon order={dateDirection} />
+											{dateDirection}
+										</motion.button>
+
+										<motion.button
+											onClick={() => handleSortChange('random')}
+											aria-pressed={sortOrder === 'random'}
+											title={sortOrder === 'random' ? 'Shuffle again' : 'Shuffle'}
+											variants={filterButtonVariants}
+											initial="inactive"
+											animate={sortOrder === 'random' ? 'active' : 'inactive'}
+											whileHover="hover"
+											whileTap={{ scale: 0.98 }}
+											className="min-h-11 inline-flex items-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors cursor-pointer"
+										>
+											<SortIcon order="random" />
+											Random
+										</motion.button>
 									</div>
 								</motion.div>
 							</div>
