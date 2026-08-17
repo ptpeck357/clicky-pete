@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import type { Photo } from '../../types/photo';
 import { adminService } from '../../services/adminService';
 import type { EditableTags, TagValues } from '../../services/adminService';
@@ -100,7 +101,19 @@ export const AdminPage: React.FC = () => {
 	const [photos, setPhotos] = useState<Photo[]>([]);
 	const [values, setValues] = useState<TagValues>(EMPTY_VALUES);
 	const [pending, setPending] = useState<Pending[]>([]);
-	const [tab, setTab] = useState<'upload' | 'library'>('upload');
+	// In the URL rather than in state, so retagging a photo cannot land you back on the upload
+	// tab, and a refresh reopens where you were. /admin?tab=library is also bookmarkable.
+	const [searchParams, setSearchParams] = useSearchParams();
+	const tab: 'upload' | 'library' = searchParams.get('tab') === 'library' ? 'library' : 'upload';
+	const setTab = (name: 'upload' | 'library') => {
+		const next = new URLSearchParams(searchParams);
+		if (name === 'library') {
+			next.set('tab', name);
+		} else {
+			next.delete('tab');
+		}
+		setSearchParams(next, { replace: true });
+	};
 	const [bulk, setBulk] = useState<EditableTags>(EMPTY_TAGS);
 	const [dragging, setDragging] = useState(false);
 	const [busy, setBusy] = useState(false);
