@@ -25,6 +25,28 @@ const cssAspect = (aspectRatio: string): string => {
 	return w > 0 && h > 0 ? `${w} / ${h}` : '3 / 2';
 };
 
+/** Inline rather than an icon package: two icons do not earn a dependency the site would ship. */
+const Icon: React.FC<{ path: string }> = ({ path }) => (
+	<svg
+		viewBox="0 0 24 24"
+		fill="none"
+		stroke="currentColor"
+		strokeWidth={1.5}
+		strokeLinecap="round"
+		strokeLinejoin="round"
+		className="size-4"
+		aria-hidden="true"
+	>
+		<path d={path} />
+	</svg>
+);
+
+const PENCIL_PATH =
+	'M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125';
+
+const TRASH_PATH =
+	'M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0';
+
 const FLAG_LABELS: [keyof EditableTags, string][] = [
 	['featured', 'Featured'],
 	['hero', 'Hero'],
@@ -37,6 +59,7 @@ export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onCh
 	const [busy, setBusy] = useState(false);
 	const [limit, setLimit] = useState(PAGE_SIZE);
 	const [confirmingId, setConfirmingId] = useState<string | null>(null);
+	const [newestFirst, setNewestFirst] = useState(true);
 
 	const matches = useMemo(() => {
 		const needle = query.trim().toLowerCase();
@@ -48,6 +71,13 @@ export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onCh
 				.includes(needle),
 		);
 	}, [photos, query]);
+
+	/**
+	 * Newest means most recently added, not most recently taken: entries are appended on upload,
+	 * so reversing puts the latest additions first without depending on `date`, which most
+	 * entries do not have.
+	 */
+	const ordered = useMemo(() => (newestFirst ? [...matches].reverse() : matches), [matches, newestFirst]);
 
 	const remove = async (photo: Photo, deleteFiles: boolean) => {
 		setBusy(true);
@@ -67,7 +97,7 @@ export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onCh
 	};
 
 	// Navigation moves through the filtered set, so arrow keys follow what is on screen.
-	const editing = editingIndex !== null ? matches[editingIndex] : undefined;
+	const editing = editingIndex !== null ? ordered[editingIndex] : undefined;
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -81,6 +111,18 @@ export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onCh
 					}}
 					placeholder="Filter by name, category, location, collection"
 				/>
+				{/* The label names the order in effect, not the one a click would switch to. */}
+				<button
+					type="button"
+					onClick={() => {
+						setNewestFirst((current) => !current);
+						setLimit(PAGE_SIZE);
+					}}
+					className="flex items-center gap-1.5 rounded-md border border-blue-600 px-3 py-2 text-sm text-blue-100 hover:bg-blue-950"
+				>
+					<span aria-hidden="true">{newestFirst ? '↓' : '↑'}</span>
+					{newestFirst ? 'Newest first' : 'Oldest first'}
+				</button>
 				<span className="text-sm text-gray-500 tabular-nums">
 					{matches.length === photos.length
 						? `${photos.length} photos`
@@ -90,7 +132,7 @@ export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onCh
 
 			{/* items-start keeps a portrait card from stretching its landscape neighbours. */}
 			<div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-2 xl:grid-cols-3">
-				{matches.slice(0, limit).map((photo, index) => (
+				{ordered.slice(0, limit).map((photo, index) => (
 					<article key={photo.id} className="overflow-hidden rounded-lg border border-gray-700 bg-gray-900">
 						<button
 							type="button"
@@ -172,16 +214,22 @@ export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onCh
 										type="button"
 										disabled={busy}
 										onClick={() => setEditingIndex(index)}
-										className="rounded-md border border-blue-700 px-3 py-1 text-sm text-blue-300 hover:bg-blue-950 hover:text-blue-200 disabled:opacity-50"
+										className="flex items-center gap-1.5 rounded-md border border-gray-600 px-3 py-1 text-sm text-gray-200 hover:border-blue-700 hover:bg-blue-950 disabled:opacity-50"
 									>
+										<span className="text-blue-400">
+											<Icon path={PENCIL_PATH} />
+										</span>
 										Edit
 									</button>
 									<button
 										type="button"
 										disabled={busy}
 										onClick={() => setConfirmingId(photo.id)}
-										className="rounded-md border border-red-800 px-3 py-1 text-sm text-red-400 hover:bg-red-950 hover:text-red-300 disabled:opacity-50"
+										className="flex items-center gap-1.5 rounded-md border border-gray-600 px-3 py-1 text-sm text-gray-200 hover:border-red-700 hover:bg-red-950 disabled:opacity-50"
 									>
+										<span className="text-red-400">
+											<Icon path={TRASH_PATH} />
+										</span>
 										Remove
 									</button>
 								</div>
