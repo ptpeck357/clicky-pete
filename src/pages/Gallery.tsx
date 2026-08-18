@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect, useRef, useCallback, useDeferredVa
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { Link, useParams, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { PhotoGrid, PhotoViewerModal, CollectionsGrid } from '../components/organisms';
+import { Seo, JsonLd, collectionBreadcrumbSchema } from '../components/atoms';
 import { usePhotos } from '../hooks/usePhotos';
 import { photoService } from '../services/photoService';
 import { parseSortOrder, sortPhotos } from '../utils/photoOrder';
@@ -338,6 +339,28 @@ export const Gallery: React.FC = () => {
 
 	return (
 		<div className="min-h-screen bg-gray-900">
+			{/* `?view=collections` is a view toggle, not a different page, so both views canonicalise
+			    to /gallery rather than being indexed as two. */}
+			{urlCollection ? (
+				<>
+					{/* coverPhotoUrl is '' until the photos load, and '' is not nullish, so it would
+					    win the share-image fallback rather than defer to it. */}
+					<Seo
+						title={`${urlCollection} Photos | Clicky Pete Photography`}
+						description={`${urlCollection} photography by Peter Peck — a collection of landscape, night and portrait work shot on location.`}
+						path={`/gallery/${encodeURIComponent(urlCollection)}`}
+						image={coverPhotoUrl || undefined}
+					/>
+					<JsonLd data={collectionBreadcrumbSchema(urlCollection)} />
+				</>
+			) : (
+				<Seo
+					title="Photo Gallery | Bozeman Photographer"
+					description="Landscape, night, portrait and aerial photography from Montana, Wyoming, Idaho and beyond, grouped into collections by place and theme."
+					path="/gallery"
+				/>
+			)}
+
 			{urlCollection && (
 				<div className="relative -mt-16 overflow-hidden bg-gray-900 h-[calc(40vh+4rem)] sm:h-[calc(65vh+4rem)]">
 					{coverPhotoUrl && (

@@ -1,10 +1,20 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Seo } from '../components/atoms';
 
 export const NotFound: React.FC = () => {
 	return (
 		<div className="min-h-screen bg-gray-900 text-white flex items-center justify-center px-4">
+			{/* The path is whatever was typed, so there is no canonical worth claiming beyond the
+			    site root, and nothing here should ever be a search result. */}
+			<Seo
+				title="Page Not Found | Clicky Pete Photography"
+				description="That page does not exist."
+				path="/"
+				noIndex
+			/>
+
 			<div className="text-center max-w-md mx-auto">
 				<motion.div
 					initial={{ opacity: 0, y: 20 }}

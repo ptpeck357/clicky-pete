@@ -2,9 +2,11 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { PhotoViewerModal, PhotoGrid } from '../components/organisms';
+import { Seo, JsonLd, businessSchema } from '../components/atoms';
 import { photoService } from '../services/photoService';
 import { shuffleArray } from '../utils/array';
 import { preloadImages } from '../utils/imageOptimization';
+import { describePhoto } from '../utils/photoAlt';
 import type { Photo } from '../types/photo';
 
 const heroVariants = {
@@ -212,6 +214,13 @@ export const Home: React.FC = () => {
 
 	return (
 		<div className="min-h-screen bg-gray-900 text-white">
+			<Seo
+				title="Bozeman Photographer | Clicky Pete Photography"
+				description="Portrait, graduation, family and engagement photography in Bozeman, Montana, alongside landscape and night work from across the Mountain West."
+				path="/"
+			/>
+			<JsonLd data={businessSchema} />
+
 			<section className="relative h-screen w-full -mt-16 flex items-center justify-center overflow-hidden">
 				{!heroImagesLoaded && (
 					<div className="absolute inset-0 bg-gray-900 flex items-center justify-center z-30">
@@ -253,7 +262,7 @@ export const Home: React.FC = () => {
 									/>
 									<img
 										src={imageUrl}
-										alt={photo.tags.category || 'Hero photo'}
+										alt={describePhoto(photo)}
 										className="relative w-full h-full object-contain sm:object-cover"
 									/>
 								</div>
@@ -290,6 +299,16 @@ export const Home: React.FC = () => {
 						>
 							Capturing <span className="block text-blue-400">The Moment</span>
 						</motion.h1>
+
+						{/* The h1 says nothing a search for a photographer would match. This line does,
+						    without taking the hero's voice off it. */}
+						<motion.p
+							className="text-sm sm:text-lg md:text-xl text-gray-200 [text-shadow:0_2px_12px_rgba(0,0,0,0.9)]"
+							variants={textVariants}
+							transition={{ duration: 0.8, ease: 'easeOut' }}
+						>
+							Portrait &amp; landscape photographer in Bozeman, Montana
+						</motion.p>
 					</motion.div>
 				</motion.div>
 
