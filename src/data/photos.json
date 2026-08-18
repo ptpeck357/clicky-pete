@@ -5131,6 +5131,17 @@
     }
   },
   {
+    "id": "img-7525",
+    "file": "IMG_7525.webp",
+    "tags": {
+      "category": "Portrait",
+      "location": "Montana State University",
+      "collection": "Graduations",
+      "date": "2025-05-04",
+      "aspectRatio": "3:2"
+    }
+  },
+  {
     "id": "img-7815",
     "file": "IMG_7815.webp",
     "tags": {
@@ -6189,17 +6200,6 @@
     }
   },
   {
-    "id": "img-7525",
-    "file": "IMG_7525.webp",
-    "tags": {
-      "category": "Portrait",
-      "location": "Montana State University",
-      "collection": "Graduations",
-      "date": "2026-05-04",
-      "aspectRatio": "3:2"
-    }
-  },
-  {
     "id": "dji-0555",
     "file": "DJI_0555.webp",
     "tags": {
@@ -6294,7 +6294,7 @@
     "file": "IMG_0078.webp",
     "tags": {
       "category": "Portrait",
-      "location": "Big Sky, MT",
+      "location": "Lone Mountain, MT",
       "collection": "Engagements",
       "date": "2026-08-02",
       "aspectRatio": "4:3"
@@ -6305,7 +6305,7 @@
     "file": "IMG_0009.webp",
     "tags": {
       "category": "Portrait",
-      "location": "Big Sky, MT",
+      "location": "Lone Mountain, MT",
       "collection": "Engagements",
       "date": "2026-08-02",
       "aspectRatio": "4:5"
@@ -6316,7 +6316,7 @@
     "file": "IMG_0071.webp",
     "tags": {
       "category": "Portrait",
-      "location": "Big Sky, MT",
+      "location": "Lone Mountain, MT",
       "collection": "Engagements",
       "date": "2026-08-02",
       "aspectRatio": "4:3"
@@ -6327,7 +6327,7 @@
     "file": "IMG_0072.webp",
     "tags": {
       "category": "Portrait",
-      "location": "Big Sky, MT",
+      "location": "Lone Mountain, MT",
       "collection": "Engagements",
       "date": "2026-08-02",
       "aspectRatio": "4:3"
@@ -6338,7 +6338,7 @@
     "file": "IMG_0081.webp",
     "tags": {
       "category": "Portrait",
-      "location": "Big Sky, MT",
+      "location": "Lone Mountain, MT",
       "collection": "Engagements",
       "date": "2026-08-02",
       "aspectRatio": "4:3"
@@ -6349,7 +6349,7 @@
     "file": "IMG_0047.webp",
     "tags": {
       "category": "Portrait",
-      "location": "Big Sky, MT",
+      "location": "Lone Mountain, MT",
       "collection": "Engagements",
       "date": "2026-08-02",
       "aspectRatio": "4:5"
@@ -6360,7 +6360,7 @@
     "file": "IMG_0037.webp",
     "tags": {
       "category": "Portrait",
-      "location": "Big Sky, MT",
+      "location": "Lone Mountain, MT",
       "collection": "Engagements",
       "date": "2026-08-02",
       "aspectRatio": "4:3"
@@ -6371,7 +6371,7 @@
     "file": "IMG_0079.webp",
     "tags": {
       "category": "Portrait",
-      "location": "Big Sky, MT",
+      "location": "Lone Mountain, MT",
       "collection": "Engagements",
       "date": "2026-08-02",
       "featured": true,
@@ -6383,7 +6383,7 @@
     "file": "IMG_0015.webp",
     "tags": {
       "category": "Portrait",
-      "location": "Big Sky, MT",
+      "location": "Lone Mountain, MT",
       "collection": "Engagements",
       "date": "2026-08-02",
       "aspectRatio": "4:5"
