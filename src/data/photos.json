@@ -6544,17 +6544,6 @@
     }
   },
   {
-    "id": "img-0274",
-    "file": "IMG_0274.webp",
-    "tags": {
-      "category": "People",
-      "location": "Montana State University",
-      "collection": "People",
-      "date": "2026-08-17",
-      "aspectRatio": "4:5"
-    }
-  },
-  {
     "id": "img-0280",
     "file": "IMG_0280.webp",
     "tags": {
@@ -6783,6 +6772,17 @@
       "collection": "People",
       "date": "2026-08-17",
       "aspectRatio": "3:2"
+    }
+  },
+  {
+    "id": "img-0274",
+    "file": "IMG_0274.webp",
+    "tags": {
+      "category": "People",
+      "location": "Montana State University",
+      "collection": "People",
+      "date": "2026-08-17",
+      "aspectRatio": "4:5"
     }
   }
 ]
