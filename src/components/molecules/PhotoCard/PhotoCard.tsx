@@ -2,6 +2,7 @@ import React, { useState, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import type { Photo } from '../../../types/photo';
 import { preloadViewerImage } from '../../../utils/imageOptimization';
+import { describePhoto } from '../../../utils/photoAlt';
 
 interface PhotoCardProps {
 	photo: Photo;
@@ -118,7 +119,9 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick, className 
 							src={photoUrls.src}
 							srcSet={photoUrls.srcSet}
 							sizes={photoUrls.sizes}
-							alt={photo.tags.category || 'Photo'}
+							alt={describePhoto(photo)}
+							loading="lazy"
+							decoding="async"
 							className={`w-full ${aspectRatio === 'natural' ? 'h-auto' : 'h-full'} object-cover ${
 								aspectRatio === 'natural' && !imageLoaded ? 'opacity-0' : 'opacity-100'
 							} transition-opacity duration-300`}
