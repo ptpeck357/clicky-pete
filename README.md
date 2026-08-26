@@ -134,7 +134,7 @@ or collection. Which group is open is held in the URL, so the browser's back but
 level at a time and a refresh reopens where you were.
 
 **Tag descriptions:**
-- `category`: Landscape, Portrait, Aerial, or Astro|Night
+- `category`: Landscape, People, Aerial, or Astro|Night
 - `location`: where it was taken, as `Place, ST` or `Place, Country`
 - `collection`: the group it belongs to (Montana, Engagements, Graduations, Idaho, …)
 - `date`: when it was taken, as `YYYY-MM-DD`. Optional — an absent date means unknown, and the
@@ -160,8 +160,8 @@ The admin exists only under `npm run dev`. It is excluded from production builds
 - **Home**: Featured photos with progressive loading
 - **Gallery**: View all photos, with category filters and a sort control
 - **Sorting**: Newest first by default. The date button flips between newest and oldest and shows which is in force; Random shuffles, and reshuffles each time it is clicked. Undated photos sit below the dated ones, shuffled, and the choice is held in the URL as `?sort=` so a sorted view can be shared
-- **Collections**: Browse photos by group — Montana, Graduations, Engagements, Idaho, Portraits, Fragments, Washington, San Luis Obispo, Arizona, Wyoming, Utah
-- **Categories**: Filter by photo type — Landscape, Portrait, Aerial, Astro|Night
+- **Collections**: Browse photos by group — Montana, Graduations, Engagements, Idaho, People, Fragments, Washington, San Luis Obispo, Arizona, Wyoming, Utah
+- **Categories**: Filter by photo type — Landscape, People, Aerial, Astro|Night
 - **Photo Modal**: Click any photo for full-screen view with navigation
 
 ### Navigation
