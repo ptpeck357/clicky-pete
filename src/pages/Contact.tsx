@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Seo } from '../components/atoms';
+import { photoService } from '../services/photoService';
+import { describePhoto } from '../utils/photoAlt';
+import type { Photo } from '../types/photo';
 
 // `prompts` become the blank lines the message field is pre-filled with, so they only ask
 // what actually varies for that shoot — headcount matters for a family, not for a headshot.
@@ -94,6 +97,28 @@ export const Contact: React.FC = () => {
 	});
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [isSubmitted, setIsSubmitted] = useState(false);
+	const [heroPhoto, setHeroPhoto] = useState<Photo | null>(null);
+	const [heroLoaded, setHeroLoaded] = useState(false);
+
+	// A hero-tagged photo behind the intro, picked per visit the way Home shuffles its featured
+	// set. All five of them are landscapes, which is what keeps the headline readable over one.
+	useEffect(() => {
+		let cancelled = false;
+
+		photoService
+			.getHeroPhotos()
+			.then((photos) => {
+				if (cancelled || photos.length === 0) return;
+				setHeroPhoto(photos[Math.floor(Math.random() * photos.length)]);
+			})
+			.catch(() => {
+				// Not worth surfacing: the gradient the photo sits on stands on its own.
+			});
+
+		return () => {
+			cancelled = true;
+		};
+	}, []);
 
 	// The textarea grows with what is in it, so nobody has to find the drag handle — which is
 	// all but invisible on a dark field, and absent entirely on a phone. Capped at most of the
@@ -210,6 +235,17 @@ export const Contact: React.FC = () => {
 
 	const labelClass = 'block text-xs font-semibold tracking-wider text-gray-400 uppercase mb-2';
 
+	// Missing config drops the backdrop rather than throwing the way the photo components do —
+	// this one is decoration, and the page still works without it.
+	const cloudFrontUrl = import.meta.env.VITE_CLOUDFRONT_URL;
+	const heroPhotoUrls =
+		heroPhoto && cloudFrontUrl
+			? {
+					src: `${cloudFrontUrl}/photos/800/${heroPhoto.file}`,
+					srcSet: `${cloudFrontUrl}/photos/400/${heroPhoto.file} 400w, ${cloudFrontUrl}/photos/800/${heroPhoto.file} 800w, ${cloudFrontUrl}/photos/2000/${heroPhoto.file} 2000w`,
+				}
+			: null;
+
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-black via-gray-900 via-slate-800 via-blue-900 via-blue-700 via-sky-600 via-cyan-500 via-blue-600 via-indigo-700 via-indigo-900 via-slate-900 to-black flex flex-col">
 			<Seo
@@ -218,13 +254,29 @@ export const Contact: React.FC = () => {
 				path="/contact"
 			/>
 
-			{/* Intro */}
-			<div className="px-6 pt-8 sm:pt-14 lg:pt-24 pb-8 sm:pb-12">
+			{/* Intro. A photo sits behind it: this is the page that sells photography, and it was
+			    the one page showing none. The overlay fades to black at the bottom so the section
+			    meets the page gradient, which starts on black, without a seam. */}
+			<div className="relative overflow-hidden px-6 pt-8 sm:pt-14 lg:pt-24 pb-8 sm:pb-12">
+				{heroPhoto && heroPhotoUrls && (
+					<img
+						src={heroPhotoUrls.src}
+						srcSet={heroPhotoUrls.srcSet}
+						sizes="100vw"
+						alt={describePhoto(heroPhoto)}
+						onLoad={() => setHeroLoaded(true)}
+						className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+							heroLoaded ? 'opacity-100' : 'opacity-0'
+						}`}
+					/>
+				)}
+				<div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/70 to-black pointer-events-none" />
+
 				<motion.div
 					initial={{ opacity: 0, y: -20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.7 }}
-					className="w-full max-w-3xl mx-auto text-center"
+					className="relative w-full max-w-3xl mx-auto text-center"
 				>
 					<div className="relative block py-5 px-6 mb-5 sm:py-8 sm:px-8 sm:mb-8">
 						<div className="absolute top-0 left-0 w-8 h-8 sm:w-10 sm:h-10 border-l-2 border-t-2 border-gray-600" />
@@ -236,9 +288,22 @@ export const Contact: React.FC = () => {
 						</h1>
 					</div>
 
+					{/* The offer to skip the packages is already in this sentence, so the shortcut
+					    is the sentence rather than another button competing with the four "Book"
+					    ones. Underlined, not just blue: blue on this page is decoration — the word
+					    in the headline above is blue and links nowhere. A plain anchor is enough,
+					    since globals.css scrolls smoothly and the card carries scroll-mt-24 to
+					    clear the fixed header. */}
 					<p className="text-gray-400 text-base sm:text-lg leading-relaxed">
 						Have a shoot in mind? Want to collaborate? <br className="hidden sm:inline" />
-						Pick a session below, or just send me a message.
+						Pick a session below, or{' '}
+						<a
+							href="#contact-form"
+							className="text-blue-400 underline underline-offset-4 decoration-blue-400/40 hover:decoration-blue-400 transition-colors"
+						>
+							just send me a message
+						</a>
+						.
 					</p>
 				</motion.div>
 			</div>
@@ -349,6 +414,7 @@ export const Contact: React.FC = () => {
 			    otherwise cover its top when a package button scrolls it into view. */}
 			<section className="px-6 pt-12 sm:pt-16 pb-16 sm:pb-20">
 				<motion.div
+					id="contact-form"
 					ref={formRef}
 					initial={{ opacity: 0, y: 20 }}
 					whileInView={{ opacity: 1, y: 0 }}
