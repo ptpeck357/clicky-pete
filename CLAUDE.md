@@ -12,10 +12,10 @@ npm run fix     # eslint --fix + prettier --write
 ```
 
 `npm run ci` must pass before committing. Lint runs with `--max-warnings=10`; there are
-currently 9, all pre-existing: seven are `react-hooks/set-state-in-effect` in `usePhotos`,
-`Gallery`, `Home`, `AdminPage` and `PhotoEditModal`, one is the `Math.random` shuffle in
+currently 8, all pre-existing: six are `react-hooks/set-state-in-effect` in `usePhotos`,
+`Gallery` (two), `Home`, `AdminPage` and `PhotoEditModal`, one is the `Math.random` shuffle in
 `Gallery` reported as an impure call during render, and one is a skipped-memoization notice in
-`usePhotos`. A tenth warning means something new was added.
+`usePhotos`. A ninth warning means something new was added.
 
 ## How photos work
 
