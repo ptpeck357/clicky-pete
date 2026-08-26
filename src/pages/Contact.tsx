@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import { Seo } from '../components/atoms';
 
 // `prompts` become the blank lines the message field is pre-filled with, so they only ask
 // what actually varies for that shoot — headcount matters for a family, not for a headshot.
@@ -211,6 +212,12 @@ export const Contact: React.FC = () => {
 
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-black via-gray-900 via-slate-800 via-blue-900 via-blue-700 via-sky-600 via-cyan-500 via-blue-600 via-indigo-700 via-indigo-900 via-slate-900 to-black flex flex-col">
+			<Seo
+				title="Book a Session | Bozeman Photographer"
+				description="Portrait, graduation, family and engagement sessions in Bozeman, Montana. Pricing, what each session includes, and a form to get a date on the books."
+				path="/contact"
+			/>
+
 			{/* Intro */}
 			<div className="px-6 pt-8 sm:pt-14 lg:pt-24 pb-8 sm:pb-12">
 				<motion.div

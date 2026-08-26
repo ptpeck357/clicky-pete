@@ -29,6 +29,9 @@ plan.md
 .env
 lambda/function.zip
 
+# Generated from photos.json by scripts/generate-sitemap.mjs on every build
+public/sitemap.xml
+
 # Local admin (dev-only): machine-specific AWS targets and publish state
 admin.config.json
 .admin-state.json

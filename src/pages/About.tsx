@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { Seo } from '../components/atoms';
 
 const HERO_IMAGES = ['canyon_land.webp', 'motorcycle.webp', 'northern_lights.webp', 'cover_photo.webp'];
 const PROFILE_BASE = '/photos/aboutme/profile/web';
@@ -33,6 +34,12 @@ export const About: React.FC = () => {
 
 	return (
 		<div className="min-h-screen bg-gray-900">
+			<Seo
+				title="About Peter Peck | Bozeman Photographer"
+				description="Peter Peck is a photographer in Bozeman, Montana, shooting portraits, graduations, families and engagements alongside landscape and night work."
+				path="/about"
+			/>
+
 			{HERO_IMAGES.length > 0 && (
 				<section className="relative w-full h-screen -mt-16 flex items-center justify-center overflow-hidden bg-gray-900">
 					<motion.div
@@ -59,7 +66,7 @@ export const About: React.FC = () => {
 										/photos/aboutme/hero/2000/${image} 2000w
 									`}
 									sizes="100vw"
-									alt="Hero"
+									alt="Landscape photography by Peter Peck"
 									className="relative w-full h-full object-contain sm:object-cover"
 								/>
 							</div>

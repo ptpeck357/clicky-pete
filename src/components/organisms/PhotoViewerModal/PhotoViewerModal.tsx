@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Photo } from '../../../types/photo';
 import { preloadViewerImage } from '../../../utils/imageOptimization';
+import { describePhoto } from '../../../utils/photoAlt';
 
 interface PhotoViewerModalProps {
 	photo: Photo | null;
@@ -349,7 +350,7 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({
 								src={photoUrls.src}
 								srcSet={photoUrls.srcSet}
 								sizes={photoUrls.sizes}
-								alt={(photo.tags.category as string) || 'Photo'}
+								alt={describePhoto(photo)}
 								draggable={false}
 								className={`relative w-full h-full object-contain transition-opacity duration-150 select-none ${
 									imageLoaded ? 'opacity-100' : 'opacity-0'
