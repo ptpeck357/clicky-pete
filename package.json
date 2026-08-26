@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "npm run generate:sitemap && tsc -b && vite build",
+    "generate:sitemap": "node scripts/generate-sitemap.mjs",
     "lint:eslint": "eslint . --max-warnings=10",
     "lint:eslint:fix": "eslint . --max-warnings=10 --fix",
     "lint:prettier": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
