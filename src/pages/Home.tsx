@@ -307,7 +307,7 @@ export const Home: React.FC = () => {
 							variants={textVariants}
 							transition={{ duration: 0.8, ease: 'easeOut' }}
 						>
-							Portrait &amp; landscape photographer in Bozeman, Montana
+							Portrait &amp; landscape photographer in Bozeman,&nbsp;Montana
 						</motion.p>
 					</motion.div>
 				</motion.div>
