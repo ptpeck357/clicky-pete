@@ -37,10 +37,10 @@ export const Home: React.FC = () => {
 	const [photosFetched, setPhotosFetched] = useState(false);
 	const [heroTextVisible, setHeroTextVisible] = useState(true);
 
-	const [displayedPhotos, setDisplayedPhotos] = useState<Photo[]>([]);
 	const [photosToShow, setPhotosToShow] = useState(12);
 
 	const loadMoreRef = useRef<HTMLDivElement>(null);
+	const displayedPhotos = featuredPhotos.slice(0, photosToShow);
 	const hasMorePhotos = photosToShow < featuredPhotos.length;
 
 	const handleLoadMore = useCallback(() => {
@@ -86,10 +86,6 @@ export const Home: React.FC = () => {
 
 		loadPhotos();
 	}, []);
-
-	useEffect(() => {
-		setDisplayedPhotos(featuredPhotos.slice(0, photosToShow));
-	}, [featuredPhotos, photosToShow]);
 
 	useEffect(() => {
 		if (heroPhotos.length === 0) {
