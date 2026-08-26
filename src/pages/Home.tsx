@@ -167,7 +167,7 @@ export const Home: React.FC = () => {
 
 	useEffect(() => {
 		if (!heroImagesLoaded) return;
-		const t = setTimeout(() => setHeroTextVisible(false), 3500);
+		const t = setTimeout(() => setHeroTextVisible(false), 5000);
 		return () => clearTimeout(t);
 	}, [heroImagesLoaded]);
 
