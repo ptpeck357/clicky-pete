@@ -141,6 +141,40 @@ and neither validates that it does.
 `lambda/contact-form` is not deployed by Amplify. Changes to it need deploying separately, so
 a commit touching the Lambda is not live until that happens.
 
+## Static files, Amplify rewrites and the edge cache
+
+Amplify rewrites every request to `/index.html` so the SPA can route it, and the rule carries an
+allowlist of extensions it leaves alone:
+
+```
+css | gif | ico | jpg | js | png | txt | xml | svg | woff | woff2 | ttf | map | json | webp
+```
+
+**A real file whose extension is not on that list is shadowed by the SPA shell.** It builds into
+`dist/` correctly, `npm run preview` serves it correctly, and production answers with
+`index.html` and `content-type: text/html` — a 200, so nothing looks broken. `/sitemap.xml` did
+exactly this until `xml` was added; `robots.txt` worked throughout only because `txt` was
+already listed. Anything new — a `.pdf`, a `.webmanifest`, an `.ics` — needs its extension
+adding first, in the Amplify console under Rewrites and redirects. It is not in the repo.
+
+**Editing the rule appears to do nothing, and that is the second half of the trap.** CloudFront
+has already cached the wrong response with `s-maxage=31536000`, a year at the edge, and Amplify
+exposes no manual invalidation. A query string does not bust it either — the distribution does
+not key on one. **Redeploy this version** on the branch triggers the invalidation without
+needing a commit. Until that runs, you are reading the old object and cannot judge whether the
+rule is right.
+
+```bash
+curl -sI https://www.clickypete.photography/sitemap.xml   # content-type, and x-cache
+```
+
+`x-cache: Hit from cloudfront` with a non-zero `age` means the answer is cached, whatever it
+says. `Miss` means it came from the origin and can be trusted.
+
+Related: the inline `<script type="application/ld+json">` on the homepage is **not** blocked by
+`script-src 'self'`. Browsers enforce `script-src` on executable script, not on data blocks.
+This was checked against production rather than assumed.
+
 ## Conventions
 
 Tabs, single quotes, 120 columns, semicolons — enforced by Prettier on commit via Husky and
