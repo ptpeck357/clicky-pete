@@ -34,6 +34,7 @@ export const Home: React.FC = () => {
 
 	const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
 	const [heroImagesLoaded, setHeroImagesLoaded] = useState(false);
+	const [photosFetched, setPhotosFetched] = useState(false);
 	const [heroTextVisible, setHeroTextVisible] = useState(true);
 
 	const [displayedPhotos, setDisplayedPhotos] = useState<Photo[]>([]);
@@ -78,6 +79,8 @@ export const Home: React.FC = () => {
 				setHeroPhotos(heroToUse);
 			} catch (error) {
 				console.error('Failed to load photos:', error);
+			} finally {
+				setPhotosFetched(true);
 			}
 		};
 
@@ -89,7 +92,11 @@ export const Home: React.FC = () => {
 	}, [featuredPhotos, photosToShow]);
 
 	useEffect(() => {
-		if (heroPhotos.length === 0) return;
+		if (heroPhotos.length === 0) {
+			// nothing to preload once the fetch is done: drop the overlay rather than spin forever
+			if (photosFetched) setHeroImagesLoaded(true);
+			return;
+		}
 
 		const LOADING_TIMEOUT_MS = 15000;
 		let hasCompleted = false;
@@ -97,6 +104,7 @@ export const Home: React.FC = () => {
 		const cloudFrontUrl = import.meta.env.VITE_CLOUDFRONT_URL;
 		if (!cloudFrontUrl) {
 			console.error('CloudFront URL not configured');
+			setHeroImagesLoaded(true);
 			return;
 		}
 
@@ -113,32 +121,20 @@ export const Home: React.FC = () => {
 			}
 		}, LOADING_TIMEOUT_MS);
 
-		if (heroImageUrls.length > 0) {
-			preloadImages(heroImageUrls)
-				.then(() => {
-					if (!hasCompleted) {
-						hasCompleted = true;
-						clearTimeout(timeoutId);
-						setHeroImagesLoaded(true);
-					}
-				})
-				.catch(() => {
-					if (!hasCompleted) {
-						hasCompleted = true;
-						clearTimeout(timeoutId);
-						setHeroImagesLoaded(true);
-					}
-				});
-		} else {
-			hasCompleted = true;
-			clearTimeout(timeoutId);
-			setHeroImagesLoaded(true);
-		}
+		// preloadImages swallows per-image failures and always resolves
+		preloadImages(heroImageUrls).then(() => {
+			if (!hasCompleted) {
+				hasCompleted = true;
+				clearTimeout(timeoutId);
+				setHeroImagesLoaded(true);
+			}
+		});
 
 		return () => {
-			if (timeoutId) clearTimeout(timeoutId);
+			hasCompleted = true;
+			clearTimeout(timeoutId);
 		};
-	}, [heroPhotos]);
+	}, [heroPhotos, photosFetched]);
 
 	const getHeroImageUrl = (photo: Photo, cloudFrontUrl: string) => {
 		const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1920;
