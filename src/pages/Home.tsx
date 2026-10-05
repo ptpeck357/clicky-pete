@@ -163,8 +163,6 @@ export const Home: React.FC = () => {
 		return () => clearTimeout(t);
 	}, [heroImagesLoaded]);
 
-	const recentPhotos = displayedPhotos.slice(1);
-
 	// Parallax effect for hero background
 	const { scrollY } = useScroll();
 	const backgroundY = useTransform(scrollY, [0, 800], [0, -350]);
@@ -352,7 +350,7 @@ export const Home: React.FC = () => {
 			>
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 					<PhotoGrid
-						photos={recentPhotos}
+						photos={displayedPhotos}
 						loading={displayedPhotos.length === 0}
 						onPhotoClick={handlePhotoClick}
 						aspectRatio="natural"
