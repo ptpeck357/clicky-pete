@@ -479,6 +479,7 @@ export const Contact: React.FC = () => {
 											type="text"
 											id="name"
 											name="name"
+											maxLength={200}
 											value={formData.name}
 											onChange={handleInputChange}
 											required
@@ -495,6 +496,7 @@ export const Contact: React.FC = () => {
 											type="email"
 											id="email"
 											name="email"
+											maxLength={320}
 											value={formData.email}
 											onChange={handleInputChange}
 											required
@@ -513,6 +515,7 @@ export const Contact: React.FC = () => {
 										type="text"
 										id="subject"
 										name="subject"
+										maxLength={200}
 										value={formData.subject}
 										onChange={handleInputChange}
 										required
@@ -528,6 +531,7 @@ export const Contact: React.FC = () => {
 									<textarea
 										id="message"
 										name="message"
+										maxLength={10000}
 										value={formData.message}
 										onChange={handleInputChange}
 										required
