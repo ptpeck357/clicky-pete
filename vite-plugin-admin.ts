@@ -291,15 +291,21 @@ export function adminPlugin(): Plugin {
 				cloudfront = new CloudFrontClient({ region: config.region });
 			};
 
-			/** Uploads photos.json and clears the CDN copy. Shared by /publish and /delete. */
-			const publishManifest = async (): Promise<string | undefined> => {
+			/**
+			 * Optimistic lock: if the live file changed since our last publish, someone edited it
+			 * elsewhere and pushing now would silently discard their change.
+			 */
+			const assertLiveUnchanged = async () => {
 				const state = readState();
 				const head = await s3.send(new HeadObjectCommand({ Bucket: config.bucket, Key: MANIFEST_KEY }));
-				// Optimistic lock: if the live file changed since our last publish, someone
-				// edited it elsewhere and pushing now would silently discard their change.
 				if (state.lastPublishedETag && head.ETag !== state.lastPublishedETag) {
 					throw new PublishConflict(head.ETag, state.lastPublishedETag);
 				}
+			};
+
+			/** Uploads photos.json and clears the CDN copy. Shared by /publish and /delete. */
+			const publishManifest = async (): Promise<string | undefined> => {
+				await assertLiveUnchanged();
 
 				const put = await s3.send(
 					new PutObjectCommand({
@@ -515,6 +521,22 @@ export function adminPlugin(): Plugin {
 						const target = manifest.find((p) => p.id === id);
 						if (!target) return send(res, 404, { error: `no entry ${id}` });
 
+						// Checked before the entry is removed: refusing after it would leave the files
+						// with no entry to delete them through, since a retry answers 404.
+						if (deleteFiles === true) {
+							try {
+								await assertLiveUnchanged();
+							} catch (error) {
+								if (error instanceof PublishConflict) {
+									return send(res, 409, {
+										error: `${error.message}. Nothing was removed — resolve that, then delete again.`,
+										filesDeleted: false,
+									});
+								}
+								throw error;
+							}
+						}
+
 						const remaining = manifest.filter((p) => p.id !== id);
 						writeManifest(remaining);
 
@@ -525,13 +547,13 @@ export function adminPlugin(): Plugin {
 						try {
 							await publishManifest();
 						} catch (error) {
+							// Whatever failed — the lock, the upload or the invalidation — the files are
+							// still in place, so put the entry back and let the delete be retried. Left
+							// out, a retry answers 404 and the files can no longer be removed from here.
+							writeManifest(manifest);
 							if (error instanceof PublishConflict) {
-								// The entry is already out of the local manifest; leaving the files in
-								// place is the safe half-way state, so report rather than delete blind.
 								return send(res, 409, {
-									error: `${error.message}. The entry was removed locally but the files were kept — publish, then delete again.`,
-									removed: id,
-									entries: remaining.length,
+									error: `${error.message}. Nothing was removed — resolve that, then delete again.`,
 									filesDeleted: false,
 								});
 							}
