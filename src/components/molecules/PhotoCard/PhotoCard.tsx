@@ -74,8 +74,19 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick, className 
 
 	return (
 		<div
-			className={`bg-gray-800 rounded-lg overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer group hover:-translate-y-2 ${className}`}
+			className={`bg-gray-800 rounded-lg overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer group hover:-translate-y-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 ${className}`}
 			onClick={onClick}
+			// A div rather than a <button>, since the card's block layout and masonry sizing are
+			// built around one — so the role, focus and Enter/Space a button gets free are added here.
+			role={onClick ? 'button' : undefined}
+			tabIndex={onClick ? 0 : undefined}
+			onKeyDown={(event) => {
+				if (onClick && (event.key === 'Enter' || event.key === ' ')) {
+					event.preventDefault();
+					onClick();
+				}
+			}}
+			onFocus={() => preloadViewerImage(photo.file)}
 			// Hovering or touching is intent to open. Starting the full-size fetch here buys
 			// the download a head start over the click, and costs nothing if it never comes.
 			onPointerEnter={() => preloadViewerImage(photo.file)}
