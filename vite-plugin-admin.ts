@@ -309,6 +309,9 @@ export function adminPlugin(): Plugin {
 						ContentType: 'application/json',
 					}),
 				);
+				// Recorded before invalidating: the object is already replaced, so a failed
+				// invalidation left unrecorded would make the next publish 409 against our own write.
+				writeState({ lastPublishedETag: put.ETag });
 				await cloudfront.send(
 					new CreateInvalidationCommand({
 						DistributionId: config.distributionId,
@@ -318,7 +321,6 @@ export function adminPlugin(): Plugin {
 						},
 					}),
 				);
-				writeState({ lastPublishedETag: put.ETag });
 				return put.ETag;
 			};
 
@@ -421,10 +423,12 @@ export function adminPlugin(): Plugin {
 							});
 						}
 
-						// rotate() applies EXIF orientation, then metadata is dropped by default —
-						// no GPS or camera data reaches the published files.
-						const upright = sharp(source).rotate();
-						const { width, height } = await upright.metadata();
+						// metadata() describes the input as stored, ignoring rotate(), so a portrait
+						// shot carrying an EXIF orientation flag reads as landscape: a 4:5 would be
+						// refused as 5:4, and a 2:3 accepted as 3:2. autoOrient is the size the
+						// renditions below actually come out at.
+						const { autoOrient } = await sharp(source).metadata();
+						const { width, height } = autoOrient;
 						if (!width || !height) return send(res, 400, { error: 'could not read image dimensions' });
 
 						const ratio = aspectRatio(width, height);
@@ -437,6 +441,8 @@ export function adminPlugin(): Plugin {
 							});
 						}
 
+						// rotate() applies EXIF orientation, then metadata is dropped by default —
+						// no GPS or camera data reaches the published files.
 						for (const size of SIZES) {
 							const body = await sharp(source)
 								.rotate()
