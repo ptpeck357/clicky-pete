@@ -51,7 +51,13 @@ export const Seo: React.FC<SeoProps> = ({ title, description, path, image, noInd
 /**
  * Structured data, rendered inline. React does not hoist a script with a non-JavaScript type,
  * so this stays where it is placed — which Google accepts anywhere in the document.
+ *
+ * `<` is escaped because the collection name comes straight from the URL: a `</script>` in it
+ * would close this element early in any server-rendered or prerendered copy of the page.
  */
 export const JsonLd: React.FC<{ data: object }> = ({ data }) => (
-	<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />
+	<script
+		type="application/ld+json"
+		dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, '\\u003c') }}
+	/>
 );
