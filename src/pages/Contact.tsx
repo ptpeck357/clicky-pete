@@ -211,8 +211,11 @@ export const Contact: React.FC = () => {
 				if (!response.ok) {
 					throw new Error('Failed to send message');
 				}
-			} else {
+			} else if (import.meta.env.DEV) {
 				await new Promise((resolve) => setTimeout(resolve, 1500));
+			} else {
+				// A build without the endpoint must not tell a visitor their message was sent.
+				throw new Error('VITE_CONTACT_API_URL is not configured');
 			}
 
 			setIsSubmitted(true);
