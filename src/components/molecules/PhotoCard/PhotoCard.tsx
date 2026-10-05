@@ -116,6 +116,9 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick, className 
 				) : shouldLoad ? (
 					<>
 						<img
+							// A failed <img> never fires onError again for the same src, so without a
+							// remount the first failure was the last: no retry, and no error state either.
+							key={retryCount}
 							src={photoUrls.src}
 							srcSet={photoUrls.srcSet}
 							sizes={photoUrls.sizes}
