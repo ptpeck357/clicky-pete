@@ -229,6 +229,15 @@ const objectExists = async (s3: S3Client, bucket: string, key: string): Promise<
 	}
 };
 
+/** A malformed Origin, or the literal "null" a sandboxed page sends, counts as foreign. */
+const isSameHost = (origin: string, host?: string): boolean => {
+	try {
+		return new URL(origin).host === host;
+	} catch {
+		return false;
+	}
+};
+
 const send = (res: ServerResponse, status: number, body: unknown) => {
 	res.statusCode = status;
 	res.setHeader('Content-Type', 'application/json');
@@ -315,6 +324,16 @@ export function adminPlugin(): Plugin {
 
 			server.middlewares.use('/__admin', (req, res, next) => {
 				const url = (req.url ?? '').split('?')[0];
+
+				// Any page open in the browser can POST here as a "simple" text/plain request,
+				// which skips the CORS preflight: the response is unreadable to it, but the
+				// handler still runs — enough to delete a photo from the bucket. Browsers always
+				// send Origin on a cross-origin POST, so one that is not this server is refused.
+				// No Origin at all means curl or a same-origin GET, both of which are fine.
+				const origin = req.headers.origin;
+				if (origin && !isSameHost(origin, req.headers.host)) {
+					return send(res, 403, { error: `cross-origin request from ${origin} refused` });
+				}
 
 				const handle = async () => {
 					init();
