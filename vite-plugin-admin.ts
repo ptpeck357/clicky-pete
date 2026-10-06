@@ -567,29 +567,31 @@ export function adminPlugin(): Plugin {
 						}
 
 						// The entry is gone from the live manifest by now, so it cannot be put back, and
-						// a retry through the admin would answer 404. Every size is attempted, each
-						// a few times (deleting is idempotent), and anything still left is named so it
-						// can be removed by hand rather than discovered later as a 409 on re-upload.
+						// a retry through the admin would answer 404. Every size is attempted rather
+						// than stopping at the first failure — the SDK has already retried each one with
+						// backoff — and anything left is named, with the reason, so it can be removed by
+						// hand rather than discovered later as a 409 on re-upload.
 						const deleted: string[] = [];
-						const failed: string[] = [];
+						const failed: { key: string; reason: string }[] = [];
 						for (const size of SIZES) {
 							const Key = `photos/${size}/${target.file}`;
-							let lastError: unknown;
-							for (let attempt = 0; attempt < 3; attempt++) {
-								try {
-									await s3.send(new DeleteObjectCommand({ Bucket: config.bucket, Key }));
-									lastError = undefined;
-									break;
-								} catch (error) {
-									lastError = error;
-								}
+							try {
+								await s3.send(new DeleteObjectCommand({ Bucket: config.bucket, Key }));
+								deleted.push(Key);
+							} catch (error) {
+								failed.push({
+									key: Key,
+									reason: error instanceof Error ? error.message : String(error),
+								});
 							}
-							if (lastError === undefined) deleted.push(Key);
-							else failed.push(Key);
 						}
 						if (failed.length > 0) {
+							const listed = failed.map(({ key, reason }) => `${key} (${reason})`).join(', ');
+							const commands = failed
+								.map(({ key }) => `aws s3 rm s3://${config.bucket}/${key} --profile ${config.profile}`)
+								.join(' && ');
 							return send(res, 500, {
-								error: `Published without ${id}, but ${failed.length} of its files could not be deleted: ${failed.join(', ')}. Remove them with: ${failed.map((key) => `aws s3 rm s3://${config.bucket}/${key} --profile ${config.profile}`).join(' && ')}`,
+								error: `Published without ${id}, but ${failed.length} of its files could not be deleted: ${listed}. Remove them with: ${commands}`,
 								removed: id,
 								entries: remaining.length,
 								filesDeleted: false,
