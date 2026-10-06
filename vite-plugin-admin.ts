@@ -229,6 +229,15 @@ const objectExists = async (s3: S3Client, bucket: string, key: string): Promise<
 	}
 };
 
+/** A malformed Origin, or the literal "null" a sandboxed page sends, counts as foreign. */
+const isSameHost = (origin: string, host?: string): boolean => {
+	try {
+		return new URL(origin).host === host;
+	} catch {
+		return false;
+	}
+};
+
 const send = (res: ServerResponse, status: number, body: unknown) => {
 	res.statusCode = status;
 	res.setHeader('Content-Type', 'application/json');
@@ -282,15 +291,21 @@ export function adminPlugin(): Plugin {
 				cloudfront = new CloudFrontClient({ region: config.region });
 			};
 
-			/** Uploads photos.json and clears the CDN copy. Shared by /publish and /delete. */
-			const publishManifest = async (): Promise<string | undefined> => {
+			/**
+			 * Optimistic lock: if the live file changed since our last publish, someone edited it
+			 * elsewhere and pushing now would silently discard their change.
+			 */
+			const assertLiveUnchanged = async () => {
 				const state = readState();
 				const head = await s3.send(new HeadObjectCommand({ Bucket: config.bucket, Key: MANIFEST_KEY }));
-				// Optimistic lock: if the live file changed since our last publish, someone
-				// edited it elsewhere and pushing now would silently discard their change.
 				if (state.lastPublishedETag && head.ETag !== state.lastPublishedETag) {
 					throw new PublishConflict(head.ETag, state.lastPublishedETag);
 				}
+			};
+
+			/** Uploads photos.json and clears the CDN copy. Shared by /publish and /delete. */
+			const publishManifest = async (): Promise<string | undefined> => {
+				await assertLiveUnchanged();
 
 				const put = await s3.send(
 					new PutObjectCommand({
@@ -298,8 +313,17 @@ export function adminPlugin(): Plugin {
 						Key: MANIFEST_KEY,
 						Body: readFileSync(MANIFEST_PATH),
 						ContentType: 'application/json',
+						// Without this the object carries no Cache-Control, so browsers pick a
+						// lifetime of their own from Last-Modified and keep showing the previous
+						// manifest after a publish — invalidating CloudFront does not reach their
+						// cache. After "Remove and delete files" that stale copy names deleted
+						// objects. no-cache still lets an unchanged file come back as a 304.
+						CacheControl: 'no-cache',
 					}),
 				);
+				// Recorded before invalidating: the object is already replaced, so a failed
+				// invalidation left unrecorded would make the next publish 409 against our own write.
+				writeState({ lastPublishedETag: put.ETag });
 				await cloudfront.send(
 					new CreateInvalidationCommand({
 						DistributionId: config.distributionId,
@@ -309,12 +333,21 @@ export function adminPlugin(): Plugin {
 						},
 					}),
 				);
-				writeState({ lastPublishedETag: put.ETag });
 				return put.ETag;
 			};
 
 			server.middlewares.use('/__admin', (req, res, next) => {
 				const url = (req.url ?? '').split('?')[0];
+
+				// Any page open in the browser can POST here as a "simple" text/plain request,
+				// which skips the CORS preflight: the response is unreadable to it, but the
+				// handler still runs — enough to delete a photo from the bucket. Browsers always
+				// send Origin on a cross-origin POST, so one that is not this server is refused.
+				// No Origin at all means curl or a same-origin GET, both of which are fine.
+				const origin = req.headers.origin;
+				if (origin && !isSameHost(origin, req.headers.host)) {
+					return send(res, 403, { error: `cross-origin request from ${origin} refused` });
+				}
 
 				const handle = async () => {
 					init();
@@ -402,10 +435,12 @@ export function adminPlugin(): Plugin {
 							});
 						}
 
-						// rotate() applies EXIF orientation, then metadata is dropped by default —
-						// no GPS or camera data reaches the published files.
-						const upright = sharp(source).rotate();
-						const { width, height } = await upright.metadata();
+						// metadata() describes the input as stored, ignoring rotate(), so a portrait
+						// shot carrying an EXIF orientation flag reads as landscape: a 4:5 would be
+						// refused as 5:4, and a 2:3 accepted as 3:2. autoOrient is the size the
+						// renditions below actually come out at.
+						const { autoOrient } = await sharp(source).metadata();
+						const { width, height } = autoOrient;
 						if (!width || !height) return send(res, 400, { error: 'could not read image dimensions' });
 
 						const ratio = aspectRatio(width, height);
@@ -418,6 +453,8 @@ export function adminPlugin(): Plugin {
 							});
 						}
 
+						// rotate() applies EXIF orientation, then metadata is dropped by default —
+						// no GPS or camera data reaches the published files.
 						for (const size of SIZES) {
 							const body = await sharp(source)
 								.rotate()
@@ -490,6 +527,22 @@ export function adminPlugin(): Plugin {
 						const target = manifest.find((p) => p.id === id);
 						if (!target) return send(res, 404, { error: `no entry ${id}` });
 
+						// Checked before the entry is removed: refusing after it would leave the files
+						// with no entry to delete them through, since a retry answers 404.
+						if (deleteFiles === true) {
+							try {
+								await assertLiveUnchanged();
+							} catch (error) {
+								if (error instanceof PublishConflict) {
+									return send(res, 409, {
+										error: `${error.message}. Nothing was removed — resolve that, then delete again.`,
+										filesDeleted: false,
+									});
+								}
+								throw error;
+							}
+						}
+
 						const remaining = manifest.filter((p) => p.id !== id);
 						writeManifest(remaining);
 
@@ -500,24 +553,52 @@ export function adminPlugin(): Plugin {
 						try {
 							await publishManifest();
 						} catch (error) {
+							// Whatever failed — the lock, the upload or the invalidation — the files are
+							// still in place, so put the entry back and let the delete be retried. Left
+							// out, a retry answers 404 and the files can no longer be removed from here.
+							writeManifest(manifest);
 							if (error instanceof PublishConflict) {
-								// The entry is already out of the local manifest; leaving the files in
-								// place is the safe half-way state, so report rather than delete blind.
 								return send(res, 409, {
-									error: `${error.message}. The entry was removed locally but the files were kept — publish, then delete again.`,
-									removed: id,
-									entries: remaining.length,
+									error: `${error.message}. Nothing was removed — resolve that, then delete again.`,
 									filesDeleted: false,
 								});
 							}
 							throw error;
 						}
 
+						// The entry is gone from the live manifest by now, so it cannot be put back, and
+						// a retry through the admin would answer 404. Every size is attempted rather
+						// than stopping at the first failure — the SDK has already retried each one with
+						// backoff — and anything left is named, with the reason, so it can be removed by
+						// hand rather than discovered later as a 409 on re-upload.
 						const deleted: string[] = [];
+						const failed: { key: string; reason: string }[] = [];
 						for (const size of SIZES) {
 							const Key = `photos/${size}/${target.file}`;
-							await s3.send(new DeleteObjectCommand({ Bucket: config.bucket, Key }));
-							deleted.push(Key);
+							try {
+								await s3.send(new DeleteObjectCommand({ Bucket: config.bucket, Key }));
+								deleted.push(Key);
+							} catch (error) {
+								failed.push({
+									key: Key,
+									reason: error instanceof Error ? error.message : String(error),
+								});
+							}
+						}
+						if (failed.length > 0) {
+							const listed = failed.map(({ key, reason }) => `${key} (${reason})`).join(', ');
+							const commands = failed
+								.map(({ key }) => `aws s3 rm s3://${config.bucket}/${key} --profile ${config.profile}`)
+								.join(' && ');
+							return send(res, 500, {
+								error: `Published without ${id}, but ${failed.length} of its files could not be deleted: ${listed}. Remove them with: ${commands}`,
+								removed: id,
+								entries: remaining.length,
+								filesDeleted: false,
+								published: true,
+								deleted,
+								failed,
+							});
 						}
 						return send(res, 200, {
 							removed: id,

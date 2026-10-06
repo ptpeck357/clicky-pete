@@ -219,6 +219,9 @@ export const PhotoLibrary: React.FC<PhotoLibraryProps> = ({ photos, values, onCh
 			);
 		} catch (error) {
 			onError(error instanceof Error ? error.message : String(error));
+			// A failure can still have changed photos.json — a partial file delete happens after
+			// the entry is published away — so re-read rather than keep listing what may be gone.
+			onChanged();
 		} finally {
 			setBusy(false);
 		}

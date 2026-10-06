@@ -6,6 +6,8 @@ const ses = new SESClient({ region: process.env.AWS_REGION });
 const TO_EMAIL = process.env.TO_EMAIL;
 const FROM_EMAIL = process.env.FROM_EMAIL || TO_EMAIL;
 
+const MAX_LENGTHS = { name: 200, email: 320, subject: 200, message: 10000 };
+
 const corsHeaders = {
 	'Access-Control-Allow-Origin': '*',
 	'Access-Control-Allow-Headers': 'Content-Type,Authorization',
@@ -34,12 +36,24 @@ export const handler = async (event) => {
 			};
 		}
 
-		// Validate required fields
-		if (!name || !email || !subject || !message) {
+		// Validate required fields. Type-checked as well as present: a number or an object here
+		// would otherwise reach escapeHtml and throw, answering 500 for what is a bad request.
+		const fields = { name, email, subject, message };
+		if (Object.values(fields).some((value) => typeof value !== 'string' || value.trim() === '')) {
 			return {
 				statusCode: 400,
 				headers: corsHeaders,
 				body: JSON.stringify({ error: 'All fields are required' }),
+			};
+		}
+
+		// Generous for a real enquiry, but stops the endpoint relaying a megabyte into the inbox.
+		const tooLong = Object.entries(fields).find(([field, value]) => value.length > MAX_LENGTHS[field]);
+		if (tooLong) {
+			return {
+				statusCode: 400,
+				headers: corsHeaders,
+				body: JSON.stringify({ error: `${tooLong[0]} is too long` }),
 			};
 		}
 

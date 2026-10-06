@@ -44,6 +44,28 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({
 		}
 	}, []);
 
+	// The cards behind are focusable, so focus has to move into the viewer: left on the card,
+	// Enter reopens the photo it was opened from and Tab walks the grid underneath. On close it
+	// goes to the card of the photo last shown rather than the one opened — after arrowing
+	// through forty photos, that is where the reader is — falling back to whatever opened it.
+	const closeButtonRef = useRef<HTMLButtonElement>(null);
+	const shownPhotoIdRef = useRef<string | undefined>(undefined);
+	useEffect(() => {
+		if (photo) shownPhotoIdRef.current = photo.id;
+	}, [photo]);
+	useEffect(() => {
+		if (!isOpen) return;
+		const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+		closeButtonRef.current?.focus();
+		return () => {
+			const shownId = shownPhotoIdRef.current;
+			const shownCard = shownId
+				? document.querySelector<HTMLElement>(`[data-photo-id="${CSS.escape(shownId)}"]`)
+				: null;
+			(shownCard ?? opener)?.focus();
+		};
+	}, [isOpen]);
+
 	const onCloseRef = useRef(onClose);
 	useEffect(() => {
 		onCloseRef.current = onClose;
@@ -184,6 +206,8 @@ export const PhotoViewerModal: React.FC<PhotoViewerModalProps> = ({
 					/>
 
 					<motion.button
+						ref={closeButtonRef}
+						aria-label="Close"
 						className="absolute top-6 right-6 z-10 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors cursor-pointer"
 						onClick={onClose}
 						whileHover={{ scale: 1.1 }}

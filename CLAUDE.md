@@ -27,6 +27,20 @@ publishing, never by editing S3 directly.
 Each photo exists as three WebP renditions at `photos/{400,800,2000}/<file>`.
 `cloudFrontPhotoService.getPhotoUrl()` builds those paths, so the key layout is load-bearing.
 
+The site downloads the manifest once per page load: `cloudFrontPhotoService` shares one
+request between every caller and only discards it on failure. A tab left open does not see a
+publish until it is reloaded.
+
+**The admin publishes `photos.json` with `Cache-Control: no-cache`, and that header is
+load-bearing.** Without it the object carries no caching header, browsers choose a lifetime of
+their own from `Last-Modified`, and a returning visitor keeps the previous manifest after a
+publish — invalidating CloudFront does not reach a browser's cache. After "Remove and delete
+files", that stale copy names objects that no longer exist. Seen once, before the header was
+added: Chrome showed 599 entries while live and the repo both held 597, and the live object had
+no `Cache-Control` at all. The stale copy had been replaced before it could be inspected, so the
+cause is inferred rather than captured. `curl -sI` the live file after a publish and check the
+header is there.
+
 Rules that are easy to break:
 
 - **`id` is lowercased, `file` keeps the camera's casing.** Every entry pairs them that way:

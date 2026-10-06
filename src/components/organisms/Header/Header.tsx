@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Navigation } from '../Navigation';
@@ -6,7 +6,9 @@ import { Navigation } from '../Navigation';
 export const Header: React.FC = () => {
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const [isVisible, setIsVisible] = useState(true);
-	const [lastScrollY, setLastScrollY] = useState(0);
+	// A ref, not state: as state it re-rendered the header and re-subscribed the listener on
+	// every scroll event, when only the direction of travel ever needs to reach the screen.
+	const lastScrollYRef = useRef(0);
 
 	const toggleMobileMenu = () => {
 		setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -15,6 +17,7 @@ export const Header: React.FC = () => {
 	useEffect(() => {
 		const controlHeader = () => {
 			const currentScrollY = window.scrollY;
+			const lastScrollY = lastScrollYRef.current;
 
 			if (currentScrollY < 10) {
 				setIsVisible(true);
@@ -24,12 +27,12 @@ export const Header: React.FC = () => {
 				setIsVisible(true);
 			}
 
-			setLastScrollY(currentScrollY);
+			lastScrollYRef.current = currentScrollY;
 		};
 
-		window.addEventListener('scroll', controlHeader);
+		window.addEventListener('scroll', controlHeader, { passive: true });
 		return () => window.removeEventListener('scroll', controlHeader);
-	}, [lastScrollY]);
+	}, []);
 
 	return (
 		<motion.header
