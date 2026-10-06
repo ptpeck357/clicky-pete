@@ -86,7 +86,8 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick, className 
 					onClick();
 				}
 			}}
-			onFocus={() => preloadViewerImage(photo.file)}
+			// Lets the viewer hand focus back to the card of the photo it was last showing.
+			data-photo-id={photo.id}
 			// Hovering or touching is intent to open. Starting the full-size fetch here buys
 			// the download a head start over the click, and costs nothing if it never comes.
 			onPointerEnter={() => preloadViewerImage(photo.file)}
