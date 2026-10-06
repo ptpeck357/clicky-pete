@@ -115,6 +115,9 @@ export const Gallery: React.FC = () => {
 	const [categories, setCategories] = useState<string[]>([]);
 	const [categoriesLoading, setCategoriesLoading] = useState(false);
 	const [photosToShow, setPhotosToShow] = useState(15);
+	// Bumped by Try Again. The categories load on their own, so without this a failed first
+	// load left the pills on "No categories available" even after the photos came back.
+	const [retryCount, setRetryCount] = useState(0);
 
 	const deferredCategory = useDeferredValue(localFilter.category);
 	const fetchFilter = useMemo<PhotoFilter>(
@@ -228,7 +231,12 @@ export const Gallery: React.FC = () => {
 
 			fetchCategories();
 		}
-	}, [showAllPhotos]);
+	}, [showAllPhotos, retryCount]);
+
+	const handleRetry = () => {
+		setRetryCount((count) => count + 1);
+		refetch();
+	};
 
 	const handleCategoryChange = (category: string | undefined) => {
 		setLocalFilter({ category });
@@ -322,7 +330,7 @@ export const Gallery: React.FC = () => {
 						Failed to load photos
 					</motion.div>
 					<motion.button
-						onClick={refetch}
+						onClick={handleRetry}
 						className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
 						whileHover={{ scale: 1.05 }}
 						whileTap={{ scale: 0.95 }}
