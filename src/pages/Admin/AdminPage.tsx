@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import type { Photo } from '../../types/photo';
 import { adminService } from '../../services/adminService';
@@ -158,6 +158,23 @@ export const AdminPage: React.FC = () => {
 	const [notice, setNotice] = useState<string | null>(null);
 	// Supplied by the server so the warning here cannot drift from what upload enforces.
 	const [expectedRatios, setExpectedRatios] = useState<string[]>([]);
+
+	// Each preview pins its file's bytes in memory until revoked, and a dropped folder can be
+	// hundreds of full-size exports, so release them as items leave the list and on unmount.
+	const previewsRef = useRef<Set<string>>(new Set());
+	useEffect(() => {
+		const live = new Set(pending.map((item) => item.preview));
+		for (const url of previewsRef.current) {
+			if (!live.has(url)) URL.revokeObjectURL(url);
+		}
+		previewsRef.current = live;
+	}, [pending]);
+	useEffect(() => {
+		const previews = previewsRef;
+		return () => {
+			for (const url of previews.current) URL.revokeObjectURL(url);
+		};
+	}, []);
 
 	/**
 	 * Asking S3 rather than tracking edits in the session: changes made before this page was

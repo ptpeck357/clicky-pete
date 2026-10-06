@@ -30,8 +30,17 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({ name, count, cov
 
 	return (
 		<motion.div
-			className="relative bg-gray-800 rounded-lg overflow-hidden cursor-pointer group"
+			className="relative bg-gray-800 rounded-lg overflow-hidden cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
 			onClick={onClick}
+			role="button"
+			tabIndex={0}
+			aria-label={`${name} collection, ${count} photos`}
+			onKeyDown={(event) => {
+				if (event.key === 'Enter' || event.key === ' ') {
+					event.preventDefault();
+					onClick();
+				}
+			}}
 			whileHover={{ scale: 1.02 }}
 			whileTap={{ scale: 0.98 }}
 			initial={{ opacity: 0, y: 20 }}

@@ -3,6 +3,30 @@ import type { Photo } from '../types/photo';
 const CLOUDFRONT_URL = import.meta.env.VITE_CLOUDFRONT_URL || '';
 const PHOTOS_JSON_PATH = '/data/photos.json';
 
+/**
+ * One manifest download per page load. The gallery alone asks three times on arrival and again
+ * on every category click; sharing one promise also means a slow earlier request can no longer
+ * resolve after a later one and overwrite its result. Cleared on failure so "Try Again" refetches.
+ */
+let manifestRequest: Promise<Photo[]> | null = null;
+
+const fetchManifest = async (): Promise<Photo[]> => {
+	try {
+		const response = await fetch(`${CLOUDFRONT_URL}${PHOTOS_JSON_PATH}`);
+
+		if (!response.ok) {
+			throw new Error(`Failed to fetch photos: ${response.status} ${response.statusText}`);
+		}
+
+		const photos: Photo[] = await response.json();
+		return photos;
+	} catch (error) {
+		console.error('Failed to fetch photos from CloudFront:', error);
+		manifestRequest = null;
+		throw error;
+	}
+};
+
 export const cloudFrontPhotoService = {
 	async getPhotos(): Promise<Photo[]> {
 		if (!CLOUDFRONT_URL) {
@@ -11,19 +35,8 @@ export const cloudFrontPhotoService = {
 			);
 		}
 
-		try {
-			const response = await fetch(`${CLOUDFRONT_URL}${PHOTOS_JSON_PATH}`);
-
-			if (!response.ok) {
-				throw new Error(`Failed to fetch photos: ${response.status} ${response.statusText}`);
-			}
-
-			const photos: Photo[] = await response.json();
-			return photos;
-		} catch (error) {
-			console.error('Failed to fetch photos from CloudFront:', error);
-			throw error;
-		}
+		manifestRequest ??= fetchManifest();
+		return manifestRequest;
 	},
 
 	async getPhotosByTag(tagKey: string, tagValue: string): Promise<Photo[]> {

@@ -163,8 +163,6 @@ export const Home: React.FC = () => {
 		return () => clearTimeout(t);
 	}, [heroImagesLoaded]);
 
-	const recentPhotos = displayedPhotos.slice(1);
-
 	// Parallax effect for hero background
 	const { scrollY } = useScroll();
 	const backgroundY = useTransform(scrollY, [0, 800], [0, -350]);
@@ -304,13 +302,14 @@ export const Home: React.FC = () => {
 					</motion.div>
 				</motion.div>
 
-				<div
+				<button
+					type="button"
 					className="absolute bottom-[12%] left-1/2 -translate-x-1/2 z-10 cursor-pointer"
 					onClick={() => document.getElementById('photo-section')?.scrollIntoView({ behavior: 'smooth' })}
 					aria-label="Scroll down"
 				>
-					<div className="scroll-arrow" />
-				</div>
+					<span className="scroll-arrow block" />
+				</button>
 
 				{heroPhotos.length > 1 && (
 					<>
@@ -352,7 +351,7 @@ export const Home: React.FC = () => {
 			>
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 					<PhotoGrid
-						photos={recentPhotos}
+						photos={displayedPhotos}
 						loading={displayedPhotos.length === 0}
 						onPhotoClick={handlePhotoClick}
 						aspectRatio="natural"
