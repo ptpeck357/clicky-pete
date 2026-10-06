@@ -313,6 +313,12 @@ export function adminPlugin(): Plugin {
 						Key: MANIFEST_KEY,
 						Body: readFileSync(MANIFEST_PATH),
 						ContentType: 'application/json',
+						// Without this the object carries no Cache-Control, so browsers pick a
+						// lifetime of their own from Last-Modified and keep showing the previous
+						// manifest after a publish — invalidating CloudFront does not reach their
+						// cache. After "Remove and delete files" that stale copy names deleted
+						// objects. no-cache still lets an unchanged file come back as a 304.
+						CacheControl: 'no-cache',
 					}),
 				);
 				// Recorded before invalidating: the object is already replaced, so a failed
