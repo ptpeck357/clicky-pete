@@ -35,9 +35,11 @@ publish until it is reloaded.
 load-bearing.** Without it the object carries no caching header, browsers choose a lifetime of
 their own from `Last-Modified`, and a returning visitor keeps the previous manifest after a
 publish — invalidating CloudFront does not reach a browser's cache. After "Remove and delete
-files", that stale copy names objects that no longer exist. It has happened: Chrome showed 599
-entries while live and the repo both held 597. `curl -sI` the live file after a publish and
-check the header is there.
+files", that stale copy names objects that no longer exist. Seen once, before the header was
+added: Chrome showed 599 entries while live and the repo both held 597, and the live object had
+no `Cache-Control` at all. The stale copy had been replaced before it could be inspected, so the
+cause is inferred rather than captured. `curl -sI` the live file after a publish and check the
+header is there.
 
 Rules that are easy to break:
 
