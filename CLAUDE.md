@@ -250,3 +250,7 @@ If work has already been committed on `dev` by mistake, move it to a branch befo
 Once the PR shows as merged into `dev`, switch to `dev`, pull, and delete the PR branch locally and
 on the remote (GitHub may have already removed it; check with `git ls-remote --heads origin`).
 Never delete a branch before its PR merges, and never delete `main`, `dev`, or `prod`.
+
+After each PR merges into `prod`, append an entry to the top of `CHANGELOG.md`: the `prod` PR's
+number and its merge date in Mountain Time, then the `dev` PRs it shipped, newest first, and any
+commits that went onto `dev` without a PR.
