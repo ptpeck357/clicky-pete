@@ -16,6 +16,9 @@
 - **Hero Carousel**: Auto-rotating hero images with dot indicators and parallax scrolling
 - **Infinite Scroll**: Photos load progressively as you scroll down the page
 - **Progressive Loading**: Optimized image loading with srcSet and lazy loading
+- **Search metadata**: Per-page titles, descriptions, canonicals and Open Graph tags, `ProfessionalService` and breadcrumb structured data, and descriptive alt text composed from each photo's tags
+- **Sitemap**: Generated at build time from `photos.json`, including every collection page and an image entry per photo
+- **Keyboard access**: A skip-to-content link, and photos, collections and the photo viewer all operable by keyboard
 
 ## Tech Stack
 
@@ -40,14 +43,16 @@
 
 ```bash
 npm install
-cp .env.example .env    # set VITE_CLOUDFRONT_URL and VITE_CONTACT_API_URL
+cp .env.example .env    # set VITE_CLOUDFRONT_URL and VITE_CONTACT_API_URL; VITE_GA_MEASUREMENT_ID is optional
 npm run dev             # http://localhost:5173
 ```
 
 | Script | Purpose |
 | --- | --- |
 | `npm run dev` | Dev server, and the only place the photo admin exists |
-| `npm run build` | Type-check and build to `dist/` |
+| `npm run build` | Generate `public/sitemap.xml`, type-check, and build to `dist/` |
+| `npm run generate:sitemap` | Regenerate the sitemap alone — it is gitignored, so the deployed copy always comes from the build |
+| `npm run preview` | Serve the production build locally |
 | `npm run validate:manifest` | Check `photos.json` — id/filename convention, known tags, duplicate entries |
 | `npm run ci` | Validate the manifest, lint, format check, build, and verify no admin code shipped |
 | `npm run fix` | Auto-fix lint and formatting |
@@ -55,17 +60,19 @@ npm run dev             # http://localhost:5173
 ## 📁 Project Structure
 
 ```
-photography-portfolio/
+clicky-pete/
 ├── src/
 │   ├── app/                   # App configuration
 │   │   ├── App.tsx            # Main app component
 │   │   └── Router.tsx         # Route definitions (/admin is gated to dev)
 │   │
 │   ├── components/            # React components
-│   │   ├── atoms/             # Basic UI components
+│   │   ├── atoms/             # Basic UI components, including <Seo> and <JsonLd>
 │   │   ├── molecules/         # Composite components
-│   │   ├── organisms/         # Complex components
-│   │   └── templates/         # Page layouts
+│   │   └── organisms/         # Complex components
+│   │
+│   ├── config/
+│   │   └── site.ts            # Site origin, name, socials — read by metadata and structured data
 │   │
 │   ├── data/
 │   │   └── photos.json        # Photo index — source of truth, published to S3
@@ -84,7 +91,10 @@ photography-portfolio/
 │   ├── utils/                 # Utility functions
 │   └── styles/                # CSS styles
 │
+├── scripts/
+│   └── generate-sitemap.mjs   # Writes public/sitemap.xml from photos.json at build time
 ├── vite-plugin-admin.ts       # Dev-only endpoints backing the admin
+├── customHttp.yml             # Security headers Amplify serves, including the CSP
 ├── admin.config.example.json  # Template for local AWS targets
 ├── lambda/                    # AWS Lambda functions (contact form)
 ├── public/                    # Static assets
@@ -185,8 +195,3 @@ made it into the bundle.
 See `CLAUDE.md` for the constraints that are not obvious from the code — the `photos.json`
 format requirement, the id convention, and the two ways admin code can silently reach
 production.
-
-
-## License
-
-This project is licensed under the MIT License.

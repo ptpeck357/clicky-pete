@@ -36,10 +36,18 @@ const collections = [...new Set(photos.map((photo) => photo.tags.collection).fil
 const escapeXml = (text) =>
 	text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-// The same sentence describePhoto() in src/utils/photoAlt.ts builds for alt text. Duplicated
-// for the reason SITE_URL is; change one and change the other.
+// The same sentence describePhoto() in src/utils/photoAlt.ts builds for alt text, with the
+// same readableCategory(). Duplicated for the reason SITE_URL is; change one and change the other.
+const readableCategory = (category) =>
+	category
+		.split('|')
+		.map((part) => part.trim())
+		.filter(Boolean)
+		.map((part, index) => (index === 0 ? part : part.toLowerCase()))
+		.join(' and ');
+
 const describePhoto = ({ tags: { category, location, collection } }) => {
-	const subject = category ? `${category} photography` : 'Photograph';
+	const subject = category ? `${readableCategory(category)} photography` : 'Photograph';
 	const place = location ? ` in ${location}` : '';
 	const series = collection && collection !== location ? ` — ${collection} collection` : '';
 	return `${subject}${place}${series}`;

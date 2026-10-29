@@ -320,6 +320,9 @@ export const Gallery: React.FC = () => {
 				animate={{ opacity: 1 }}
 				transition={{ duration: 0.5 }}
 			>
+				{/* No <Seo> on a failed load, but the tab still needs a title: main.tsx removes the
+				    static one from index.html. */}
+				<title>Photo Gallery | Clicky Pete Photography</title>
 				<div className="text-center">
 					<motion.div
 						className="text-red-400 text-lg mb-4"
