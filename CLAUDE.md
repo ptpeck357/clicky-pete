@@ -192,7 +192,7 @@ This was checked against production rather than assumed.
 ## Conventions
 
 Tabs, single quotes, 120 columns, semicolons — enforced by Prettier on commit via Husky and
-lint-staged. Components are organised atoms/molecules/organisms/templates and use Tailwind
+lint-staged. Components are organised atoms/molecules/organisms and use Tailwind
 utilities, not CSS modules.
 
 Commits follow Conventional Commits, checked by commitlint, and are grouped by what the

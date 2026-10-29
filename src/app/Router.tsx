@@ -1,6 +1,7 @@
 import React, { Suspense, lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Home } from '../pages/Home';
+import { SITE_NAME } from '../config/site';
 
 // Home stays eager — it is the landing page, and deferring it would add a round trip
 // before anything renders. The rest load when navigated to.
@@ -17,8 +18,10 @@ const AdminPage = import.meta.env.DEV ? lazy(() => import('../pages/Admin/AdminP
 export const Router: React.FC = () => {
 	return (
 		// One boundary around the whole switch: the lazy routes are full pages, so there is
-		// nothing useful to show beneath them while a chunk loads.
-		<Suspense fallback={null}>
+		// nothing useful to show beneath them while a chunk loads — except a title. main.tsx
+		// removes index.html's, so without this the tab shows the bare URL until the page's
+		// own <Seo> mounts.
+		<Suspense fallback={<title>{SITE_NAME}</title>}>
 			<Routes>
 				<Route path="/" element={<Home />} />
 				<Route path="/gallery" element={<Gallery />} />
