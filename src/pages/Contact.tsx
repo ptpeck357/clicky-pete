@@ -363,7 +363,7 @@ export const Contact: React.FC = () => {
 									<span className="text-3xl font-bold">${pkg.price}</span>
 								</p>
 								<p className="mt-3 text-sm text-gray-400 leading-relaxed">{pkg.blurb}</p>
-								<ul className="mt-4 space-y-2 text-sm text-gray-300">
+								<ul className="mt-4 mb-6 space-y-2 text-sm text-gray-300">
 									{pkg.details.map((detail) => (
 										<li key={detail} className="flex items-start gap-2">
 											<svg
@@ -387,7 +387,7 @@ export const Contact: React.FC = () => {
 								<button
 									type="button"
 									onClick={() => handleSelectPackage(pkg.name, pkg.prompts)}
-									className="mt-6 w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer font-medium text-sm"
+									className="mt-auto w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer font-medium text-sm"
 								>
 									Book {pkg.name}
 								</button>
