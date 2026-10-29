@@ -1,5 +1,14 @@
 import type { Photo } from '../types/photo';
 
+/** `Astro|Night` → `Astro and night`. A single category comes back unchanged. */
+const readableCategory = (category: string): string =>
+	category
+		.split('|')
+		.map((part) => part.trim())
+		.filter(Boolean)
+		.map((part, index) => (index === 0 ? part : part.toLowerCase()))
+		.join(' and ');
+
 /**
  * Alt text describing an actual photo, rather than the one word its category happens to be.
  *
@@ -18,7 +27,8 @@ import type { Photo } from '../types/photo';
 export const describePhoto = (photo: Photo): string => {
 	const { category, location, collection } = photo.tags;
 
-	const subject = category ? `${category} photography` : 'Photograph';
+	// A combined category is stored as `Astro|Night`; read aloud, the pipe is noise.
+	const subject = category ? `${readableCategory(category)} photography` : 'Photograph';
 	const place = location ? ` in ${location}` : '';
 	// The collection is only worth appending when it says something the location did not.
 	const series = collection && collection !== location ? ` — ${collection} collection` : '';
