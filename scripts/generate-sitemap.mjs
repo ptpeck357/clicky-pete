@@ -20,9 +20,30 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 // and one constant is not worth a build step to share.
 const SITE_URL = 'https://www.clickypete.photography';
 
+// The CloudFront host the site reads as VITE_CLOUDFRONT_URL. Hardcoded for the same reason as
+// SITE_URL, and because reading .env here would make the build depend on a file Amplify does
+// not have in the same form.
+const PHOTO_URL = 'https://photos.clickypete.photography';
+
+// Google reads at most 1,000 <image:image> entries per <url>. The largest collection is a few
+// hundred short of it; the check below fails the build rather than let Google drop the rest.
+const MAX_IMAGES_PER_URL = 1000;
+
 const photos = JSON.parse(readFileSync(join(ROOT, 'src/data/photos.json'), 'utf8'));
 
 const collections = [...new Set(photos.map((photo) => photo.tags.collection).filter(Boolean))].sort();
+
+const escapeXml = (text) =>
+	text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+// The same sentence describePhoto() in src/utils/photoAlt.ts builds for alt text. Duplicated
+// for the reason SITE_URL is; change one and change the other.
+const describePhoto = ({ tags: { category, location, collection } }) => {
+	const subject = category ? `${category} photography` : 'Photograph';
+	const place = location ? ` in ${location}` : '';
+	const series = collection && collection !== location ? ` — ${collection} collection` : '';
+	return `${subject}${place}${series}`;
+};
 
 /** Newest photo date in a set, which is the closest thing to a "last modified" the data has. */
 const latestDate = (entries) => entries.map((photo) => photo.tags.date).filter(Boolean).sort().at(-1);
@@ -34,20 +55,36 @@ const urls = [
 	{ loc: '/gallery', priority: '0.9', lastmod: siteLastMod },
 	{ loc: '/contact', priority: '0.9' },
 	{ loc: '/about', priority: '0.7' },
-	...collections.map((collection) => ({
-		loc: `/gallery/${encodeURIComponent(collection)}`,
-		priority: '0.8',
-		lastmod: latestDate(photos.filter((photo) => photo.tags.collection === collection)),
-	})),
+	...collections.map((collection) => {
+		const members = photos.filter((photo) => photo.tags.collection === collection);
+		if (members.length > MAX_IMAGES_PER_URL) {
+			throw new Error(`${collection} has ${members.length} photos, over Google's ${MAX_IMAGES_PER_URL} per URL`);
+		}
+		return {
+			loc: `/gallery/${encodeURIComponent(collection)}`,
+			priority: '0.8',
+			lastmod: latestDate(members),
+			images: members,
+		};
+	}),
 ];
 
+const imageEntry = (photo) =>
+	[
+		'\t\t<image:image>',
+		`\t\t\t<image:loc>${PHOTO_URL}/photos/2000/${encodeURIComponent(photo.file)}</image:loc>`,
+		`\t\t\t<image:title>${escapeXml(describePhoto(photo))}</image:title>`,
+		'\t\t</image:image>',
+	].join('\n');
+
 const body = urls
-	.map(({ loc, priority, lastmod }) =>
+	.map(({ loc, priority, lastmod, images = [] }) =>
 		[
 			'\t<url>',
 			`\t\t<loc>${SITE_URL}${loc}</loc>`,
 			lastmod ? `\t\t<lastmod>${lastmod}</lastmod>` : null,
 			`\t\t<priority>${priority}</priority>`,
+			...images.map(imageEntry),
 			'\t</url>',
 		]
 			.filter(Boolean)
@@ -56,11 +93,12 @@ const body = urls
 	.join('\n');
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${body}
 </urlset>
 `;
 
 writeFileSync(join(ROOT, 'public/sitemap.xml'), xml);
 
-console.log(`sitemap.xml: ${urls.length} urls (${collections.length} collections)`);
+const imageCount = urls.reduce((total, url) => total + (url.images?.length ?? 0), 0);
+console.log(`sitemap.xml: ${urls.length} urls (${collections.length} collections), ${imageCount} images`);
