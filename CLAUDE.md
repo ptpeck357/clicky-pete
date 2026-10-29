@@ -244,3 +244,9 @@ git push -u origin <branch>
 
 If work has already been committed on `dev` by mistake, move it to a branch before pushing:
 `git switch -c <branch>` keeps the commits, then reset `dev` back to `origin/dev`.
+
+## After merging a PR
+
+Once the PR shows as merged into `dev`, switch to `dev`, pull, and delete the PR branch locally and
+on the remote (GitHub may have already removed it; check with `git ls-remote --heads origin`).
+Never delete a branch before its PR merges, and never delete `main`, `dev`, or `prod`.

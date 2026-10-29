@@ -11,6 +11,9 @@ import type { Photo } from '../types/photo';
  *
  * Anything missing is dropped rather than guessed, since a fair number of entries predate
  * one field or another.
+ *
+ * scripts/generate-sitemap.mjs repeats this sentence for the image sitemap's titles; change
+ * one and change the other.
  */
 export const describePhoto = (photo: Photo): string => {
 	const { category, location, collection } = photo.tags;
