@@ -527,11 +527,7 @@ export const Gallery: React.FC = () => {
 									setLocalFilter({});
 									setPhotosToShow(INITIAL_PHOTOS);
 								}}
-								className={`inline-block px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-									showAllPhotos
-										? 'bg-blue-600 text-white'
-										: 'bg-gray-700 light:bg-gray-200 text-gray-300 light:text-gray-700 hover:bg-gray-600 light:hover:bg-gray-300'
-								}`}
+								className={`inline-block px-4 py-2 rounded-full text-sm font-medium transition-colors ${filterButtonColors(showAllPhotos)}`}
 								whileHover={{ scale: 1.05 }}
 								whileTap={{ scale: 0.95 }}
 							>
@@ -539,11 +535,7 @@ export const Gallery: React.FC = () => {
 							</MotionLink>
 							<MotionLink
 								to={galleryPath('collections')}
-								className={`inline-block px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-									viewMode === 'collections'
-										? 'bg-blue-600 text-white'
-										: 'bg-gray-700 light:bg-gray-200 text-gray-300 light:text-gray-700 hover:bg-gray-600 light:hover:bg-gray-300'
-								}`}
+								className={`inline-block px-4 py-2 rounded-full text-sm font-medium transition-colors ${filterButtonColors(viewMode === 'collections')}`}
 								whileHover={{ scale: 1.05 }}
 								whileTap={{ scale: 0.95 }}
 							>
