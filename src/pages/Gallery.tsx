@@ -333,10 +333,9 @@ export const Gallery: React.FC = () => {
 	};
 
 	// A collection exists only as a tag on its photos, so a name that matches none is a wrong URL,
-	// not an empty collection. Judged without a category, since a real collection can come back
-	// empty under one. Only decided after the load, so a prerendered collection page still
+	// not an empty collection. Only decided after the load, so a prerendered collection page still
 	// hydrates against its loading state.
-	if (urlCollection && !fetchCategory && !loading && !error && photos.length === 0) {
+	if (urlCollection && !loading && !error && photos.length === 0) {
 		return <NotFound />;
 	}
 
