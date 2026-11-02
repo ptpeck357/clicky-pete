@@ -247,6 +247,10 @@ Tabs, single quotes, 120 columns, semicolons — enforced by Prettier on commit 
 lint-staged. Components are organised atoms/molecules/organisms and use Tailwind
 utilities, not CSS modules.
 
+Imports use `@/` (mapped to `src/` in `vite.config.ts` and `tsconfig.json`) for anything
+outside the current folder, and `./` for a file in the same folder. `../` is a lint error in
+`src`. The rule does not see dynamic `import()`, so those follow the convention by hand.
+
 Commits follow Conventional Commits, checked by commitlint, and are grouped by what the
 changes have in common — several small commits rather than one covering ten unrelated files.
 Stage explicit paths rather than `git add -A`, so an unrelated edit sitting in the working
