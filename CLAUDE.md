@@ -3,6 +3,10 @@
 Photography portfolio. React 19 + Vite + Tailwind v4, deployed on AWS Amplify. Photos live in
 S3 behind CloudFront; the site reads a single JSON index at runtime.
 
+Amplify deploys two branches: `prod` to https://www.clickypete.photography (the bare domain
+redirects there) and `dev` to https://dev.d13yluvb8bpbjw.amplifyapp.com. A merge into `dev` is
+checkable there before it ships; production only changes when `dev` is merged into `prod`.
+
 ## Commands
 
 ```
