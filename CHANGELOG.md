@@ -10,6 +10,10 @@ onto `dev` directly, without a PR of their own.
 
 - #109 feat: prerender every route to static HTML at build
 
+## 2026-10-29 — #107
+
+- #106 docs: add a changelog of every release to prod
+
 ## 2026-10-29 — #105
 
 - #104 fix(seo): drop the duplicate `<title>` and the pipe in alt text

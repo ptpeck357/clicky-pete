@@ -1,10 +1,6 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
-
-// The tap animation sits on the link itself. On a wrapping motion.div, Framer Motion gives the
-// div tabIndex=0 so the gesture is keyboard-reachable, and every item became two Tab stops.
-const MotionLink = motion.create(Link);
+import { useLocation } from 'react-router-dom';
+import { MotionLink } from '../../atoms';
 
 interface NavigationProps {
 	className?: string;
@@ -40,6 +36,9 @@ export const Navigation: React.FC<NavigationProps> = ({ className = '', onItemCl
 
 	return (
 		<nav className={containerClasses}>
+			{/* The tap animation sits on the link itself. On a wrapping motion.div, Framer Motion
+			    gives the div tabIndex=0 so the gesture is keyboard-reachable, and every item became
+			    two Tab stops. */}
 			{navItems.map((item) => (
 				<MotionLink
 					key={item.path}

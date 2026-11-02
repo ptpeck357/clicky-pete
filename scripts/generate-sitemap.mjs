@@ -48,7 +48,12 @@ const describePhoto = ({ tags: { category, location, collection } }) => {
 };
 
 /** Newest photo date in a set, which is the closest thing to a "last modified" the data has. */
-const latestDate = (entries) => entries.map((photo) => photo.tags.date).filter(Boolean).sort().at(-1);
+const latestDate = (entries) =>
+	entries
+		.map((photo) => photo.tags.date)
+		.filter(Boolean)
+		.sort()
+		.at(-1);
 
 const siteLastMod = latestDate(photos);
 
