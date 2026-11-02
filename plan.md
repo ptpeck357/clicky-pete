@@ -9,14 +9,14 @@
 ### 2026-11-01
 
 **Prerendering is live:** #109, shipped to `prod` via #110 (2026-11-01 Mountain Time), with the
-Amplify rules changed. #111 added its `CHANGELOG.md` entry and the CLAUDE.md rules, on `dev`,
-docs only, not yet released.
+Amplify rules changed. #111 added its `CHANGELOG.md` entry and the CLAUDE.md rules.
 
-**#108 (`fix/collection-card-links`) is open against `dev` and mergeable:** collection cards are
+**#108 (`fix/collection-card-links`) is live**, with #111, via #112 (2026-11-01 Mountain Time),
+and checked on production: collection cards are
 real links, the first fix from the SEO audit, plus fixes from two code reviews (a route change no
 longer shows the previous view's photos). It also carries the #107 `CHANGELOG.md` entry and puts
-this file and `SEO.md` under version control. After it merges and ships, add its `CHANGELOG.md`
-entry. Details are in `SEO.md`.
+this file and `SEO.md` under version control. The #112 `CHANGELOG.md` entry is on
+`docs/changelog-112`. Details and next steps are in `SEO.md`.
 
 ### 2026-10-29
 
