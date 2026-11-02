@@ -17,10 +17,9 @@ interface SeoProps {
  * Per-page document metadata.
  *
  * React 19 hoists <title>, <meta> and <link> into <head> from wherever they are rendered, so
- * this needs no portal and no helmet dependency. What it cannot do is put them in the HTML
- * that leaves the server: the app is client-rendered, so a crawler that does not run
- * JavaScript — every social link-preview scraper — still sees the shell in index.html.
- * Prerendering is the open decision that fixes that; these tags are what it would emit.
+ * this needs no portal and no helmet dependency. scripts/prerender.mjs renders them into each
+ * route's static HTML at build, for crawlers that never run JavaScript; main.tsx removes those
+ * copies before React takes over, so the list of tags here and the selector there move together.
  */
 export const Seo: React.FC<SeoProps> = ({ title, description, path, image, noIndex = false }) => {
 	const url = `${SITE_URL}${path}`;

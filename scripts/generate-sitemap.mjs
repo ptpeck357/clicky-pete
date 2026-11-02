@@ -10,11 +10,9 @@
  * added. Amplify runs `npm run build`, so the deployed copy is always current.
  */
 
-import { readFileSync, writeFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
-
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+import { writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { ROOT, photos, collections, collectionPath } from './site-routes.mjs';
 
 // Kept in step with src/config/site.ts by hand: this script is Node, that file is bundled TS,
 // and one constant is not worth a build step to share.
@@ -28,10 +26,6 @@ const PHOTO_URL = 'https://photos.clickypete.photography';
 // Google reads at most 1,000 <image:image> entries per <url>. The largest collection is a few
 // hundred short of it; the check below fails the build rather than let Google drop the rest.
 const MAX_IMAGES_PER_URL = 1000;
-
-const photos = JSON.parse(readFileSync(join(ROOT, 'src/data/photos.json'), 'utf8'));
-
-const collections = [...new Set(photos.map((photo) => photo.tags.collection).filter(Boolean))].sort();
 
 const escapeXml = (text) =>
 	text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -69,7 +63,7 @@ const urls = [
 			throw new Error(`${collection} has ${members.length} photos, over Google's ${MAX_IMAGES_PER_URL} per URL`);
 		}
 		return {
-			loc: `/gallery/${encodeURIComponent(collection)}`,
+			loc: collectionPath(collection),
 			priority: '0.8',
 			lastmod: latestDate(members),
 			images: members,

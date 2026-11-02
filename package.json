@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run generate:sitemap && tsc -b && vite build",
+    "build": "npm run generate:sitemap && tsc -b && vite build && npm run prerender",
+    "prerender": "vite build --ssr src/entry-server.tsx --outDir dist-ssr && node scripts/prerender.mjs",
     "generate:sitemap": "node scripts/generate-sitemap.mjs",
     "lint:eslint": "eslint . --max-warnings=10",
     "lint:eslint:fix": "eslint . --max-warnings=10 --fix",
