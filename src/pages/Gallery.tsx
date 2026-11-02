@@ -2,15 +2,13 @@ import React, { useState, useMemo, useEffect, useRef, useCallback, useDeferredVa
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { Link, useParams, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { PhotoGrid, PhotoViewerModal, CollectionsGrid } from '../components/organisms';
-import { Seo, JsonLd, collectionBreadcrumbSchema } from '../components/atoms';
+import { Seo, JsonLd, MotionLink, collectionBreadcrumbSchema } from '../components/atoms';
 import { collectionPath } from '../config/site';
 import { usePhotos } from '../hooks/usePhotos';
 import { photoService } from '../services/photoService';
 import { parseSortOrder, sortPhotos } from '../utils/photoOrder';
 import type { SortOrder } from '../utils/photoOrder';
 import type { Photo, PhotoFilter } from '../types/photo';
-
-const MotionLink = motion.create(Link);
 
 const filterButtonVariants = {
 	inactive: {

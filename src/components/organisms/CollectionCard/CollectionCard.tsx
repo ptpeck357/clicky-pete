@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { MotionLink } from '../../atoms';
 import { collectionPath } from '../../../config/site';
 import type { Photo } from '../../../types/photo';
 
@@ -9,8 +9,6 @@ interface CollectionCardProps {
 	count: number;
 	coverPhoto: Photo;
 }
-
-const MotionLink = motion.create(Link);
 
 export const CollectionCard: React.FC<CollectionCardProps> = ({ name, count, coverPhoto }) => {
 	const getPhotoUrls = () => {
