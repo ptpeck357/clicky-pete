@@ -57,6 +57,14 @@ These are manual checks that nothing in the repo records as done.
       sharp is installed; the check is downloading each 2000px object, measuring it, and
       comparing against the manifest. It is the one manifest claim `npm run validate:manifest`
       cannot check, because it needs the pixels.
+- [ ] **Slim the homepage hero preload.** `Home.tsx` preloads the 800px and 2000px renditions
+      of all 5 hero photos, about 2.6 MB, before the overlay drops, though phones show only the
+      800s. Load only the rendition `getHeroImageUrl` picks, and only the first photo before
+      showing. Detail in `SEO.md`, audit item 5.
+- [ ] **Trim CLAUDE.md.** Its Branching section mostly repeats the global CLAUDE.md; keep the
+      repo-specific parts (branches cut from `dev`, `main` renamed) and "After merging a PR".
+      Cut the 599-versus-597 manifest story and the plain-`200` rewrite history to a sentence
+      each. Needs Peter's sign-off, since every session reads those rules.
 
 **If the site looks wrong**, the first question is whether the repo copy of
 `src/data/photos.json` matches the live one — see "Verify before committing" in CLAUDE.md.
