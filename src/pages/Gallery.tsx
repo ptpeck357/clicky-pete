@@ -4,6 +4,7 @@ import { Link, useParams, useNavigate, useSearchParams, useLocation } from 'reac
 import { PhotoGrid, PhotoViewerModal, CollectionsGrid } from '@/components/organisms';
 import { Seo, JsonLd, MotionLink, collectionBreadcrumbSchema } from '@/components/atoms';
 import { collectionPath } from '@/config/site';
+import { NotFound } from '@/pages/NotFound';
 import { usePhotos } from '@/hooks/usePhotos';
 import { photoService } from '@/services/photoService';
 import { parseSortOrder, sortPhotos } from '@/utils/photoOrder';
@@ -330,6 +331,14 @@ export const Gallery: React.FC = () => {
 		}
 		setSearchParams(next, { replace: true });
 	};
+
+	// A collection exists only as a tag on its photos, so a name that matches none is a wrong URL,
+	// not an empty collection. Judged without a category, since a real collection can come back
+	// empty under one. Only decided after the load, so a prerendered collection page still
+	// hydrates against its loading state.
+	if (urlCollection && !fetchCategory && !loading && !error && photos.length === 0) {
+		return <NotFound />;
+	}
 
 	if (error) {
 		return (
