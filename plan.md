@@ -8,9 +8,15 @@
 
 ### 2026-11-01
 
-#108 (`fix/collection-card-links`) is open against `dev`: collection cards are real links now,
-the first fix from the SEO audit, and the branch carries the missing #107 `CHANGELOG.md` entry.
-Details are in `SEO.md`.
+**Prerendering is live:** #109, shipped to `prod` via #110 (2026-11-01 Mountain Time), with the
+Amplify rules changed. #111 added its `CHANGELOG.md` entry and the CLAUDE.md rules, on `dev`,
+docs only, not yet released.
+
+**#108 (`fix/collection-card-links`) is open against `dev` and mergeable:** collection cards are
+real links, the first fix from the SEO audit, plus fixes from two code reviews (a route change no
+longer shows the previous view's photos). It also carries the #107 `CHANGELOG.md` entry and puts
+this file and `SEO.md` under version control. After it merges and ships, add its `CHANGELOG.md`
+entry. Details are in `SEO.md`.
 
 ### 2026-10-29
 
@@ -20,8 +26,7 @@ earlier shipped #100 (skip-to-content link) and #101 (image sitemap). `CHANGELOG
 (merged 18:13 UTC): every `prod` PR with its Mountain Time date and the `dev` PRs and direct
 commits it shipped, plus a CLAUDE.md line saying to append an entry after each `prod` merge. #107
 shipped it to `prod` at 18:14 UTC (2026-10-29 Mountain Time), docs only; `prod` and `dev` are level
-again. **CHANGELOG.md still needs its #107 entry** (2026-10-29, shipping #106) — fold it into the
-next branch off `dev` rather than a PR of its own. Check `gh pr list` for where both got to. Since 2026-08-17, PRs #88–#101
+again. The #107 `CHANGELOG.md` entry went into #108. Since 2026-08-17, PRs #88–#101
 landed: the SEO work (#88–#92, tracked in `SEO.md`), an Amplify rewrite gotcha recorded in
 CLAUDE.md (#93), hero loading and Home fixes (#94–#95), a dev-admin cross-origin guard (#96), a
 photo refresh to 597 entries (#97), and a code-review pass (#98) that included publishing
@@ -33,8 +38,8 @@ no SEO features, a `templates/` folder that does not exist, no `src/config/` or 
 The README's unsupported MIT license line was removed, on Peter's call.
 
 An SEO audit of the live site ran later on 2026-10-29. Its findings are at the top of
-`SEO.md`'s "Where we left off", and nothing in code has changed yet. The quickest fix is to make
-the collection cards real `<a>` links: today no collection page is reachable by a crawlable link.
+`SEO.md`'s "Where we left off". The first two, crawlable collection links and the empty shell,
+are #108 and #110 (2026-11-01 above).
 
 Of the "Do first" list below, only item 1 has moved: production's console was checked clean on
 2026-08-25, with GA loading and no CSP violation, but a contact-form submit on production was
@@ -147,8 +152,8 @@ section here. Nothing about it is recorded in this file any more.
 
 ### Phase 0 — decisions and config
 
-- [ ] Decide whether this file should be version-controlled (currently gitignored, so there is
-      no history behind it and nothing to recover a deleted section from)
+- [x] Decide whether this file should be version-controlled. Yes: un-ignored and committed
+      on 2026-11-01, in #108.
 
 ### Phase 1 — seed and audit
 
@@ -170,4 +175,5 @@ section here. Nothing about it is recorded in this file any more.
 
 ### Phase 7 — SEO
 
-See `SEO.md`. The 2026-10-29 audit there lists six open items, in priority order.
+See `SEO.md`. Of the six items in its 2026-10-29 audit, the first two are done (#108, #110);
+its "Next" list is the current order.
