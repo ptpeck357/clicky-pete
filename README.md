@@ -19,6 +19,7 @@
 - **Search metadata**: Per-page titles, descriptions, canonicals and Open Graph tags, `ProfessionalService` and breadcrumb structured data, and descriptive alt text composed from each photo's tags
 - **Sitemap**: Generated at build time from `photos.json`, including every collection page and an image entry per photo
 - **Keyboard access**: A skip-to-content link, and photos, collections and the photo viewer all operable by keyboard
+- **Light and dark mode**: A navbar toggle switches themes; dark is the default and the choice is remembered
 
 ## Tech Stack
 
