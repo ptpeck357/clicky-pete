@@ -71,11 +71,11 @@ const CUSTOM_PROMPTS = ['What I have in mind', 'Preferred date(s)', 'Location id
 const SectionDivider: React.FC = () => (
 	<div className="px-6" aria-hidden="true">
 		<div className="max-w-4xl mx-auto flex items-center gap-5">
-			<div className="h-px flex-1 bg-gradient-to-r from-transparent to-gray-400" />
-			<svg viewBox="0 0 24 24" className="w-7 h-7 shrink-0 text-blue-400" fill="currentColor">
+			<div className="h-px flex-1 bg-gradient-to-r from-transparent to-gray-400 light:to-gray-300" />
+			<svg viewBox="0 0 24 24" className="w-7 h-7 shrink-0 text-blue-400 light:text-blue-600" fill="currentColor">
 				<path d="M3 18L10 7l4 6 3-4 7 9H3z" />
 			</svg>
-			<div className="h-px flex-1 bg-gradient-to-l from-transparent to-gray-400" />
+			<div className="h-px flex-1 bg-gradient-to-l from-transparent to-gray-400 light:to-gray-300" />
 		</div>
 	</div>
 );
@@ -234,9 +234,9 @@ export const Contact: React.FC = () => {
 	};
 
 	const inputClass =
-		'w-full px-4 py-3 bg-gray-800 border border-gray-500 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors';
+		'w-full px-4 py-3 bg-gray-800 light:bg-white border border-gray-500 light:border-gray-400 rounded-lg text-white light:text-gray-900 placeholder-gray-300 light:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors';
 
-	const labelClass = 'block text-xs font-semibold tracking-wider text-gray-400 uppercase mb-2';
+	const labelClass = 'block text-xs font-semibold tracking-wider text-gray-400 light:text-gray-600 uppercase mb-2';
 
 	// Missing config drops the backdrop rather than throwing the way the photo components do —
 	// this one is decoration, and the page still works without it.
@@ -250,7 +250,7 @@ export const Contact: React.FC = () => {
 			: null;
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-black via-gray-900 via-slate-800 via-blue-900 via-blue-700 via-sky-600 via-cyan-500 via-blue-600 via-indigo-700 via-indigo-900 via-slate-900 to-black flex flex-col">
+		<div className="min-h-screen bg-gradient-to-br from-black via-gray-900 via-slate-800 via-blue-900 via-blue-700 via-sky-600 via-cyan-500 via-blue-600 via-indigo-700 via-indigo-900 via-slate-900 to-black light:bg-none light:bg-gray-50 flex flex-col">
 			<Seo
 				title="Book a Session | Bozeman Photographer"
 				description="Portrait, graduation, family and engagement sessions in Bozeman, Montana. Pricing, what each session includes, and a form to get a date on the books."
@@ -273,7 +273,7 @@ export const Contact: React.FC = () => {
 						}`}
 					/>
 				)}
-				<div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/70 to-black pointer-events-none" />
+				<div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black light:from-black/55 light:via-black/40 light:to-black/55 pointer-events-none" />
 
 				<motion.div
 					initial={{ opacity: 0, y: -20 }}
@@ -297,7 +297,7 @@ export const Contact: React.FC = () => {
 					    in the headline above is blue and links nowhere. A plain anchor is enough,
 					    since globals.css scrolls smoothly and the card carries scroll-mt-24 to
 					    clear the fixed header. */}
-					<p className="text-gray-400 text-base sm:text-lg leading-relaxed">
+					<p className="text-gray-400 light:text-gray-100 text-base sm:text-lg leading-relaxed">
 						Have a shoot in mind? Want to collaborate? <br className="hidden sm:inline" />
 						Pick a session below, or{' '}
 						<a
@@ -323,10 +323,10 @@ export const Contact: React.FC = () => {
 						transition={{ duration: 0.6 }}
 						className="text-center mb-8 sm:mb-10"
 					>
-						<h2 className="text-3xl sm:text-4xl font-bold text-white mb-3">
-							Sessions &amp; <span className="text-blue-400">Pricing</span>
+						<h2 className="text-3xl sm:text-4xl font-bold text-white light:text-gray-900 mb-3">
+							Sessions &amp; <span className="text-blue-400 light:text-blue-600">Pricing</span>
 						</h2>
-						<p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">
+						<p className="text-gray-400 light:text-gray-600 text-base sm:text-lg max-w-2xl mx-auto">
 							Based in Bozeman, Montana. Pick one and tell me what you have in mind.
 						</p>
 					</motion.div>
@@ -339,12 +339,12 @@ export const Contact: React.FC = () => {
 								whileInView={{ opacity: 1, y: 0 }}
 								viewport={{ once: true, amount: 0.2 }}
 								transition={{ duration: 0.5, delay: i * 0.08 }}
-								className="flex flex-col bg-gray-800 border border-gray-600 rounded-2xl p-6 ring-1 ring-white/5 shadow-lg shadow-blue-950/20"
+								className="flex flex-col bg-gray-800 light:bg-white border border-gray-600 light:border-gray-300 rounded-2xl p-6 ring-1 ring-white/5 light:ring-black/5 shadow-lg shadow-blue-950/20"
 							>
 								<div className="flex items-center gap-2">
 									<svg
 										viewBox="0 0 24 24"
-										className="w-5 h-5 shrink-0 text-blue-400"
+										className="w-5 h-5 shrink-0 text-blue-400 light:text-blue-600"
 										fill="none"
 										stroke="currentColor"
 										strokeWidth={1.5}
@@ -354,20 +354,22 @@ export const Contact: React.FC = () => {
 									>
 										{pkg.icon}
 									</svg>
-									<h3 className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+									<h3 className="text-xs font-semibold tracking-wider text-gray-400 light:text-gray-600 uppercase">
 										{pkg.name}
 									</h3>
 								</div>
-								<p className="mt-3 text-white">
-									<span className="text-sm text-gray-400">Starting at </span>
+								<p className="mt-3 text-white light:text-gray-900">
+									<span className="text-sm text-gray-400 light:text-gray-600">Starting at </span>
 									<span className="text-3xl font-bold">${pkg.price}</span>
 								</p>
-								<p className="mt-3 text-sm text-gray-400 leading-relaxed">{pkg.blurb}</p>
-								<ul className="mt-4 mb-6 space-y-2 text-sm text-gray-300">
+								<p className="mt-3 text-sm text-gray-400 light:text-gray-600 leading-relaxed">
+									{pkg.blurb}
+								</p>
+								<ul className="mt-4 mb-6 space-y-2 text-sm text-gray-300 light:text-gray-700">
 									{pkg.details.map((detail) => (
 										<li key={detail} className="flex items-start gap-2">
 											<svg
-												className="w-4 h-4 mt-0.5 shrink-0 text-blue-400"
+												className="w-4 h-4 mt-0.5 shrink-0 text-blue-400 light:text-blue-600"
 												fill="none"
 												stroke="currentColor"
 												viewBox="0 0 24 24"
@@ -396,14 +398,14 @@ export const Contact: React.FC = () => {
 					</div>
 
 					<div className="mt-8 text-center max-w-2xl mx-auto">
-						<p className="text-sm text-gray-400 leading-relaxed">
+						<p className="text-sm text-gray-400 light:text-gray-600 leading-relaxed">
 							Every session includes an online gallery and a print release. Travel outside the Bozeman
 							area, larger groups and extra time are quoted per shoot.
 						</p>
 						<button
 							type="button"
 							onClick={() => handleSelectPackage('Custom', CUSTOM_PROMPTS)}
-							className="mt-4 px-5 py-3 bg-gray-800 border border-gray-600 text-gray-200 rounded-lg hover:border-blue-500 hover:text-white transition-colors cursor-pointer font-medium text-sm"
+							className="mt-4 px-5 py-3 bg-gray-800 light:bg-white border border-gray-600 light:border-gray-300 text-gray-200 light:text-gray-800 rounded-lg hover:border-blue-500 hover:text-white light:hover:text-gray-900 transition-colors cursor-pointer font-medium text-sm"
 						>
 							Something else? Get a custom quote
 						</button>
@@ -425,7 +427,7 @@ export const Contact: React.FC = () => {
 					transition={{ duration: 0.6 }}
 					className="w-full max-w-2xl mx-auto scroll-mt-24"
 				>
-					<div className="bg-gray-800 border border-gray-600 rounded-2xl p-6 sm:p-8 md:p-10 shadow-lg shadow-blue-950/20 ring-1 ring-white/5">
+					<div className="bg-gray-800 light:bg-white border border-gray-600 light:border-gray-300 rounded-2xl p-6 sm:p-8 md:p-10 shadow-lg shadow-blue-950/20 ring-1 ring-white/5 light:ring-black/5">
 						{isSubmitted ? (
 							<motion.div
 								className="text-center py-12"
@@ -447,8 +449,12 @@ export const Contact: React.FC = () => {
 										/>
 									</svg>
 								</div>
-								<h3 className="text-xl font-semibold text-white mb-2">Message Sent!</h3>
-								<p className="text-gray-400">Thanks for reaching out. I'll get back to you soon!</p>
+								<h3 className="text-xl font-semibold text-white light:text-gray-900 mb-2">
+									Message Sent!
+								</h3>
+								<p className="text-gray-400 light:text-gray-600">
+									Thanks for reaching out. I'll get back to you soon!
+								</p>
 							</motion.div>
 						) : (
 							<form onSubmit={handleSubmit} className="space-y-5">

@@ -5,7 +5,7 @@ import { Seo } from '@/components/atoms';
 
 export const NotFound: React.FC = () => {
 	return (
-		<div className="min-h-screen bg-gray-900 text-white flex items-center justify-center px-4">
+		<div className="min-h-screen bg-gray-900 light:bg-gray-50 text-white light:text-gray-900 flex items-center justify-center px-4">
 			{/* The path is whatever was typed, so there is no canonical worth claiming beyond the
 			    site root, and nothing here should ever be a search result. */}
 			<Seo
@@ -22,7 +22,7 @@ export const NotFound: React.FC = () => {
 					transition={{ duration: 0.6 }}
 				>
 					<motion.h1
-						className="text-8xl font-bold text-blue-400 mb-4"
+						className="text-8xl font-bold text-blue-400 light:text-blue-600 mb-4"
 						initial={{ scale: 0.8 }}
 						animate={{ scale: 1 }}
 						transition={{ duration: 0.5, delay: 0.2 }}
@@ -40,7 +40,7 @@ export const NotFound: React.FC = () => {
 					</motion.h2>
 
 					<motion.p
-						className="text-gray-400 mb-8 leading-relaxed"
+						className="text-gray-400 light:text-gray-600 mb-8 leading-relaxed"
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						transition={{ duration: 0.5, delay: 0.6 }}
@@ -67,7 +67,7 @@ export const NotFound: React.FC = () => {
 
 						<Link to="/gallery">
 							<motion.button
-								className="w-full px-6 py-3 border border-gray-600 text-gray-300 rounded-lg font-medium hover:bg-gray-800 hover:text-white transition-colors duration-200"
+								className="w-full px-6 py-3 border border-gray-600 light:border-gray-300 text-gray-300 light:text-gray-700 rounded-lg font-medium hover:bg-gray-800 light:hover:bg-gray-200 hover:text-white light:hover:text-gray-900 transition-colors duration-200"
 								whileHover={{ scale: 1.02 }}
 								whileTap={{ scale: 0.98 }}
 							>
@@ -84,7 +84,7 @@ export const NotFound: React.FC = () => {
 					transition={{ duration: 0.5, delay: 1 }}
 				>
 					<motion.svg
-						className="mx-auto h-24 w-24 text-gray-600"
+						className="mx-auto h-24 w-24 text-gray-600 light:text-gray-400"
 						fill="none"
 						viewBox="0 0 24 24"
 						stroke="currentColor"

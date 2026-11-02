@@ -203,7 +203,7 @@ export const Home: React.FC = () => {
 	};
 
 	return (
-		<div className="min-h-screen bg-gray-900 text-white">
+		<div className="min-h-screen bg-gray-900 light:bg-gray-50 text-white light:text-gray-900">
 			<Seo
 				title="Bozeman Photographer | Clicky Pete Photography"
 				description="Portrait, graduation, family and engagement photography in Bozeman, Montana, alongside landscape and night work from across the Mountain West."
@@ -213,10 +213,10 @@ export const Home: React.FC = () => {
 
 			<section className="relative h-screen w-full -mt-16 flex items-center justify-center overflow-hidden">
 				{!heroImagesLoaded && (
-					<div className="absolute inset-0 bg-gray-900 flex items-center justify-center z-30">
+					<div className="absolute inset-0 bg-gray-900 light:bg-gray-50 flex items-center justify-center z-30">
 						<div className="text-center">
-							<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto mb-4" />
-							<p className="text-gray-400">Loading gallery...</p>
+							<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 light:border-blue-600 mx-auto mb-4" />
+							<p className="text-gray-400 light:text-gray-600">Loading gallery...</p>
 						</div>
 					</div>
 				)}
@@ -239,7 +239,7 @@ export const Home: React.FC = () => {
 							return (
 								<div
 									key={photo.id}
-									className="absolute inset-x-0 top-[350px] bottom-[350px] transition-opacity duration-1000 ease-in-out overflow-hidden bg-gray-900 flex items-center justify-center"
+									className="absolute inset-x-0 top-[350px] bottom-[350px] transition-opacity duration-1000 ease-in-out overflow-hidden bg-gray-900 light:bg-gray-50 flex items-center justify-center"
 									style={{
 										opacity: isVisible ? 1 : 0,
 									}}
@@ -260,8 +260,8 @@ export const Home: React.FC = () => {
 						})}
 					</motion.div>
 				) : (
-					<div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
-						<div className="text-center text-gray-400">
+					<div className="absolute inset-0 bg-gray-900 light:bg-gray-50 flex items-center justify-center">
+						<div className="text-center text-gray-400 light:text-gray-600">
 							<p className="text-lg">No hero photos available</p>
 							<p className="text-sm">
 								Please configure your CloudFront URL and ensure photos.json contains hero photos
@@ -283,7 +283,7 @@ export const Home: React.FC = () => {
 						style={{ y: textY, opacity: textOpacity }}
 					>
 						<motion.h1
-							className="text-2xl sm:text-5xl md:text-7xl font-bold mb-4 sm:mb-6 leading-tight [text-shadow:0_2px_20px_rgba(0,0,0,0.8),0_4px_40px_rgba(0,0,0,0.5)]"
+							className="text-2xl sm:text-5xl md:text-7xl font-bold text-white mb-4 sm:mb-6 leading-tight [text-shadow:0_2px_20px_rgba(0,0,0,0.8),0_4px_40px_rgba(0,0,0,0.5)]"
 							variants={textVariants}
 							transition={{ duration: 0.8, ease: 'easeOut' }}
 						>
@@ -343,7 +343,7 @@ export const Home: React.FC = () => {
 
 			<motion.section
 				id="photo-section"
-				className="py-16 bg-[linear-gradient(to_bottom,#111827_0%,#05080f_15%,#070d1c_30%,#0a1226_50%,#0c1830_70%,#0f1d3c_80%,#070d1c_90%,#111827_100%)]"
+				className="py-16 bg-[linear-gradient(to_bottom,#111827_0%,#05080f_15%,#070d1c_30%,#0a1226_50%,#0c1830_70%,#0f1d3c_80%,#070d1c_90%,#111827_100%)] light:bg-none"
 				initial={{ opacity: 0 }}
 				whileInView={{ opacity: 1 }}
 				transition={{ duration: 0.8 }}
@@ -360,7 +360,7 @@ export const Home: React.FC = () => {
 
 					{hasMorePhotos ? (
 						<div ref={loadMoreRef} className="flex justify-center py-8" style={{ overflowAnchor: 'none' }}>
-							<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400" />
+							<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 light:border-blue-600" />
 						</div>
 					) : (
 						<motion.div
@@ -371,7 +371,7 @@ export const Home: React.FC = () => {
 						>
 							<Link to="/gallery">
 								<motion.button
-									className="px-8 py-3 border border-gray-600 text-white rounded-full font-medium hover:bg-white hover:text-gray-900 transition-all duration-300"
+									className="px-8 py-3 border border-gray-600 text-white rounded-full font-medium hover:bg-white hover:text-gray-900 light:border-gray-300 light:text-gray-900 light:hover:bg-gray-900 light:hover:text-white transition-all duration-300"
 									whileHover={{ scale: 1.05 }}
 									whileTap={{ scale: 0.95 }}
 								>

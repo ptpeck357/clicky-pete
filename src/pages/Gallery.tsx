@@ -14,25 +14,27 @@ import type { Photo, PhotoFilter } from '@/types/photo';
 // How many photos a view starts with, before infinite scroll adds more.
 const INITIAL_PHOTOS = 15;
 
+// Colors live in filterButtonColors rather than here: Framer Motion writes variant values as
+// inline styles, which the light: variant cannot override.
 const filterButtonVariants = {
 	inactive: {
 		scale: 1,
-		backgroundColor: 'rgb(55, 65, 81)',
-		color: 'rgb(209, 213, 219)',
 		transition: { duration: 0.15 },
 	},
 	active: {
 		scale: 1.05,
-		backgroundColor: 'rgb(37, 99, 235)',
-		color: 'rgb(255, 255, 255)',
 		transition: { duration: 0.15 },
 	},
 	hover: {
 		scale: 1.02,
-		backgroundColor: 'rgb(75, 85, 99)',
 		transition: { duration: 0.2 },
 	},
 };
+
+const filterButtonColors = (isActive: boolean) =>
+	isActive
+		? 'bg-blue-600 text-white'
+		: 'bg-gray-700 text-gray-300 hover:bg-gray-600 light:bg-gray-200 light:text-gray-700 light:hover:bg-gray-300';
 
 const sortIconProps: React.SVGProps<SVGSVGElement> = {
 	className: 'w-3.5 h-3.5',
@@ -370,7 +372,7 @@ export const Gallery: React.FC = () => {
 	if (error) {
 		return (
 			<motion.div
-				className="min-h-screen bg-gray-900 flex items-center justify-center"
+				className="min-h-screen bg-gray-900 light:bg-gray-50 flex items-center justify-center"
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				transition={{ duration: 0.5 }}
@@ -380,7 +382,7 @@ export const Gallery: React.FC = () => {
 				<title>Photo Gallery | Clicky Pete Photography</title>
 				<div className="text-center">
 					<motion.div
-						className="text-red-400 text-lg mb-4"
+						className="text-red-400 light:text-red-600 text-lg mb-4"
 						initial={{ scale: 0.8, opacity: 0 }}
 						animate={{ scale: 1, opacity: 1 }}
 						transition={{ delay: 0.2 }}
@@ -404,7 +406,7 @@ export const Gallery: React.FC = () => {
 	}
 
 	return (
-		<div className="min-h-screen bg-gray-900">
+		<div className="min-h-screen bg-gray-900 light:bg-gray-50">
 			{/* `?view=collections` is a view toggle, not a different page, so both views canonicalise
 			    to /gallery rather than being indexed as two. */}
 			{urlCollection ? (
@@ -428,7 +430,7 @@ export const Gallery: React.FC = () => {
 			)}
 
 			{urlCollection && (
-				<div className="relative -mt-16 overflow-hidden bg-gray-900 h-[calc(40vh+4rem)] sm:h-[calc(65vh+4rem)]">
+				<div className="relative -mt-16 overflow-hidden bg-gray-900 light:bg-gray-50 h-[calc(40vh+4rem)] sm:h-[calc(65vh+4rem)]">
 					{coverPhotoUrl && (
 						<motion.div
 							className="absolute inset-x-0 -top-[150px] -bottom-[150px]"
@@ -441,7 +443,7 @@ export const Gallery: React.FC = () => {
 							/>
 						</motion.div>
 					)}
-					<div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/35 to-gray-900/15" />
+					<div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/35 to-gray-900/15 light:from-black/55 light:via-black/20 light:to-transparent" />
 					<div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
 						<h1 className="text-3xl sm:text-5xl font-bold text-white mb-2 drop-shadow-lg">
 							{urlCollection}
@@ -453,12 +455,12 @@ export const Gallery: React.FC = () => {
 				</div>
 			)}
 
-			<main className="p-4 sm:p-6 bg-[linear-gradient(to_bottom,#111827_0%,#040711_15%,#060e1c_30%,#08142a_50%,#0a1a38_70%,#0d2244_80%,#060e1c_90%,#111827_100%)]">
+			<main className="p-4 sm:p-6 bg-[linear-gradient(to_bottom,#111827_0%,#040711_15%,#060e1c_30%,#08142a_50%,#0a1a38_70%,#0d2244_80%,#060e1c_90%,#111827_100%)] light:bg-none">
 				{urlCollection && (
 					<div className="mb-4">
 						<MotionLink
 							to={galleryPath('collections')}
-							className="inline-block px-3 py-1.5 text-sm bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 transition-colors"
+							className="inline-block px-3 py-1.5 text-sm bg-gray-700 light:bg-gray-200 text-gray-300 light:text-gray-700 rounded-md hover:bg-gray-600 light:hover:bg-gray-300 transition-colors"
 							whileHover={{ scale: 1.05 }}
 							whileTap={{ scale: 0.95 }}
 							initial={{ opacity: 0, x: -20 }}
@@ -475,7 +477,7 @@ export const Gallery: React.FC = () => {
 							<div>
 								<div className="flex items-center gap-4 mb-2">
 									<motion.h1
-										className="text-2xl sm:text-3xl font-bold text-white"
+										className="text-2xl sm:text-3xl font-bold text-white light:text-gray-900"
 										initial={{ opacity: 0, x: -20 }}
 										animate={{ opacity: 1, x: 0 }}
 										transition={{ duration: 0.6, delay: 0.1 }}
@@ -489,7 +491,7 @@ export const Gallery: React.FC = () => {
 								</div>
 
 								<motion.p
-									className="text-gray-400 text-sm sm:text-base"
+									className="text-gray-400 light:text-gray-600 text-sm sm:text-base"
 									initial={{ opacity: 0, x: -20 }}
 									animate={{ opacity: 1, x: 0 }}
 									transition={{ duration: 0.6, delay: 0.2 }}
@@ -528,7 +530,7 @@ export const Gallery: React.FC = () => {
 								className={`inline-block px-4 py-2 rounded-full text-sm font-medium transition-colors ${
 									showAllPhotos
 										? 'bg-blue-600 text-white'
-										: 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+										: 'bg-gray-700 light:bg-gray-200 text-gray-300 light:text-gray-700 hover:bg-gray-600 light:hover:bg-gray-300'
 								}`}
 								whileHover={{ scale: 1.05 }}
 								whileTap={{ scale: 0.95 }}
@@ -540,7 +542,7 @@ export const Gallery: React.FC = () => {
 								className={`inline-block px-4 py-2 rounded-full text-sm font-medium transition-colors ${
 									viewMode === 'collections'
 										? 'bg-blue-600 text-white'
-										: 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+										: 'bg-gray-700 light:bg-gray-200 text-gray-300 light:text-gray-700 hover:bg-gray-600 light:hover:bg-gray-300'
 								}`}
 								whileHover={{ scale: 1.05 }}
 								whileTap={{ scale: 0.95 }}
@@ -576,7 +578,7 @@ export const Gallery: React.FC = () => {
 								{showAllPhotos && (
 									<motion.div variants={filterSectionVariants} initial="hidden" animate="visible">
 										<motion.h3
-											className="text-base sm:text-lg font-medium text-white mb-3"
+											className="text-base sm:text-lg font-medium text-white light:text-gray-900 mb-3"
 											initial={{ opacity: 0 }}
 											animate={{ opacity: 1 }}
 											transition={{ delay: 0.1 }}
@@ -596,14 +598,14 @@ export const Gallery: React.FC = () => {
 												animate={!localFilter.category ? 'active' : 'inactive'}
 												whileHover="hover"
 												whileTap={{ scale: 0.98 }}
-												className="px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors cursor-pointer"
+												className={`px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors cursor-pointer ${filterButtonColors(!localFilter.category)}`}
 											>
 												All
 											</motion.button>
 
 											{categoriesLoading ? (
 												<motion.div
-													className="px-3 py-2 text-xs sm:text-sm text-gray-400"
+													className="px-3 py-2 text-xs sm:text-sm text-gray-400 light:text-gray-600"
 													initial={{ opacity: 0 }}
 													animate={{ opacity: 1 }}
 												>
@@ -621,7 +623,7 @@ export const Gallery: React.FC = () => {
 														}
 														whileHover="hover"
 														whileTap={{ scale: 0.98 }}
-														className="px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors cursor-pointer"
+														className={`px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors cursor-pointer ${filterButtonColors(localFilter.category === category)}`}
 														style={{ animationDelay: `${index * 0.05}s` }}
 													>
 														{formatCategoryName(category)}
@@ -629,7 +631,7 @@ export const Gallery: React.FC = () => {
 												))
 											) : (
 												<motion.div
-													className="px-3 py-2 text-xs sm:text-sm text-gray-400"
+													className="px-3 py-2 text-xs sm:text-sm text-gray-400 light:text-gray-600"
 													initial={{ opacity: 0 }}
 													animate={{ opacity: 1 }}
 												>
@@ -641,7 +643,9 @@ export const Gallery: React.FC = () => {
 								)}
 
 								<motion.div variants={filterSectionVariants} initial="hidden" animate="visible">
-									<h3 className="text-base sm:text-lg font-medium text-white mb-3">Sort</h3>
+									<h3 className="text-base sm:text-lg font-medium text-white light:text-gray-900 mb-3">
+										Sort
+									</h3>
 									<div className="flex flex-wrap gap-2" role="group" aria-label="Sort photos">
 										{/* One date button that flips direction, rather than two that mostly duplicate
 										    each other. Its label is the order in force, so it doubles as the readout. */}
@@ -658,7 +662,7 @@ export const Gallery: React.FC = () => {
 											animate={sortOrder === 'random' ? 'inactive' : 'active'}
 											whileHover="hover"
 											whileTap={{ scale: 0.98 }}
-											className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer capitalize"
+											className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer capitalize ${filterButtonColors(sortOrder !== 'random')}`}
 										>
 											<SortIcon order={dateDirection} />
 											{dateDirection}
@@ -673,7 +677,7 @@ export const Gallery: React.FC = () => {
 											animate={sortOrder === 'random' ? 'active' : 'inactive'}
 											whileHover="hover"
 											whileTap={{ scale: 0.98 }}
-											className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer"
+											className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer ${filterButtonColors(sortOrder === 'random')}`}
 										>
 											<SortIcon order="random" />
 											Random
@@ -695,7 +699,7 @@ export const Gallery: React.FC = () => {
 									className="flex justify-center py-8"
 									style={{ overflowAnchor: 'none' }}
 								>
-									<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400" />
+									<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 light:border-blue-600" />
 								</div>
 							)}
 
@@ -711,13 +715,13 @@ export const Gallery: React.FC = () => {
 								>
 									<svg
 										viewBox="0 0 24 24"
-										className="w-7 h-7 mx-auto mb-6 text-blue-400"
+										className="w-7 h-7 mx-auto mb-6 text-blue-400 light:text-blue-600"
 										fill="currentColor"
 										aria-hidden="true"
 									>
 										<path d="M3 18L10 7l4 6 3-4 7 9H3z" />
 									</svg>
-									<p className="text-gray-300 text-lg sm:text-xl leading-relaxed mb-7">
+									<p className="text-gray-300 light:text-gray-700 text-lg sm:text-xl leading-relaxed mb-7">
 										Portraits, graduations, families and engagements around Bozeman, at introductory
 										rates.
 									</p>
