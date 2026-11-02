@@ -25,13 +25,13 @@ export function AppContent() {
 	}, [location.pathname]);
 
 	return (
-		<div className="min-h-screen bg-gray-900">
+		<div className="min-h-screen bg-gray-900 light:bg-gray-50">
 			{/* First Tab stop on every page, so a keyboard or screen-reader user can jump past the
 			    nav. Above the fixed header's z-50, or it would appear underneath it. tabIndex on
 			    <main> lets focus land there, not just the scroll position. */}
 			<a
 				href="#main-content"
-				className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:px-4 focus:py-2 focus:rounded-md focus:bg-gray-800 focus:text-white focus:ring-2 focus:ring-blue-400"
+				className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:px-4 focus:py-2 focus:rounded-md focus:bg-gray-800 light:focus:bg-white focus:text-white light:focus:text-gray-900 focus:ring-2 focus:ring-blue-400"
 			>
 				Skip to content
 			</a>

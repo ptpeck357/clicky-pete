@@ -67,7 +67,7 @@ export const CollectionsGrid: React.FC = () => {
 			>
 				<Spinner size="lg" color="blue" />
 				<motion.p
-					className="text-gray-400 mt-4 text-sm"
+					className="text-gray-400 light:text-gray-600 mt-4 text-sm"
 					initial={{ opacity: 0, y: 10 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ delay: 0.2 }}
@@ -95,7 +95,7 @@ export const CollectionsGrid: React.FC = () => {
 	if (collections.length === 0) {
 		return (
 			<div className="text-center py-12">
-				<p className="text-gray-400">No collections found</p>
+				<p className="text-gray-400 light:text-gray-600">No collections found</p>
 			</div>
 		);
 	}

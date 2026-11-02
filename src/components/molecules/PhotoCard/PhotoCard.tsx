@@ -74,7 +74,7 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick, className 
 
 	return (
 		<div
-			className={`bg-gray-800 rounded-lg overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer group hover:-translate-y-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 ${className}`}
+			className={`bg-gray-800 light:bg-white rounded-lg overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer group hover:-translate-y-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 ${className}`}
 			onClick={onClick}
 			// A div rather than a <button>, since the card's block layout and masonry sizing are
 			// built around one — so the role, focus and Enter/Space a button gets free are added here.
@@ -94,18 +94,18 @@ export const PhotoCard: React.FC<PhotoCardProps> = ({ photo, onClick, className 
 			onTouchStart={() => preloadViewerImage(photo.file)}
 		>
 			<div
-				className={`relative ${getAspectClass()} bg-gray-700 overflow-hidden`}
+				className={`relative ${getAspectClass()} bg-gray-700 light:bg-gray-200 overflow-hidden`}
 				ref={imgRef}
 				style={aspectRatio === 'natural' ? getImageDimensions() : {}}
 			>
 				{imageError ? (
 					<motion.div
-						className="absolute inset-0 flex items-center justify-center bg-gray-700"
+						className="absolute inset-0 flex items-center justify-center bg-gray-700 light:bg-gray-200"
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						transition={{ duration: 0.3 }}
 					>
-						<div className="text-center text-gray-400">
+						<div className="text-center text-gray-400 light:text-gray-600">
 							<motion.svg
 								className="mx-auto h-12 w-12 mb-2"
 								fill="none"

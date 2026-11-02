@@ -47,8 +47,8 @@ export const Navigation: React.FC<NavigationProps> = ({ className = '', onItemCl
 					whileTap={{ scale: 0.95 }}
 					className={`${baseClasses} ${
 						isActive(item.path)
-							? 'text-blue-400 bg-gray-800'
-							: 'text-gray-300 hover:text-white hover:bg-gray-700'
+							? 'text-blue-400 bg-gray-800 light:text-blue-700 light:bg-gray-50'
+							: 'text-gray-300 light:text-gray-700 hover:text-white light:hover:text-gray-900 hover:bg-gray-700 light:hover:bg-gray-400'
 					}`}
 				>
 					{item.label}

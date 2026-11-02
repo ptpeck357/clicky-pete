@@ -27,7 +27,7 @@ const SOCIALS = [
 
 export const Footer: React.FC = () => {
 	return (
-		<footer className="bg-gray-800 border-t border-gray-700">
+		<footer className="bg-gray-800 light:bg-gray-300 border-t border-gray-700 light:border-gray-400">
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
 				{/* Three equal columns rather than justify-between, so the social icons sit on the
 				    page's centre line instead of drifting with the width of the text either side. */}
@@ -39,9 +39,9 @@ export const Footer: React.FC = () => {
 						transition={{ duration: 0.6, delay: 0.8 }}
 						viewport={{ once: true }}
 					>
-						<span className="text-blue-400">ISO 100</span>
-						<span className="text-purple-500">1/1050</span>
-						<span className="text-lime-500">f/2.4</span>
+						<span className="text-blue-400 light:text-blue-800">ISO 100</span>
+						<span className="text-purple-500 light:text-purple-700">1/1050</span>
+						<span className="text-lime-500 light:text-lime-800">f/2.4</span>
 					</motion.div>
 
 					<motion.div
@@ -60,7 +60,7 @@ export const Footer: React.FC = () => {
 								target="_blank"
 								rel="noopener noreferrer"
 								aria-label={social.label}
-								className={`p-2 -m-2 text-gray-400 transition-colors ${social.hoverClass}`}
+								className={`p-2 -m-2 text-gray-400 light:text-gray-600 transition-colors ${social.hoverClass}`}
 							>
 								<svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
 									<path d={social.path} />
@@ -76,7 +76,7 @@ export const Footer: React.FC = () => {
 						transition={{ duration: 0.6, delay: 1.0 }}
 						viewport={{ once: true }}
 					>
-						<span className="text-gray-400">© 2026 Clicky Pete Photography</span>
+						<span className="text-gray-400 light:text-gray-600">© 2026 Clicky Pete Photography</span>
 					</motion.div>
 				</div>
 			</div>

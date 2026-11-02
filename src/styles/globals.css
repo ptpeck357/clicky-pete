@@ -1,14 +1,23 @@
 @import 'tailwindcss';
 
+/* Dark is the default and needs no class; public/theme-init.js adds .light to <html> before
+   first paint when the visitor has chosen it. */
+@custom-variant light (&:where(.light, .light *));
+
 /* Custom styles for the photography portfolio */
 
 @layer base {
 	html {
 		scroll-behavior: smooth;
+		color-scheme: dark;
+	}
+
+	html.light {
+		color-scheme: light;
 	}
 
 	body {
-		@apply bg-gray-900 text-white m-0 min-h-screen;
+		@apply bg-gray-900 text-white m-0 min-h-screen light:bg-gray-50 light:text-gray-900;
 		font-family:
 			system-ui,
 			-apple-system,
@@ -19,7 +28,7 @@
 	}
 
 	#root {
-		@apply min-h-screen bg-gray-900;
+		@apply min-h-screen bg-gray-900 light:bg-gray-50;
 		max-width: none;
 		margin: 0;
 		padding: 0;

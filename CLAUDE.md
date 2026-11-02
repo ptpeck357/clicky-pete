@@ -245,6 +245,26 @@ Related: the inline `<script type="application/ld+json">` on the homepage is **n
 `script-src 'self'`. Browsers enforce `script-src` on executable script, not on data blocks.
 This was checked against production rather than assumed.
 
+## Light mode
+
+Dark is the default. The navbar toggle (`ThemeToggle`) puts `.light` on `<html>` and stores
+`theme: light` in localStorage; `public/theme-init.js` reapplies it before first paint. It is a
+file rather than inline because `script-src` is `'self'`. Styling uses the `light:` custom
+variant from `globals.css`, written next to the dark class it overrides:
+`bg-gray-900 light:bg-gray-50`.
+
+Rules that are easy to break:
+
+- **A new color class needs its `light:` partner**, or it shows the dark shade on a light page.
+  Overlays and text on top of photos (the heroes, collection cards, the photo viewer) are the
+  exception: they stay dark and white in both themes on purpose.
+- **Nothing reads the theme during render.** `ThemeToggle` swaps its icon and label with
+  `light:hidden`, and the header renders both logos. Reading it in render makes the prerendered
+  page disagree with the client (see Prerendering).
+- **Framer Motion variants write colors as inline styles, which `light:` cannot override.**
+  Keep colors in classes and only motion values in variants — see `filterButtonColors` in
+  `Gallery.tsx`.
+
 ## Conventions
 
 Tabs, single quotes, 120 columns, semicolons — enforced by Prettier on commit via Husky and
