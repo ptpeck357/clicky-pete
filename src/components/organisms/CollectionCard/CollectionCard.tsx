@@ -8,12 +8,11 @@ interface CollectionCardProps {
 	name: string;
 	count: number;
 	coverPhoto: Photo;
-	onClick: () => void;
 }
 
 const MotionLink = motion.create(Link);
 
-export const CollectionCard: React.FC<CollectionCardProps> = ({ name, count, coverPhoto, onClick }) => {
+export const CollectionCard: React.FC<CollectionCardProps> = ({ name, count, coverPhoto }) => {
 	const getPhotoUrls = () => {
 		const cloudFrontUrl = import.meta.env.VITE_CLOUDFRONT_URL;
 		if (!cloudFrontUrl) {
@@ -36,7 +35,6 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({ name, count, cov
 		<MotionLink
 			to={collectionPath(name)}
 			className="block relative bg-gray-800 rounded-lg overflow-hidden cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
-			onClick={onClick}
 			aria-label={`${name} collection, ${count} photos`}
 			whileHover={{ scale: 1.02 }}
 			whileTap={{ scale: 0.98 }}

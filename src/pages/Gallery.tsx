@@ -10,6 +10,8 @@ import { parseSortOrder, sortPhotos } from '../utils/photoOrder';
 import type { SortOrder } from '../utils/photoOrder';
 import type { Photo, PhotoFilter } from '../types/photo';
 
+const MotionLink = motion.create(Link);
+
 const filterButtonVariants = {
 	inactive: {
 		scale: 1,
@@ -167,8 +169,11 @@ export const Gallery: React.FC = () => {
 	// displayedPhotos always slices the current order from the start, so the count stays
 	// meaningful — while resetting it would shorten the page under a reader who has scrolled
 	// and let the browser clamp them somewhere they did not ask to be.
+	// The category filter is reset here rather than in the links' click handlers, so it also
+	// clears on back/forward, and a Cmd-click that opens a new tab leaves this one alone.
 	useEffect(() => {
 		setPhotosToShow(15);
+		setLocalFilter({});
 		isLoadingMoreRef.current = false;
 	}, [urlCollection, showAllPhotos]);
 
@@ -247,10 +252,6 @@ export const Gallery: React.FC = () => {
 		}
 	};
 
-	const handleCollectionSelect = () => {
-		setLocalFilter({});
-	};
-
 	const handlePhotoClick = (photo: Photo) => {
 		setSelectedPhoto(photo);
 		setIsModalOpen(true);
@@ -305,11 +306,6 @@ export const Gallery: React.FC = () => {
 			next.set('sort', order);
 		}
 		setSearchParams(next, { replace: true });
-	};
-
-	const handleBackToCollections = () => {
-		setLocalFilter({});
-		navigate('/gallery?view=collections');
 	};
 
 	if (error) {
@@ -401,9 +397,9 @@ export const Gallery: React.FC = () => {
 			<main className="p-4 sm:p-6 bg-[linear-gradient(to_bottom,#111827_0%,#040711_15%,#060e1c_30%,#08142a_50%,#0a1a38_70%,#0d2244_80%,#060e1c_90%,#111827_100%)]">
 				{urlCollection && (
 					<div className="mb-4">
-						<motion.button
-							onClick={handleBackToCollections}
-							className="px-3 py-1.5 text-sm bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 transition-colors"
+						<MotionLink
+							to="/gallery?view=collections"
+							className="inline-block px-3 py-1.5 text-sm bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 transition-colors"
 							whileHover={{ scale: 1.05 }}
 							whileTap={{ scale: 0.95 }}
 							initial={{ opacity: 0, x: -20 }}
@@ -411,7 +407,7 @@ export const Gallery: React.FC = () => {
 							transition={{ duration: 0.4 }}
 						>
 							← Back to Collections
-						</motion.button>
+						</MotionLink>
 					</div>
 				)}
 				{!urlCollection && (
@@ -459,13 +455,15 @@ export const Gallery: React.FC = () => {
 						transition={{ delay: 0.3 }}
 					>
 						<div className="flex gap-2">
-							<motion.button
+							{/* Clicked while already on All Photos, the route does not change, so the
+							    reset effect does not run — this is what still clears a picked category. */}
+							<MotionLink
+								to="/gallery"
 								onClick={() => {
 									setLocalFilter({});
 									setPhotosToShow(12);
-									navigate('/gallery');
 								}}
-								className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+								className={`inline-block px-4 py-2 rounded-full text-sm font-medium transition-colors ${
 									showAllPhotos
 										? 'bg-blue-600 text-white'
 										: 'bg-gray-700 text-gray-300 hover:bg-gray-600'
@@ -474,13 +472,10 @@ export const Gallery: React.FC = () => {
 								whileTap={{ scale: 0.95 }}
 							>
 								All Photos
-							</motion.button>
-							<motion.button
-								onClick={() => {
-									setLocalFilter({});
-									navigate('/gallery?view=collections');
-								}}
-								className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+							</MotionLink>
+							<MotionLink
+								to="/gallery?view=collections"
+								className={`inline-block px-4 py-2 rounded-full text-sm font-medium transition-colors ${
 									viewMode === 'collections'
 										? 'bg-blue-600 text-white'
 										: 'bg-gray-700 text-gray-300 hover:bg-gray-600'
@@ -489,7 +484,7 @@ export const Gallery: React.FC = () => {
 								whileTap={{ scale: 0.95 }}
 							>
 								Collections
-							</motion.button>
+							</MotionLink>
 						</div>
 					</motion.div>
 				)}
@@ -503,7 +498,7 @@ export const Gallery: React.FC = () => {
 							exit={{ opacity: 0, y: -20 }}
 							transition={{ duration: 0.3 }}
 						>
-							<CollectionsGrid onCollectionSelect={handleCollectionSelect} />
+							<CollectionsGrid />
 						</motion.div>
 					) : (
 						<motion.div
