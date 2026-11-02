@@ -26,7 +26,10 @@ that already exists.
 6. **The open code and copy items.** Prerendering is done (#110). Next largest: build-time
    collection links on `/gallery` (see 2026-11-01 below) and the hero preload. The session
    pages wait on family photos and on sign-off of the mockup.
-7. **Rerun the Rich Results Test and check a link preview** now that pages are prerendered,
+7. **Small fixes**, one short branch: a `preconnect` to `photos.clickypete.photography` in
+   `index.html`, since every image and `photos.json` come from there, and the `SITE_URL`
+   comment in `site.ts` that still says the apex 302s (it is a 301). See the Todo.
+8. **Rerun the Rich Results Test and check a link preview** now that pages are prerendered,
    for example by pasting a URL into a Slack DM to yourself.
 
 ### 2026-11-01
@@ -333,7 +336,7 @@ console errors. Unknown URLs now answer a real 404.
 Why it mattered: before it, link previews were blank on every client that does not run
 JavaScript, and Google only saw the canonical on its delayed render pass.
 
-Still to do: rerun the Rich Results Test and check a link preview — "Next" item 7.
+Still to do: rerun the Rich Results Test and check a link preview — "Next" item 8.
 
 ### 4. Image sitemap
 
