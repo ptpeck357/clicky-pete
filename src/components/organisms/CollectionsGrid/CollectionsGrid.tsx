@@ -7,7 +7,7 @@ import { Spinner } from '../../atoms';
 import type { Collection } from '../../../types/photo';
 
 interface CollectionsGridProps {
-	onCollectionSelect: (collection: string) => void;
+	onCollectionSelect: () => void;
 }
 
 const containerVariants = {
@@ -117,7 +117,7 @@ export const CollectionsGrid: React.FC<CollectionsGridProps> = ({ onCollectionSe
 					name={collection.name}
 					count={collection.count}
 					coverPhoto={collection.coverPhoto}
-					onClick={() => onCollectionSelect(collection.name)}
+					onClick={onCollectionSelect}
 				/>
 			))}
 		</motion.div>

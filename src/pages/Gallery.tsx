@@ -246,9 +246,8 @@ export const Gallery: React.FC = () => {
 		}
 	};
 
-	const handleCollectionSelect = (collection: string) => {
+	const handleCollectionSelect = () => {
 		setLocalFilter({});
-		navigate(`/gallery/${collection}`);
 	};
 
 	const handlePhotoClick = (photo: Photo) => {
