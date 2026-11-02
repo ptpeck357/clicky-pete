@@ -11,34 +11,58 @@ that already exists.
 
 ## Where we left off
 
+### Next
+
+1. **Profile photos.** Convert a selection of the 2000px WebP renditions to JPG first.
+2. **Link the site to the profile.** Add the profile's share URL as `sameAs` in
+   `businessSchema`, or to `SOCIAL_PROFILES`. Its own branch. Needs the URL from Share on the
+   profile.
+3. **Decide the phone number.** It is on the profile and nowhere on the site, and it is the
+   one field the Rich Results Test flags on the business markup.
+4. **Ask past clients for reviews.**
+5. **Recheck the 9 gallery URLs in Search Console** around 2026-11-12: Pages report, are they
+   still "Discovered – currently not indexed"? Read Performance → Queries again around
+   2026-11-29.
+6. **The open code and copy items.** Prerendering is done (#110). Next largest: build-time
+   collection links on `/gallery` (see 2026-11-01 below) and the hero preload. The session
+   pages wait on family photos and on sign-off of the mockup.
+7. **Merge #108**, ship it to `prod`, and add its `CHANGELOG.md` entry.
+8. **Rerun the Rich Results Test and check a link preview** now that pages are prerendered,
+   for example by pasting a URL into a Slack DM to yourself.
+
 ### 2026-11-01
 
-Audit item 1 (collection cards as links) is done: **#108**, `fix/collection-card-links`, open
-against `dev`, not merged. Checked in Chrome on the dev server: 11 `<a href>` cards, client-side
-navigation by click and by Enter, focus ring intact. The branch also carries the #107
-`CHANGELOG.md` entry. Once it ships to `prod`, add a `CHANGELOG.md` entry and recheck the gallery
-URLs in Search Console. The 2026-11-12 recheck in "Next" below is the natural point.
+**#109, prerendering, is live** via #110 (2026-11-02 UTC), with the Amplify rules changed and
+verified on production. Every route now carries its own metadata in the raw HTML. #111 added
+its `CHANGELOG.md` entry and the CLAUDE.md rules. See §3.
 
-Also checked: both Business Profile edits from 2026-10-29 have published ("Next" item 1, done).
-The profile's service areas list Manhattan where this file records Four Corners; unresolved.
-Nothing else from the audit or "Next" has moved.
+**#108, collection cards as links, is open against `dev` and mergeable.** It also carries the
+#107 `CHANGELOG.md` entry, `plan.md` and this file, and has `dev` merged in. Two code reviews
+ran on it; the main fix is that a route change no longer shows the previous view's photos or
+category for a moment (`usePhotos` now ties photos and errors to their filter). Details are in
+the PR. Checked in Chrome on the dev server and on the production build.
 
-Audit item 2 (the empty shell): **prerendering is built** on `feat/prerender` in the worktree
-`../clicky-pete-prerender`. It is open as **#109** against `dev` and not merged. It needs no new
-dependency, but needs two Amplify console rule changes after merge. See §3.
+- **Known:** `/gallery?view=collections` loaded directly logs a recoverable hydration mismatch
+  (React #418), because the prerendered `/gallery` is All Photos. Accepted, per CLAUDE.md.
+- **Gap #108 does not close:** the prerendered `/gallery` has no collection links, since the
+  collections load in effects. Googlebot renders JavaScript and sees them; a crawler that does
+  not, sees only the nav. Rendering the list from `photos.json` at build would close it.
+
+**Business Profile:** both 2026-10-29 edits have published. The service areas list Manhattan
+where this file used to record Four Corners; unresolved. See §0.
 
 ### 2026-10-29 — audit of the live site
 
 A fresh pass over production with curl and Chrome, after #105. Nothing changed in code. The new
 findings, most important first:
 
-1. **No crawlable link reaches any collection page.** `CollectionCard` is a `div role="button"`
+1. **Done in #108, not yet merged.** ~~No crawlable link reaches any collection page.~~ `CollectionCard` is a `div role="button"`
    that calls `navigate()`, and the Collections/All Photos toggle is a button too. Read live:
    `/gallery` has no `<a href>` beyond the four nav links. Google finds the 11 collection URLs
    only through the sitemap, which fits the 9 stuck in "Discovered – currently not indexed".
    **Fix:** render the card as a `<Link to={`/gallery/${encodeURIComponent(name)}`}>`. A small,
    self-contained branch, and the cheapest item on this list.
-2. **The empty shell** (§3), unchanged and still the largest item.
+2. **Done, live via #110.** ~~The empty shell~~ (§3).
 3. **Thin pages.** The visible text in `<main>`: Home 10 words, `/gallery` 18,
    `/gallery/Montana` 10 (title, photo count, sort control). Contact 158, About 184. A collection
    page has nothing to rank on beyond its alt text. **Graduations and Engagements already are
@@ -73,74 +97,6 @@ Checked and fine: one `<title>` per page, descriptions and canonicals on every r
 `ProfessionalService` and `BreadcrumbList` JSON-LD, the apex and http 301s to https www, HSTS,
 robots.txt, a 15-URL sitemap where every URL answers 200, alt text on every content image, CLS 0.
 
-### 2026-10-29
-
-**State at end of session:** `prod` and `dev` are level. #105 (merged 18:08 UTC) shipped #103
-(pricing-button alignment) and #104 (title and alt-text fixes, README and CLAUDE.md refresh), both
-verified live: the deployed bundle removes the static `<title>`, and the live sitemap has no
-`Astro|Night` left (56 "Astro and night" titles). No branches other than `dev` and `prod` exist on
-the remote. Search Console needs nothing until the rechecks in "Next" fall due.
-
-The session covered Search Console and the Business Profile in the browser, then three code
-branches: #100 and #101 live via #102 (17:56 UTC), #104 live via #105 (18:08 UTC).
-
-- **Search Console: 6 indexed, 12 not indexed**, and the 15 sitemap URLs are all accounted for.
-  The homepage no longer reports "Duplicate without user-selected canonical"; that re-crawl
-  landed. Details and the indexing requests are under "Google Search Console — status" in §0.
-- **Google Business Profile: verified and live**, 113 views so far. Services and hours were
-  edited today and are pending Google's review. See "Google Business Profile — status" in §0.
-- **Rich Results Test: passes**, and the HTML Googlebot renders carries every tag. It also
-  turned up two bugs, below. See §2.
-- **Performance read for the first time**: 4 clicks, 42 impressions. See "Google Search
-  Console — status" in §0.
-- **Live on `prod` via #102:**
-    - #100, `fix/skip-to-content` (`bf98745`): the skip link, plus the "After merging a PR"
-      section in `CLAUDE.md`.
-    - #101, `feat/image-sitemap` (`5bee501`): 597 image entries in the sitemap.
-    - Both branches deleted locally and on the remote; the worktree is removed.
-    - Verified live: `sitemap.xml` carries 597 `<image:loc>` entries and parses, with
-      `last-modified` from the deploy; the bundle contains the skip link. Sitemap resubmitted in
-      Search Console 2026-10-29, read the same day, status Success.
-- **Session-page mockup** for senior portraits, families and engagements:
-  https://claude.ai/artifact/QFigiW2hzbD2Y4gGZDXG9n (private). Built from real prices and
-  locations. **There are no family-session photos in the portfolio**, so that page has empty
-  frames; that is the gating item for a Families page, ahead of any code.
-
-**Two bugs found, fixed in #104, live via #105, 2026-10-29:**
-
-1. **Two `<title>` elements on every page.** The static `<title>Clicky Pete Photography</title>`
-   in `index.html` survives after React 19 hoists the per-page one, so the rendered head holds
-   both. React's comes first and Google showed it, but it is still invalid HTML. **Fix:**
-   `main.tsx` removes the static `<title>` before React renders. `index.html` keeps it, so
-   clients that never run JavaScript still get a title. An inline script would act sooner, but
-   the CSP's `script-src 'self'` blocks it.
-2. **Alt text reads "Astro|Night photography in…"** for that category. `describePhoto` uses
-   the category verbatim, pipe and all. **Fix:** `readableCategory()` turns it into "Astro and
-   night photography in…", in `photoAlt.ts` and in the copy in `generate-sitemap.mjs`.
-
-Both checked in the browser: one `<title>` per page across route changes, no pipe in any alt.
-A code review then caught two gaps the title fix opened, both closed: the Suspense fallback now
-renders the site name as a `<title>` while a lazy page loads, and Gallery's "Failed to load
-photos" screen carries its own. It also flagged CLAUDE.md still naming a `templates/` layer that
-does not exist, fixed alongside the README.
-
-Next, in order:
-
-1. ~~**Check both profile edits published**~~ — **done 2026-11-01**, both live with no pending
-   marker. See "Google Business Profile — status" in §0.
-2. **Profile photos.** Convert a selection of the 2000px WebP renditions to JPG first.
-3. **Link the site to the profile.** Add the profile's share URL as `sameAs` in
-   `businessSchema`, or to `SOCIAL_PROFILES`. Its own branch. Needs the URL from Share on the
-   profile.
-4. **Decide the phone number.** It is on the profile and nowhere on the site, and it is the
-   one field the Rich Results Test flags on the business markup.
-5. **Ask past clients for reviews.**
-6. **Recheck the 9 gallery URLs in Search Console** around 2026-11-12: Pages report, are they
-   still "Discovered – currently not indexed"? Read Performance → Queries again around
-   2026-11-29.
-7. **The open code and copy items.** Prerendering is still the largest of them. The session
-   pages wait on family photos and on sign-off of the mockup.
-
 ### Built
 
 | Piece                   | Where                                        | Notes                                                                                       |
@@ -156,8 +112,8 @@ Next, in order:
 
 ### Not built
 
-1. **The HTML shell is still empty**, so social crawlers see nothing — see the prerendering
-   decision below. This is the single most client-visible gap.
+1. ~~**The HTML shell is still empty**~~ — every route is prerendered, live via #110 on
+   2026-11-02 UTC. What the HTML still lacks is photos, and collection links on `/gallery`.
 2. ~~**No image sitemap**~~ — live since #102, 2026-10-29.
 3. **No `ImageObject` structured data.**
 4. **Gallery headings still say "Collections" and "All Photos".**
@@ -182,16 +138,17 @@ Detail for all three is in §0 of the implementation plan.
 
 - [ ] **Make the collection cards real links.** `CollectionCard` and the Collections toggle are
       buttons, so no collection page is reachable by a crawlable link. Audit 2026-10-29, item 1.
-      In review as #108 (`fix/collection-card-links`), not merged.
+      In review as #108 (`fix/collection-card-links`), not merged. The prerendered `/gallery`
+      still has no collection links; see 2026-11-01.
 - [ ] **Render `NotFound` for an unknown collection.** `/gallery/Nowhere` is an indexable page
-      today. Audit item 4.
+      today. Audit item 4. Since #110 it answers HTTP 404, which Google respects, but the page
+      still renders "Nowhere Photos" with a self canonical. Lower priority than it was.
 - [ ] **Slim the homepage hero preload.** Load only the rendition `getHeroImageUrl` picks, and
       only the first photo before the overlay drops. Audit item 5.
 - [ ] **Small fixes:** a `preconnect` to the photo host, and the stale "302" comment in
       `site.ts`. Audit, minor.
-- [ ] **Prerendering.** Decided and built 2026-11-01 on `feat/prerender` (worktree
-      `../clicky-pete-prerender`), in review as #109, not merged. Needs two Amplify
-      console rule changes after merge. See §3.
+- [x] **Prerendering.** #109, live via #110 on 2026-11-02 UTC, with both Amplify rules set.
+      Rich Results Test and a link-preview check are still to do. See §3.
 - [x] **Image sitemap entries.** Live via #102, 2026-10-29.
 - [ ] **`ImageObject` JSON-LD** where it fits. Lower value than either of the above; it can wait.
 - [x] **A skip-to-content link.** Live via #102, 2026-10-29.
@@ -240,68 +197,34 @@ still apply to any edit:
 
 #### Google Business Profile — status
 
-**2026-08-25: created, verification processing, up to 5 days.** Not publicly visible until it
-clears. Name `Clicky Pete Photography`, primary category `Photographer`, six service areas
-(Bozeman, Belgrade, Livingston, Big Sky, Four Corners, Gallatin County), phone and website set.
-The website field is the www form, matching `SITE_URL`.
+**Live and verified**, checked 2026-11-01 in the manager panel on Google Search; 121 views.
 
-Verification has since cleared (see 2026-10-29 below), so the warning that sat here about not
-editing during it no longer applies.
+- **Name** `Clicky Pete Photography`, primary category `Photographer`, phone and the www
+  website set.
+- **Service areas:** Big Sky, Bozeman, Belgrade, Gallatin County, Manhattan and Livingston.
+  This file used to record Four Corners where Manhattan now is; whether that was deliberate is
+  unresolved.
+- **Description:** the one approved 2026-08-25, live. Google truncates at roughly 250
+  characters, so the searchable words sit in the first two sentences, and no URLs or phone
+  numbers are allowed in it.
+- **Services**, published 2026-11-01: Headshots and portraits, Family and group, Portrait
+  photography, Senior class photography, and Engagement photography. The last is custom, since
+  Google's presets bundle engagement with weddings, which are not sold. No prices set.
+- **Hours: "Open with no main hours"**, published 2026-11-01. It shows no hours, the closest fit
+  for appointment-only.
+- **Skipped on purpose:** the storefront photo (there is none), the $500 Ads credit
+  (spend-matching, and no reviews behind the listing yet), and the Workspace mailbox.
 
-Skipped during signup, all deliberately: the storefront photo (no storefront), the photo upload
-step (easier in the Photos tab once verified), the $500 Ads credit (spend-matching, and there
-are no reviews behind the listing yet), and the Workspace mailbox (separate decision — the
-contact form already goes out through SES).
+Open:
 
-Once it clears, in this order:
-
-1. Description — the draft is below. Done; it is on the live profile.
-2. Services, mirroring the `/contact` cards. Done 2026-10-29.
-3. Hours — "by appointment" is valid. Done 2026-10-29, as "Open with no main hours".
-4. Photos. Still open. Note the format trap: **Google takes JPG or PNG, not WebP**, and every rendition in
-   the bucket is WebP. Converting is a `sharp` pass over the 2000px copies.
-5. The review short link, then the asks.
-
-**Profile description, approved 2026-08-25** (555 chars, cap is 750; no URLs or phone numbers
-are allowed in this field, and Google truncates at roughly 250 with a "More" link, so the
-searchable words sit in the first two sentences):
-
-> I'm Peter Peck, and I photograph people around Bozeman — portraits, graduations, families and
-> engagements. Most sessions end up outside somewhere in Gallatin County: a trailhead, a field
-> at golden hour, or wherever already means something to you. I got clicky-happy with a Kodak
-> point-and-shoot as a kid and never really stopped. When I'm not photographing people I'm out
-> chasing landscapes, aerials and night skies across Montana. If you're thinking about a
-> session, send me a note — half of it is just working out the right spot and the right light.
-
-Open: it says "graduations", matching the `/contact` cards, where "senior portraits" is what
-parents in Bozeman actually search. If that wording changes it should change on the site first.
-
-Also open: a phone number is now published on the profile and appears nowhere on the site.
-Not a problem, but see "Code that follows from these" below.
-
-**2026-10-29: verified and live.** It appears in search with "You manage this Business Profile",
-113 views, areas served shown as "Bozeman and nearby areas". The description above was already
-in place. Edited today, both pending Google's review:
-
-- **Services**, under the `Photographer` category: Headshots and portraits, Family and group,
-  Portrait photography, Senior class photography, and Engagement photography. The last is a
-  custom service: Google's presets only offer engagement bundled with weddings, and weddings
-  are not sold. The preset "Wedding and engagement" was on the profile before, was removed by a
-  misclick during this session, and was deliberately not restored. No prices or descriptions
-  are set on any service.
-- **Hours: "Open with no main hours"**, which shows no hours at all, the closest fit for
-  appointment-only. The previous setting was "Open with main hours", with a 9–5 week and
-  Wednesday closed, which were never chosen on purpose. After saving, the panel showed "Your
-  edit is taking longer than expected"; recheck before assuming it published.
-
-**2026-11-01: both edits published**, checked in the manager panel on Google Search. Services
-lists all five under `Photographer`; Hours reads "Open with no main hours", and the public
-panel shows no hours. Neither carries a pending marker. 121 views. The service areas read
-Big Sky, Bozeman, Belgrade, Gallatin County, Manhattan (59741) and Livingston (59047):
-Manhattan where this file records Four Corners. Not changed, since it is not known whether
-that was a deliberate edit.
-
-Still to do on the profile: photos (JPG or PNG, see step 4 above), then reviews.
+- **Photos.** Google takes JPG or PNG, not WebP, and every rendition in the bucket is WebP, so
+  this starts with a `sharp` pass over the 2000px copies.
+- **"Graduations" or "senior portraits".** The description and the `/contact` cards say
+  "graduations"; parents in Bozeman search "senior portraits". If it changes, change the site
+  first.
+- **The phone number** is on the profile and nowhere on the site. See "Code that follows from
+  these" below.
+- **Reviews**, below.
 
 #### Reviews
 
@@ -333,23 +256,9 @@ Set up 2026-08-25; progress is under "status" below. Still open from the origina
 
 #### Google Search Console — status
 
-**2026-08-25: domain property `clickypete.photography` verified.** Verified by TXT record at the
-apex in Route 53, added through the console — the `clicky-pete` IAM user is scoped to the photo
-bucket and CloudFront invalidations and is denied `route53:ListHostedZones`, so this is not a
-CLI job. **Leave that TXT record in place permanently**; deleting it un-verifies the property
-and loses the history. There was no other TXT at the apex, so nothing had to be merged.
-
-A domain property rather than a URL prefix, on purpose: it covers apex, www, http and https in
-one, and the apex redirects to www here.
-
-URL Inspection was run on the homepage as a baseline. The live test returned **"URL is available
-to Google"** — the page fetches, is not blocked by robots, and is eligible for indexing. That is
-the live-test verdict, not an indexing state; whether it is actually indexed is the separate
-card at the top of the same page.
-
-That baseline was taken before the deploy, when production had no `Seo` component, so
-`og:title` and the JSON-LD were legitimately absent. Finding them there now is the proof the work
-reached Google.
+**Verified 2026-08-25** as a domain property, by a TXT record at the apex in Route 53. The IAM
+user cannot touch Route 53, so that is a console job. **Leave the TXT record in place
+permanently**; deleting it un-verifies the property and loses the history.
 
 **`sitemap.xml` submitted 2026-08-25.** The address has to be the **full URL**,
 `https://www.clickypete.photography/sitemap.xml`. A domain property has no prefix to prepend, so
@@ -398,11 +307,6 @@ Too little to decide anything on yet. Read it again in a month.
   `businessSchema` as `telephone`. Consistent is better than absent, and absent is better than
   two different numbers.
 
-### 1. Test pass before the PR
-
-Run 2026-08-25 against `npm run dev` before #88; every item passed. Removed 2026-11-01 as
-finished; the checklist is in git history.
-
 ### 2. Production checks, once it deploys
 
 Run 2026-08-25 against the deployed site; all pass. `robots.txt` and `sitemap.xml` answer with
@@ -415,93 +319,22 @@ Non-critical only: `telephone` is missing on the business, which waits on the ph
 `streetAddress` and `postalCode` are missing on the organization, which is right for a
 service-area business with its address hidden.
 
-### 3. Prerendering — the open decision
+### 3. Prerendering
 
-`index.html` is `<div id="root">` and a module script. Every tag `Seo.tsx` writes — title,
-description, canonical, Open Graph — exists only after React runs. Confirmed against production
-on 2026-08-25, and still true on 2026-10-29:
+**Live since 2026-11-02 UTC** (#109, shipped via #110). Every route is prerendered at build with
+React's own `react-dom/static`, no new dependency: 15 pages, each with its title, description,
+canonical, Open Graph tags, JSON-LD and copy in the raw HTML. Photos are not prerendered. The
+mechanics, the two Amplify rules it needs, what changed with `404-200` and the rule for
+changing them safely are all in CLAUDE.md under "Prerendering".
 
-```bash
-curl -s https://www.clickypete.photography/ | grep -ic canonical   # → 0
-```
+Verified on production: `/`, `/about`, `/contact`, `/gallery`, `/gallery/Montana` and the
+encoded San Luis Obispo path each answer 200 with their own canonical, and hydrate with no
+console errors. Unknown URLs now answer a real 404.
 
-**This stopped being hypothetical the day the branch shipped.** Two separate costs, and the
-second one is new:
+Why it mattered: before it, link previews were blank on every client that does not run
+JavaScript, and Google only saw the canonical on its delayed render pass.
 
-1. **Link previews are blank** on every client that does not execute JavaScript — Facebook,
-   Instagram, Slack, iMessage, Bing. For a portfolio shared by link between people planning a
-   session, that is the gap most visible to clients.
-2. **Google only sees the canonical on its render pass**, which is a second queue that lags the
-   crawl by days or weeks. On 2026-08-25 the homepage was reported as "Duplicate without
-   user-selected canonical" with "User-declared canonical: None" — the crawler had the shell and
-   nothing else. A re-crawl fixed that particular reading — by 2026-10-29 the homepage is
-   indexed — but the structural delay stays: every metadata change waits on the render queue
-   rather than landing with the crawl. The 9 collection pages sitting in "Discovered – currently
-   not indexed" since September are likely the same cost showing up as crawl priority.
-
-Three ways out, unresolved because the first one needs a new dependency:
-
-- **Prerender at build** — `vite-plugin-prerender` or similar headless-renders each route to
-  static HTML. Keeps the app as it is. Costs a build-time dependency and a slower build.
-  Collection routes have to be enumerated from `photos.json`, which `generate-sitemap.mjs`
-  already does — that loop is the shared piece, and the two should read one list rather than
-  each building their own.
-- **Leave it client-rendered.** Google does index the site, on a delay; link previews stay blank
-  everywhere else. Zero cost, and defensible if the site is found mostly by search rather than
-  shared by link — but note that finding 2 above is the price, and it is paid on every
-  metadata change from here on.
-- **Migrate to a framework with SSG.** Correct long-term, disproportionate now.
-
-Nothing else in this file is blocked on the answer, so it can stay open — but it should be
-answered rather than drift. It is now the largest single item left, and it undercuts the value
-of everything already shipped.
-
-**Decided 2026-11-01: prerender at build, with no new dependency.** Built on `feat/prerender`,
-in the worktree `../clicky-pete-prerender`. Open as #109 against `dev`, not merged. The
-first option above, but without a headless browser. React 19's own `react-dom/static`
-`prerender()` runs on a Vite SSR build of `src/entry-server.tsx`, and `scripts/prerender.mjs`
-writes one HTML file per route. Both scripts read their route list from
-`scripts/site-routes.mjs`, so the sitemap and the prerender always agree. The build gains about
-a second. Full mechanics and rules are in CLAUDE.md under "Prerendering".
-
-- 15 pages: `home.html`, `about.html`, `contact.html`, `gallery.html`, and
-  `gallery/<Collection>.html` ×11. `index.html` stays the empty shell, as the fallback for
-  unknown URLs.
-- Each page carries its title, description, canonical, OG/Twitter tags (with `og:image` when
-  `VITE_CLOUDFRONT_URL` is set at build), JSON-LD and copy. Photos are not prerendered; they
-  still arrive through the client fetch.
-- `main.tsx` hydrates a prerendered page (`hydrateRoot`) and client-renders the shell. It
-  removes the server's head tags first, so the page never holds two of any.
-- Checked in Chrome against `vite preview`, which resolves clean URLs as Amplify does:
-  `/`, `/about`, `/contact`, `/gallery` and `/gallery/Montana` hydrate with no console errors,
-  one copy of each head tag, and photos loading. Client-side navigation afterwards swaps the
-  tags correctly. `npm run ci` passes with the same 8 warnings.
-- Known and accepted: a query string the page reads (`/gallery/Montana?sort=oldest`) logs a
-  recoverable hydration mismatch (React #418) and re-renders on the client. `/home` would
-  serve `home.html` and do the same.
-
-**Needs two Amplify console changes before it does anything in production** (until then,
-every URL still gets the shell, so merging is safe on its own):
-
-1. The SPA rewrite rule: type `200` → `404-200`, with the same regex source and target. It then
-   rewrites only requests that have no file.
-2. A new rule above it: `/` → `/home.html`, type `200`.
-
-Then **Redeploy this version** to clear the edge cache, and verify:
-
-```bash
-for p in / /about /contact /gallery /gallery/Montana "/gallery/San%20Luis%20Obispo%2C%20CA" /gallery/Nowhere; do
-  echo "$p  $(curl -s "https://www.clickypete.photography$p" | grep -o '<link rel="canonical"[^>]*>')"
-done
-curl -sI https://www.clickypete.photography/about | grep -i 'content-type\|x-cache'
-```
-
-Every known path should print its own canonical; `/gallery/Nowhere` should print none (the
-shell). **Not verified, because it can only be tested on Amplify:** that `404-200` still
-resolves `/about` to `about.html`, and that a collection name with a space and comma maps to
-its file. If either fails, the fallback is an explicit `200` rule per path ahead of the SPA
-rule. Then rerun the Rich Results Test, and check a link preview, for example by pasting a
-URL into a Slack DM to yourself.
+Still to do: rerun the Rich Results Test, and check a link preview.
 
 ### 4. Image sitemap
 
