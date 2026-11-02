@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { photoService } from '../services/photoService';
+import { photoService } from '@/services/photoService';
 
 export const useCategories = () => {
 	const [categories, setCategories] = useState<string[]>([]);

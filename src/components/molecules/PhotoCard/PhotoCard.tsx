@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
-import type { Photo } from '../../../types/photo';
-import { preloadViewerImage } from '../../../utils/imageOptimization';
-import { describePhoto } from '../../../utils/photoAlt';
+import type { Photo } from '@/types/photo';
+import { preloadViewerImage } from '@/utils/imageOptimization';
+import { describePhoto } from '@/utils/photoAlt';
 
 interface PhotoCardProps {
 	photo: Photo;

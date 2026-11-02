@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import type { Photo } from '../../types/photo';
-import { adminService } from '../../services/adminService';
-import type { EditableTags, PublishState, TagValues } from '../../services/adminService';
+import type { Photo } from '@/types/photo';
+import { adminService } from '@/services/adminService';
+import type { EditableTags, PublishState, TagValues } from '@/services/adminService';
 import { PhotoForm } from './PhotoForm';
 import { PhotoLibrary } from './PhotoLibrary';
 import { Icon, TRASH_PATH } from './icons';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { prerender } from 'react-dom/static';
 import { StaticRouter } from 'react-router-dom';
-import { AppContent } from './app/App';
+import { AppContent } from '@/app/App';
 
 /**
  * Renders one route to HTML at build time, for scripts/prerender.mjs. `prerender` waits for

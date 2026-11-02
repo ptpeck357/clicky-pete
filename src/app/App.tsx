@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { BrowserRouter, useLocation } from 'react-router-dom';
 import ReactGA from 'react-ga4';
 import { Router } from './Router';
-import { Header, Footer } from '../components/organisms';
+import { Header, Footer } from '@/components/organisms';
 
 const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID;
 

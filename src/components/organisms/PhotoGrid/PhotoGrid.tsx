@@ -1,9 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import Masonry from 'react-masonry-css';
-import { PhotoCard } from '../../molecules';
-import { Spinner } from '../../atoms';
-import type { Photo } from '../../../types/photo';
+import { PhotoCard } from '@/components/molecules';
+import { Spinner } from '@/components/atoms';
+import type { Photo } from '@/types/photo';
 
 interface PhotoGridProps {
 	photos: Photo[];

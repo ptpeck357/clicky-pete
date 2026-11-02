@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { Seo } from '../components/atoms';
+import { Seo } from '@/components/atoms';
 
 const HERO_IMAGES = ['canyon_land.webp', 'motorcycle.webp', 'northern_lights.webp', 'cover_photo.webp'];
 const PROFILE_BASE = '/photos/aboutme/profile/web';

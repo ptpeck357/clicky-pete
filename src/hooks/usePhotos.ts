@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { photoService } from '../services/photoService';
-import type { Photo, PhotoFilter } from '../types/photo';
+import { photoService } from '@/services/photoService';
+import type { Photo, PhotoFilter } from '@/types/photo';
 
 // One shared empty list, so a pending fetch does not hand memoised callers a new array per render.
 const NO_PHOTOS: Photo[] = [];

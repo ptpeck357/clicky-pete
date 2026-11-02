@@ -8,7 +8,7 @@ import {
 	SITE_NAME,
 	SITE_URL,
 	SOCIAL_PROFILES,
-} from '../../../config/site';
+} from '@/config/site';
 
 /**
  * The business, for local search. `areaServed` rather than a street address on purpose:

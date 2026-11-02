@@ -1,4 +1,4 @@
-import type { Photo, Collection } from '../types/photo';
+import type { Photo, Collection } from '@/types/photo';
 
 export const generateCollections = (photos: Photo[]): Collection[] => {
 	if (photos.length === 0) return [];

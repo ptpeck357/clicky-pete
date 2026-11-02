@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './app/App';
+import App from '@/app/App';
 
-import './styles/globals.css';
+import '@/styles/globals.css';
 
 // Every tag <Seo> writes, plus index.html's static <title>. A prerendered page carries the
 // server's copies in <head>; the shell carries only the static title, kept for clients that

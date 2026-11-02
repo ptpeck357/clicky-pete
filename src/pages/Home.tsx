@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { PhotoViewerModal, PhotoGrid } from '../components/organisms';
-import { Seo, JsonLd, businessSchema } from '../components/atoms';
-import { photoService } from '../services/photoService';
-import { shuffleArray } from '../utils/array';
-import { preloadImages } from '../utils/imageOptimization';
-import { describePhoto } from '../utils/photoAlt';
-import type { Photo } from '../types/photo';
+import { PhotoViewerModal, PhotoGrid } from '@/components/organisms';
+import { Seo, JsonLd, businessSchema } from '@/components/atoms';
+import { photoService } from '@/services/photoService';
+import { shuffleArray } from '@/utils/array';
+import { preloadImages } from '@/utils/imageOptimization';
+import { describePhoto } from '@/utils/photoAlt';
+import type { Photo } from '@/types/photo';
 
 const heroVariants = {
 	hidden: { opacity: 0 },

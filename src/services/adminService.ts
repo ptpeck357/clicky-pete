@@ -1,4 +1,4 @@
-import type { Photo } from '../types/photo';
+import type { Photo } from '@/types/photo';
 
 /**
  * Talks to the dev-only middleware in vite-plugin-admin.ts. These endpoints exist

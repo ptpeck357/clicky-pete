@@ -27,4 +27,13 @@ export default defineConfig([
 			'react-hooks/preserve-manual-memoization': 'warn',
 		},
 	},
+	{
+		files: ['src/**/*.{ts,tsx}'],
+		rules: {
+			'no-restricted-imports': [
+				'error',
+				{ patterns: [{ group: ['../*'], message: "Import from '@/...' outside the current folder." }] },
+			],
+		},
+	},
 ]);
