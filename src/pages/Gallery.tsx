@@ -10,6 +10,9 @@ import { parseSortOrder, sortPhotos } from '../utils/photoOrder';
 import type { SortOrder } from '../utils/photoOrder';
 import type { Photo, PhotoFilter } from '../types/photo';
 
+// How many photos a view starts with, before infinite scroll adds more.
+const INITIAL_PHOTOS = 15;
+
 const filterButtonVariants = {
 	inactive: {
 		scale: 1,
@@ -115,7 +118,7 @@ export const Gallery: React.FC = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [categories, setCategories] = useState<string[]>([]);
 	const [categoriesLoading, setCategoriesLoading] = useState(false);
-	const [photosToShow, setPhotosToShow] = useState(15);
+	const [photosToShow, setPhotosToShow] = useState(INITIAL_PHOTOS);
 	// Bumped by Try Again. The categories load on their own, so without this a failed first
 	// load left the pills on "No categories available" even after the photos came back.
 	const [retryCount, setRetryCount] = useState(0);
@@ -124,12 +127,16 @@ export const Gallery: React.FC = () => {
 	// including back/forward, and not when a Cmd-click opens a new tab. Done during render rather
 	// than in an effect: an effect runs after the new route's first render, which would fetch that
 	// route's photos with the previous view's category still applied.
+	// Deliberately not keyed on sortOrder. Re-sorting reorders the same photos, and
+	// displayedPhotos always slices the current order from the start, so the count stays
+	// meaningful — while resetting it would shorten the page under a reader who has scrolled
+	// and let the browser clamp them somewhere they did not ask to be.
 	const routeKey = `${urlCollection ?? ''}|${showAllPhotos}`;
 	const [prevRouteKey, setPrevRouteKey] = useState(routeKey);
 	if (routeKey !== prevRouteKey) {
 		setPrevRouteKey(routeKey);
 		setLocalFilter({});
-		setPhotosToShow(15);
+		setPhotosToShow(INITIAL_PHOTOS);
 	}
 
 	// useDeferredValue hands back the previous value on an urgent render, so a cleared category
@@ -178,10 +185,8 @@ export const Gallery: React.FC = () => {
 
 	const isLoadingMoreRef = useRef(false);
 	const observerRef = useRef<IntersectionObserver | null>(null);
-	// Deliberately not keyed on sortOrder. Re-sorting reorders the same photos, and
-	// displayedPhotos always slices the current order from the start, so the count stays
-	// meaningful — while resetting it would shorten the page under a reader who has scrolled
-	// and let the browser clamp them somewhere they did not ask to be.
+	// The ref half of the route reset above. A ref cannot be written during render, so it
+	// resets here, on the same inputs as routeKey.
 	useEffect(() => {
 		isLoadingMoreRef.current = false;
 	}, [urlCollection, showAllPhotos]);
@@ -264,7 +269,7 @@ export const Gallery: React.FC = () => {
 
 	const handleCategoryChange = (category: string | undefined) => {
 		setLocalFilter({ category });
-		setPhotosToShow(12);
+		setPhotosToShow(INITIAL_PHOTOS);
 		if (!showAllPhotos) {
 			navigate('/gallery', { replace: true });
 		}
@@ -482,7 +487,7 @@ export const Gallery: React.FC = () => {
 								onClick={() => {
 									if (!localFilter.category) return;
 									setLocalFilter({});
-									setPhotosToShow(15);
+									setPhotosToShow(INITIAL_PHOTOS);
 								}}
 								className={`inline-block px-4 py-2 rounded-full text-sm font-medium transition-colors ${
 									showAllPhotos
