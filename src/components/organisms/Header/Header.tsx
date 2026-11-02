@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Navigation } from '@/components/organisms/Navigation';
+import { ThemeToggle } from '@/components/atoms';
 
 export const Header: React.FC = () => {
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -36,7 +37,7 @@ export const Header: React.FC = () => {
 
 	return (
 		<motion.header
-			className="bg-gray-800 border-b border-gray-700 fixed w-full top-0 z-50"
+			className="bg-gray-800 border-b border-gray-700 light:bg-gray-300 light:border-gray-400 light:shadow-sm fixed w-full top-0 z-50"
 			initial={{ y: 0 }}
 			animate={{ y: isVisible ? 0 : -100 }}
 			transition={{ duration: 0.3, ease: 'easeInOut' }}
@@ -47,15 +48,24 @@ export const Header: React.FC = () => {
 						<img
 							src="/clicky_pete_logo_light.svg"
 							alt="Clicky Pete"
-							className="h-10 w-auto flex-shrink-0"
+							className="h-10 w-auto flex-shrink-0 light:hidden"
+						/>
+						<img
+							src="/clicky_pete_logo_dark.svg"
+							alt="Clicky Pete"
+							className="h-10 w-auto flex-shrink-0 hidden light:block"
 						/>
 					</Link>
 
-					<Navigation className="hidden md:flex" />
+					<div className="hidden md:flex items-center space-x-4">
+						<Navigation />
+						<ThemeToggle />
+					</div>
 
-					<div className="md:hidden">
+					<div className="md:hidden flex items-center space-x-1">
+						<ThemeToggle />
 						<motion.button
-							className="text-gray-300 hover:text-white focus:outline-none focus:text-white p-2"
+							className="text-gray-300 hover:text-white focus:outline-none focus:text-white light:text-gray-700 light:hover:text-gray-900 light:focus:text-gray-900 p-2"
 							onClick={toggleMobileMenu}
 							whileTap={{ scale: 0.95 }}
 						>
@@ -96,7 +106,7 @@ export const Header: React.FC = () => {
 							exit={{ opacity: 0, height: 0 }}
 							transition={{ duration: 0.3 }}
 						>
-							<div className="px-2 pt-2 pb-3 space-y-1 border-t border-gray-800">
+							<div className="px-2 pt-2 pb-3 space-y-1 border-t border-gray-800 light:border-gray-400">
 								<Navigation
 									className="flex flex-col space-y-2"
 									onItemClick={() => setIsMobileMenuOpen(false)}
