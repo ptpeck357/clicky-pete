@@ -1,1 +1,1 @@
-export { Spinner } from '@/components/atoms/Spinner/Spinner';
+export { Spinner } from './Spinner';

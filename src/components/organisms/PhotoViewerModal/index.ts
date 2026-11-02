@@ -1,1 +1,1 @@
-export { PhotoViewerModal } from '@/components/organisms/PhotoViewerModal/PhotoViewerModal';
+export { PhotoViewerModal } from './PhotoViewerModal';

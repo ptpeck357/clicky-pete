@@ -1,1 +1,1 @@
-export { PhotoCard } from '@/components/molecules/PhotoCard/PhotoCard';
+export { PhotoCard } from './PhotoCard';

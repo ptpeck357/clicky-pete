@@ -1,1 +1,1 @@
-export { Footer } from '@/components/organisms/Footer/Footer';
+export { Footer } from './Footer';

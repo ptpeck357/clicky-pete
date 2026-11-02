@@ -1,1 +1,1 @@
-export { PhotoGrid } from '@/components/organisms/PhotoGrid/PhotoGrid';
+export { PhotoGrid } from './PhotoGrid';

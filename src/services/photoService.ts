@@ -1,4 +1,4 @@
-import { cloudFrontPhotoService } from '@/services/cloudFrontPhotoService';
+import { cloudFrontPhotoService } from './cloudFrontPhotoService';
 import type { Photo } from '@/types/photo';
 
 export const photoService = {

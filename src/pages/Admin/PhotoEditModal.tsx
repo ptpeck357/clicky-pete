@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import type { Photo } from '@/types/photo';
 import { adminService } from '@/services/adminService';
 import type { EditableTags, TagValues } from '@/services/adminService';
-import { PhotoForm } from '@/pages/Admin/PhotoForm';
+import { PhotoForm } from './PhotoForm';
 
 interface PhotoEditModalProps {
 	photo: Photo;
