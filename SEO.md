@@ -23,6 +23,10 @@ Also checked: both Business Profile edits from 2026-10-29 have published ("Next"
 The profile's service areas list Manhattan where this file records Four Corners; unresolved.
 Nothing else from the audit or "Next" has moved.
 
+Audit item 2 (the empty shell): **prerendering is built** on `feat/prerender` in the worktree
+`../clicky-pete-prerender`. It is open as **#109** against `dev` and not merged. It needs no new
+dependency, but needs two Amplify console rule changes after merge. See §3.
+
 ### 2026-10-29 — audit of the live site
 
 A fresh pass over production with curl and Chrome, after #105. Nothing changed in code. The new
@@ -137,139 +141,6 @@ Next, in order:
 7. **The open code and copy items.** Prerendering is still the largest of them. The session
    pages wait on family photos and on sign-off of the mockup.
 
-### 2026-08-25
-
-**Updated 2026-08-25. PRs #88, #90 and #91 are on `dev`; #92 merged `dev` into `prod` and
-Amplify has deployed it. All of it is live.** The §2 production checks have been run — only the
-Rich Results Test is left, since it needs Google's own tool.
-
-```
-3c9cf7e Merge pull request #92 from ptpeck357/dev          ← prod
-bb49507 Merge pull request #91 from ptpeck357/feat/contact-hero-photo
-ed8ed8f feat(contact): add hero photo and link to form
-dfefd82 Merge pull request #90 from ptpeck357/style/hero-text-duration
-215ba1a style(home): give the hero text longer before it fades
-f9dc2f8 Merge pull request #88 from ptpeck357/feat/seo-metadata
-118eb02 feat(seo): add per-page titles, descriptions and canonicals
-4bb67f2 feat(seo): describe photos in alt text
-011676f feat(seo): generate sitemap.xml at build time
-2341bb3 feat(seo): add site config and metadata components
-97b583c fix(seo): keep "Bozeman, Montana" on one line on phones
-```
-
-The hero text timer change went in behind #88 as **PR #90** (`215ba1a`), lengthening the fade
-delay from 3.5s to 5s — see "The hero text timer" below. Nothing is outstanding in git, and
-`prod` contains everything on `dev`.
-
-Done this session:
-
-- **The whole test pass in §1**, in a browser against `npm run dev`. Every item passed, the
-  contact form included — it sent end to end and the mail arrived. Details are recorded against
-  each checkbox there.
-- **`npm run ci`** — passing throughout.
-- **The hero subtitle** — kept as written, and its line break fixed for phone widths. Confirmed
-  on a real phone after the fix.
-- **Google Business Profile** — created, verification processing, up to five days. Do not edit
-  it until that clears. See §0.
-- **Google Search Console** — domain property verified by TXT in Route 53. See §0.
-- **The `/contact` hero photo and form link** (#91). Not SEO work, but it is what is now live on
-  the page the local searches are meant to land on, and it brought one performance note with it
-  — see the last bullet in "Notes that are easy to lose".
-- **The deploy to `prod`** (#92), and the §2 checks against it. `robots.txt` and `sitemap.xml`
-  both answer with the right content type, the console is clean of CSP violations, and the
-  homepage carries one `ProfessionalService` JSON-LD block that parses.
-
-Next, as of then (superseded by 2026-10-29 above):
-
-1. **Check back in Search Console in a few days.** The sitemap should report 15 discovered
-   URLs, and the homepage should stop reporting "Duplicate without user-selected canonical"
-   once the re-crawl requested on 2026-08-25 lands.
-2. **Wait on the Google Business Profile**, then fill it out. Verification clears within about
-   five days of 2026-08-25. The description is written and sitting in §0, and the photos need
-   converting out of WebP first.
-3. **Run the homepage through the Rich Results Test.** The last §2 item, and the only one that
-   needs Google rather than a browser.
-4. **Ask past clients for reviews**, once the profile is live.
-5. **Then the open code and copy items** — the prerendering decision, image sitemap entries,
-   the gallery headings, and photos on the `/contact` session cards.
-
-### What Search Console said on 2026-08-25
-
-URL Inspection on `https://www.clickypete.photography/`, the day of the deploy. The **live test
-rendered correctly** — the metadata is there once the JavaScript runs — and indexing was
-requested to queue a re-crawl.
-
-The **index card was stale and should not be read as a failure**: last crawl `Aug 20`, five days
-before the deploy, so it describes the site before any of this existed.
-
-```
-Page indexing            Not indexed: Duplicate without user-selected canonical
-User-declared canonical  None
-Google-selected canonical https://clickypete.photography/     (the apex)
-Last crawl               Aug 20, 2026
-```
-
-"User-declared canonical: None" was simply true on Aug 20. Both lines resolve on a re-crawl.
-
-**Two real findings came out of it, though:**
-
-**1. The apex redirect is a 302, and Google chose the apex as canonical.**
-
-```
-https://clickypete.photography/      302 → https://www.clickypete.photography/
-https://www.clickypete.photography/  200
-```
-
-A 302 is temporary, which is a weak canonicalisation signal — it says www is where this lives
-_for now_. **Changed to a 301 on 2026-08-25** and verified fresh from the origin, which states
-that www is permanent — what `SITE_URL`, the canonicals and the sitemap all already assume. It
-was a one-word change in the same redirects JSON in the Amplify console that the rewrite
-allowlist lives in, plus a redeploy. Query strings survive the redirect. Note that browsers
-cache a 301 hard, so this is only correct while www stays the permanent choice.
-
-**2. The canonical is invisible without JavaScript.** Confirmed against production:
-
-```bash
-curl -s https://www.clickypete.photography/ | grep -ic canonical   # → 0
-```
-
-It exists only after React runs, and so does `og:title`. Google renders, but on a second pass
-that can lag days or weeks — which is the concrete, measured cost of the empty shell, and the
-strongest argument yet for settling §3. It is no longer a hypothetical about link previews: it
-is delaying the canonical signal on the live site.
-
-### The subtitle line break
-
-Worth keeping the reasoning, since the change is one character and looks like nothing.
-
-At `text-sm` the subtitle is 366px wide, and the hero gives it the viewport minus 32px of
-padding. That put the break in the wrong place on exactly the phones people carry:
-
-| Viewport                     | Before                                             | After                                   |
-| ---------------------------- | -------------------------------------------------- | --------------------------------------- |
-| 390 (iPhone 12–15), 375, 360 | `…photographer in Bozeman,` / **`Montana`** orphan | `…photographer in` / `Bozeman, Montana` |
-| 320 (iPhone SE 1)            | `…photographer in` / `Bozeman, Montana`            | unchanged                               |
-| 414+                         | one line                                           | one line                                |
-
-The narrowest phone was the only one that read well. A non-breaking space between `Bozeman,` and
-`Montana` forces that break at every width and cannot regress on an older browser, which
-`text-pretty` and `text-balance` both can — they degrade to doing nothing where unsupported.
-
-### The hero text timer
-
-`Home.tsx` fades the whole hero text block out on a timer once the images load, and that
-predates the SEO work — it was on `dev` before any of this. The h1 and the subtitle fade as one
-block: the opacity animates on their shared wrapper, so they cannot drift apart (measured
-divergence across 60 samples: 0.00).
-
-PR #90 raises the timer from 3.5s to 5s, on the grounds that the clock
-starts when the hero images finish loading — already several seconds in on a phone — and two
-lines of heading plus a subtitle is more than 3.5s comfortably carries. The 1s fade sits on top
-of that either way.
-
-Note it changes behaviour that has nothing to do with SEO, which is why it went in as its own
-PR rather than part of #88.
-
 ### Built
 
 | Piece                   | Where                                        | Notes                                                                                       |
@@ -296,18 +167,9 @@ PR rather than part of #88.
 
 ## Todo
 
-### Now — finish and ship the branch
-
-- [x] Run the manual test pass below on `npm run dev` — done 2026-08-25, all items
-- [x] `npm run ci` — passing 2026-08-25
-- [x] Open the PR into `dev`, merge — #88, merged 2026-08-25
-- [x] Deploy `dev` to `prod` — done 2026-08-25
-- [x] Run the three production checks below — all pass 2026-08-25; the Amplify rewrite needed
-      `xml` adding to its allowlist first, see §2
-
 ### Not code — start these first, they have lead times
 
-Step-by-step for all three is in §0 of the implementation plan.
+Detail for all three is in §0 of the implementation plan.
 
 - [x] **Claim the Google Business Profile.** Created 2026-08-25, verified and live by
       2026-10-29. Services and hours set 2026-10-29; photos are the remaining half — see §0.
@@ -327,18 +189,12 @@ Step-by-step for all three is in §0 of the implementation plan.
       only the first photo before the overlay drops. Audit item 5.
 - [ ] **Small fixes:** a `preconnect` to the photo host, and the stale "302" comment in
       `site.ts`. Audit, minor.
-- [ ] **Decide prerendering.** Blocked on a judgement call, not on work. See below.
-- [x] **Image sitemap entries** — `<image:image>` per photo on its collection URL. Committed
-      on `feat/image-sitemap` (`5bee501`), merged as #101 and live on `prod` via #102, 2026-10-29.
+- [ ] **Prerendering.** Decided and built 2026-11-01 on `feat/prerender` (worktree
+      `../clicky-pete-prerender`), in review as #109, not merged. Needs two Amplify
+      console rule changes after merge. See §3.
+- [x] **Image sitemap entries.** Live via #102, 2026-10-29.
 - [ ] **`ImageObject` JSON-LD** where it fits. Lower value than either of the above; it can wait.
-- [x] **A skip-to-content link.** Committed on `fix/skip-to-content` (`bf98745`), merged as #100 and live on
-      `prod` via #102, 2026-10-29. Checked in Chrome: first Tab shows it above the header, Enter moves focus to
-      `<main>`, and the next Tab lands in the page rather than the nav. Original note: not SEO, but it surfaced while working on `/contact` on
-      2026-08-25 and has no other home. There is no `sr-only focus:not-sr-only` anywhere in
-      `src/`, and `<main>` in `src/app/App.tsx:29` carries no `id`, so every keyboard and screen-reader
-      user tabs the whole nav on every page load. The fix is an `id` on `<main>` plus a
-      visually-hidden link that appears on focus. Its own branch — it touches the app shell,
-      not a page.
+- [x] **A skip-to-content link.** Live via #102, 2026-10-29.
 - [x] **Fix the duplicate `<title>` and the "Astro|Night" alt text.** Found 2026-10-29; fixed
       in #104, live via #105 on 2026-10-29.
 
@@ -365,47 +221,22 @@ none of them needs re-deriving later.
 
 ### 0. The lead-time items, step by step
 
-All three are done in a browser, none of them touches the repo, and none is blocked on the
-branch shipping — except submitting the sitemap, which needs the file to exist in production
-first. Start them now precisely because the waiting is the expensive part.
+All three are done in a browser and none touches the repo. Reviews is the one still open, and
+the slowest to accumulate.
 
 #### Google Business Profile
 
-This is the one that puts the site in front of someone in Gallatin County who is looking to
-book. Free, and the map pack it feeds is what "photographers near me" actually returns.
+Set up 2026-08-25 and verified by 2026-10-29; progress is under "status" below. The rules that
+still apply to any edit:
 
-1. **Pick the owning Google account before anything else.** Whatever account creates the
-   profile owns it, and moving ownership later is a support request. Use one that will still
-   exist in five years, not a throwaway.
-2. **Create it** at `business.google.com` → Add business → enter `Clicky Pete Photography`.
-   The name field must be the business name as it is presented publicly. `Clicky Pete
-Photography Bozeman` or `Bozeman Photographer | Clicky Pete` is a guideline violation —
-   Google edits it back or suspends the profile, and a suspension takes weeks to appeal. The
-   city belongs in the description and the service areas, never the name.
-3. **Primary category: `Photographer`.** This carries more ranking weight than anything else
-   on the profile. Secondaries, as they apply: `Portrait Studio`, `Wedding Photographer`,
-   `Photography Service`.
-4. **Answer "no" to having a location customers can visit** — that makes it a service-area
-   business, which is the supported type here. The address is then collected for verification
-   but hidden from the public listing.
-5. **Set the service areas** to the places sessions actually happen: Bozeman, Belgrade,
-   Livingston, Big Sky, Four Corners, Gallatin County. Up to 20 are allowed; keep it honest —
-   listing half of Montana dilutes the profile rather than widening it.
-6. **Website:** `https://www.clickypete.photography` — the www form, matching `SITE_URL`. A
-   phone number is optional but speeds up verification and gives someone a second way to reach
-   you; the site itself has none today, and adding one is not required for consistency.
-7. **Verify.** For a service-area business this is usually a video call or a recorded video —
-   continuous and unedited, showing the area, your equipment, and something tying you to the
-   business. A postcard to the address is the fallback. **Do not edit the profile while
-   verification is pending**; a change can reset the process. Days to weeks.
-8. **Once verified, fill it out properly** — this is where most profiles are left half-done:
-    - Description, ~750 characters, saying what is sold in the words people search: portrait,
-      senior and graduation, family, engagement sessions in Bozeman and around Gallatin County.
-      The same sentence `businessSchema` already uses is a good starting draft.
-    - Services, one per session type, mirroring the `/contact` cards.
-    - Hours: "by appointment" is a valid answer.
-    - Photos. This is the one input that gets ignored and shouldn't — profiles with real photos
-      get materially more clicks. Pull straight from the 2000px renditions.
+- **The name stays `Clicky Pete Photography`.** Adding a city or keyword to it ("… Bozeman",
+  "Bozeman Photographer | …") breaks Google's guidelines and risks a suspension that takes weeks
+  to appeal. The city belongs in the description and the service areas.
+- **Primary category `Photographer`**, which carries more ranking weight than anything else on
+  the profile.
+- **It is a service-area business**, with the address hidden. Keep the service areas to places
+  sessions actually happen; listing half of Montana dilutes the profile rather than widening it.
+- **Photos matter more than they look**: profiles with real photos get materially more clicks.
 
 #### Google Business Profile — status
 
@@ -492,29 +323,13 @@ sits next to the profile rather than after everything else.
 
 #### Google Search Console
 
-The only source of truth for what people actually searched before landing here. Verification
-can be done today; the sitemap submission waits for the deploy.
+Set up 2026-08-25; progress is under "status" below. Still open from the original steps:
 
-1. **Add a Domain property** (`clickypete.photography`), not a URL-prefix one. A domain
-   property covers apex, www, http and https in one, which matters here because the apex
-   redirects to www (a 301 since 2026-08-25).
-2. **Verification is a DNS TXT record** on the apex, added in Route 53 → the hosted zone →
-   Create record → type `TXT`, name empty, value the `google-site-verification=…` string in
-   quotes. The `clicky-pete` IAM user is scoped to the photo bucket and CloudFront
-   invalidations, so this is a console job, not a CLI one. Propagation is usually minutes.
-3. **Submit the sitemap** — Sitemaps → `sitemap.xml` → Submit. Only after the branch is
-   deployed: today that URL is answered by the SPA rewrite, and submitting an HTML page as a
-   sitemap gets it rejected.
-4. **Run URL Inspection on the homepage → Test live URL → View tested page.** This is the
-   cheapest real answer to the prerendering question in §3: it shows the HTML Google actually
-   ended up with, so it says whether the rendered `<title>`, description and JSON-LD made it
-   through. It says nothing about Facebook or Slack, which never run the JavaScript at all.
-5. **Come back in two to four weeks** and read Performance → Queries. That report decides the
-   next round of this file — which session type to build a page for first, and which wording
-   is already pulling. Before it has data, everything here is a guess.
-6. **Optional, five minutes:** Bing Webmaster Tools imports a verified Search Console property
-   in one click. Bing does not render JavaScript, so what it indexes is a second, blunter
-   readout on the same shell problem.
+- **Read Performance → Queries** periodically. That report decides which session type gets a
+  page first and which wording is already pulling.
+- **Optional, five minutes:** Bing Webmaster Tools imports a verified Search Console property in
+  one click. Bing does not render JavaScript, so what it indexes is a blunter second readout on
+  the empty-shell problem.
 
 #### Google Search Console — status
 
@@ -536,21 +351,9 @@ That baseline was taken before the deploy, when production had no `Seo` componen
 `og:title` and the JSON-LD were legitimately absent. Finding them there now is the proof the work
 reached Google.
 
-Remaining after the deploy:
-
-1. **`sitemap.xml` submitted 2026-08-25.** Note the address has to be the **full URL** —
-   `https://www.clickypete.photography/sitemap.xml` — not the bare `sitemap.xml`. A domain
-   property spans apex, www, http and https, so there is no prefix to prepend and a bare path
-   is rejected as "Invalid sitemap address". The bare form only works on a URL-prefix property.
-   Use the www form, matching the canonicals and the `Sitemap:` line in `robots.txt`.
-2. Re-run URL Inspection → View tested page → HTML, and look for `<title>`, `og:title`,
-   `canonical` and `application/ld+json`. Passing proves Googlebot's renderer sees them; it
-   proves nothing about Facebook, Slack or iMessage, which never run the JavaScript.
-3. Read Performance → Queries after two to four weeks. That report decides the next round.
-
-Optional, five minutes: Bing Webmaster Tools imports a verified Search Console property in one
-click. Bing does not render JavaScript at all, so what it manages to index is a blunter second
-readout on the same empty-shell problem — cheap evidence for the prerendering decision.
+**`sitemap.xml` submitted 2026-08-25.** The address has to be the **full URL**,
+`https://www.clickypete.photography/sitemap.xml`. A domain property has no prefix to prepend, so
+a bare `sitemap.xml` is rejected as "Invalid sitemap address".
 
 **2026-10-29: 6 indexed, 12 not indexed.** Four web search clicks in total since August.
 
@@ -593,141 +396,24 @@ Too little to decide anything on yet. Read it again in a month.
   `businessSchema` — linking the site to the profile is a signal in both directions.
 - If a phone number goes on the profile, decide whether it also belongs on `/contact` and in
   `businessSchema` as `telephone`. Consistent is better than absent, and absent is better than
-  two different numbers. w
+  two different numbers.
 
 ### 1. Test pass before the PR
 
-Run `npm run dev`. Metadata is not on this list — it was checked already. What is here is what
-a build and a DOM query cannot answer.
-
-**Run 2026-08-25 in Chrome against `npm run dev`.** Results inline. `npm run ci` passed on the
-branch first — 15 sitemap urls, 11 collections, nothing admin in `dist/`, lint under budget.
-
-- [x] **Metadata on every route.** Titles change across Home → Gallery → `/gallery/Montana` →
-      About → Contact → a 404 and never go stale. Canonicals are the www absolute form,
-      `ProfessionalService` on Home, `BreadcrumbList` on the collection view, `noindex, follow`
-      on the 404 only. The 404's canonical points at the site root rather than being
-      self-referential — deliberate, commented in `NotFound.tsx`, and moot since `noIndex` wins.
-- [x] **Lazy-loaded thumbnails.** `/gallery/Montana` went from 16 images to 100 across a fast
-      scroll to the bottom, with zero left unresolved, and nothing blank on the way back up. The
-      infinite-scroll sentinel fired once per batch rather than repeatedly; document height grew
-      1756 → 6463 and stayed there. Every thumbnail carries `loading="lazy"`. Not throttled to
-      Slow 4G — that is still worth a manual pass.
-- [x] **The photo viewer modal.** Opens, arrows through, the 2000px rendition loads, and the alt
-      text changes per photo ("Aerial photography in Hyalite Reservoir, MT — Montana
-      collection"). Escape closes it.
-- [x] **Footer social links.** All three hrefs match `SOCIAL_PROFILES` exactly, with
-      `target="_blank"` and `rel="noopener noreferrer"`.
-- [x] **Console.** Clean on load and through the whole pass — only Vite's HMR messages.
-- [x] **The contact form, end to end.** Sent 2026-08-25. The API Gateway endpoint answered 200
-      in 3.5s with `{"success":true}`, the honeypot was left empty, and the form cleared itself
-      afterwards. Delivery itself is SES-side and was confirmed separately.
-- [x] **The hero subtitle — kept as written, decided 2026-08-25.** "Portrait & landscape
-      photographer in Bozeman, Montana". It is a plainer register than the rest of the site, and
-      that was weighed and accepted: the h1 above it carries the voice, and a hero can afford one
-      informative beat. The h1 and the subtitle fade as one block — the opacity animates on their
-      shared wrapper, so they cannot drift apart; measured divergence across 60 samples was 0.00.
-
-**Two things the pass turned up, neither a regression:**
-
-1. **The hero text is on screen for 3.5 seconds** (raised to 5s since, in #90; the timer is now
-   `Home.tsx:162`). It fades the whole hero text
-   block out on a timer once the images load, and that predates this branch — it is on `dev`.
-   The new subtitle inherits it, so the line being judged is a 3.5-second flash rather than
-   something a visitor reads at leisure. Crawlers are unaffected: the text is in the DOM
-   throughout, and opacity is not something a search engine holds against a page. The decision
-   is whether a line written to say what the site sells should disappear on a timer.
-2. **At a 455px viewport the subtitle fills the full width as a single line**, close to both
-   edges. It does not collide with the mobile dot indicators — 139px clear — and there is no
-   horizontal scroll. A true 360px viewport was not tested: Chrome would not size the window
-   below 455 on this machine. At 360 the line wraps to two, which is fine, but it is worth one
-   look on a real phone.
-
-Original list, for reference:
-
-- [ ] **The Home hero subtitle**, the only visible change on the site. Desktop and a 360px
-      phone width. Does it crowd the h1? On mobile it sits near the dot indicators
-      (`top-[calc(50%+34vw+2rem)]`) — check they do not collide. It should fade with the rest of
-      the hero text on scroll rather than lagging. The real question is whether it reads like
-      the site or like SEO copy bolted on; it is one element to delete if not.
-- [ ] **Lazy-loaded thumbnails** — the change most able to break quietly. `/gallery` and a large
-      collection such as `/gallery/Montana`: scroll fast, then scroll back up. Throttle to Slow
-      4G and watch for thumbnails that never resolve, boxes that stay blank, or the
-      infinite-scroll sentinel firing repeatedly because what is below it never loads. The
-      masonry should not jump as photos land — the aspect-ratio box predates this change — but
-      that interaction is worth watching rather than assuming.
-- [ ] **The photo viewer modal.** Open a photo and arrow through several. Its alt attribute
-      changed and it shares the preload path with `PhotoCard`.
-- [ ] **All three footer social links.** Their hrefs moved into `src/config/site.ts`; a typo
-      there breaks a link and nothing errors.
-- [ ] **The contact form, end to end.** Send a real test message. Only an import changed, but it
-      is the page that earns anything.
-- [ ] **Tab titles** across Home → Gallery → a collection → About → Contact. Should change every
-      time and never go stale. Spot-check — already verified against `npm run preview`.
-
-Not worth testing yet: link previews pasted into Slack or iMessage. They stay blank until
-prerendering is decided, and that is not a fault in this branch.
+Run 2026-08-25 against `npm run dev` before #88; every item passed. Removed 2026-11-01 as
+finished; the checklist is in git history.
 
 ### 2. Production checks, once it deploys
 
-**Run 2026-08-25 against the deployed site. All three pass** — but one needed a fix and a
-redeploy first, recorded below because it will recur.
+Run 2026-08-25 against the deployed site; all pass. `robots.txt` and `sitemap.xml` answer with
+the right content types, and the console is clean of CSP violations. The `/sitemap.xml` fix it
+needed (the Amplify rewrite allowlist, then a redeploy to clear the edge cache) is written up in
+CLAUDE.md under "Static files, Amplify rewrites and the edge cache".
 
-```
-robots.txt    200  text/plain   the sitemap line is correct
-sitemap.xml   200  text/xml     2102 bytes, 15 <loc> entries
-console       clean — no CSP violation of any kind, GA loads, 22 images, 0 failures
-```
-
-**The inline `ld+json` is not blocked.** `ProfessionalService` is present and parsing in the
-live DOM under `script-src 'self'`. Browsers do not enforce `script-src` on
-`application/ld+json` data blocks — only on executable script. The worry recorded here before
-the deploy was unfounded, and nothing in `customHttp.yml` needs to change for it.
-
-**`/sitemap.xml` returned `text/html` at first, and the cause was the Amplify rewrite.** The SPA
-rewrite rule carries an extension allowlist, and `xml` was not on it, so the file was shadowed
-by `index.html` — `txt` was on the list, which is why `robots.txt` worked and the sitemap did
-not. The fix is in the Amplify console under Rewrites and redirects, not in the repo:
-
-```
-</^[^.]+$|\.(?!(css|gif|ico|jpg|js|png|txt|xml|svg|woff|woff2|ttf|map|json|webp)$)([^.]+$)/>
-```
-
-**Editing the rule is not enough on its own.** CloudFront had already cached the HTML response
-with `s-maxage=31536000` — a year at the edge — and Amplify exposes no manual invalidation. A
-query string does not bust it either, since the distribution does not key on one. What clears it
-is **Redeploy this version** on the branch in the Amplify console, which triggers the
-invalidation without needing a commit. The confirming header is `x-cache: Miss from cloudfront`;
-a `Hit` with a non-zero `age` means you are still reading the old object and cannot judge the
-rule.
-
-Original checks, for reference — three things only production can answer, and all three fail
-silently:
-
-```bash
-curl -sI https://www.clickypete.photography/robots.txt    # expect 200, text/plain
-curl -sI https://www.clickypete.photography/sitemap.xml   # expect 200, text/xml
-```
-
-`text/html` on either means the SPA rewrite answered instead of the file. **Both pass as of
-2026-08-25** — `text/plain` and `text/xml` respectively — but only after `xml` was added to the
-Amplify rewrite allowlist. A real file in `dist/` does not take precedence on its own, which is
-the trap now written up in CLAUDE.md under "Static files, Amplify rewrites and the edge cache".
-Re-check with `x-cache` in the headers: a hit with a non-zero age is the cached answer, not the
-current one.
-
-- [x] Open the deployed site with the console showing and look for a violation naming
-      `script-src` — that would be the inline `ld+json` being blocked by `customHttp.yml`.
-      Nothing local enforces the CSP, so this is production-only. **Checked 2026-08-25: not
-      blocked**, and it never could be — browsers enforce `script-src` on executable script, not
-      on data blocks. The homepage carries one `ProfessionalService` block and it parses.
-- [x] Run the homepage through Google's Rich Results Test. **Passed 2026-10-29**: two valid
-      items, Local business and Organization. Non-critical only: `telephone` is missing on the
-      business, which waits on the phone decision; `streetAddress` and `postalCode` are missing
-      on the organization, which is right for a service-area business with its address hidden.
-- [x] Confirm no other CSP violation appeared. Console clean on a fresh load, 2026-08-25.
-      Nothing here adds an external host, and the `/contact` backdrop added in #91 loads from
-      the CloudFront host that was already allowed.
+**Rich Results Test, passed 2026-10-29:** two valid items, Local business and Organization.
+Non-critical only: `telephone` is missing on the business, which waits on the phone decision;
+`streetAddress` and `postalCode` are missing on the organization, which is right for a
+service-area business with its address hidden.
 
 ### 3. Prerendering — the open decision
 
@@ -770,44 +456,59 @@ Nothing else in this file is blocked on the answer, so it can stay open — but 
 answered rather than drift. It is now the largest single item left, and it undercuts the value
 of everything already shipped.
 
-### 4. Image sitemap
+**Decided 2026-11-01: prerender at build, with no new dependency.** Built on `feat/prerender`,
+in the worktree `../clicky-pete-prerender`. Open as #109 against `dev`, not merged. The
+first option above, but without a headless browser. React 19's own `react-dom/static`
+`prerender()` runs on a Vite SSR build of `src/entry-server.tsx`, and `scripts/prerender.mjs`
+writes one HTML file per route. Both scripts read their route list from
+`scripts/site-routes.mjs`, so the sitemap and the prerender always agree. The build gains about
+a second. Full mechanics and rules are in CLAUDE.md under "Prerendering".
 
-**Built 2026-10-29, merged as #101, live via #102 the same day, and resubmitted in Search
-Console.** 597 images across the
-11 collection URLs, which is every photo with a collection. The photo host is hardcoded as
-`PHOTO_URL` beside `SITE_URL`. The title duplicates `describePhoto`, commented on both sides.
-The build throws past 1,000 images per URL. `xmllint` passes, `&` in place names is escaped,
-and all 597 `<image:loc>` URLs answered 200. The sitemap grows from about 2 KB to 136 KB.
+- 15 pages: `home.html`, `about.html`, `contact.html`, `gallery.html`, and
+  `gallery/<Collection>.html` ×11. `index.html` stays the empty shell, as the fallback for
+  unknown URLs.
+- Each page carries its title, description, canonical, OG/Twitter tags (with `og:image` when
+  `VITE_CLOUDFRONT_URL` is set at build), JSON-LD and copy. Photos are not prerendered; they
+  still arrive through the client fetch.
+- `main.tsx` hydrates a prerendered page (`hydrateRoot`) and client-renders the shell. It
+  removes the server's head tags first, so the page never holds two of any.
+- Checked in Chrome against `vite preview`, which resolves clean URLs as Amplify does:
+  `/`, `/about`, `/contact`, `/gallery` and `/gallery/Montana` hydrate with no console errors,
+  one copy of each head tag, and photos loading. Client-side navigation afterwards swaps the
+  tags correctly. `npm run ci` passes with the same 8 warnings.
+- Known and accepted: a query string the page reads (`/gallery/Montana?sort=oldest`) logs a
+  recoverable hydration mismatch (React #418) and re-renders on the client. `/home` would
+  serve `home.html` and do the same.
 
-The plan as written beforehand:
+**Needs two Amplify console changes before it does anything in production** (until then,
+every URL still gets the shell, so merging is safe on its own):
 
-`scripts/generate-sitemap.mjs` already walks `photos.json` and groups by collection. The work is
-adding, inside each collection's `<url>`, one `<image:image>` per photo in it:
+1. The SPA rewrite rule: type `200` → `404-200`, with the same regex source and target. It then
+   rewrites only requests that have no file.
+2. A new rule above it: `/` → `/home.html`, type `200`.
 
-```xml
-<image:image>
-  <image:loc>https://photos.clickypete.photography/photos/2000/IMG_8553.webp</image:loc>
-  <image:title>Landscape photography in Horse Prairie, MT — Montana collection</image:title>
-</image:image>
+Then **Redeploy this version** to clear the edge cache, and verify:
+
+```bash
+for p in / /about /contact /gallery /gallery/Montana "/gallery/San%20Luis%20Obispo%2C%20CA" /gallery/Nowhere; do
+  echo "$p  $(curl -s "https://www.clickypete.photography$p" | grep -o '<link rel="canonical"[^>]*>')"
+done
+curl -sI https://www.clickypete.photography/about | grep -i 'content-type\|x-cache'
 ```
 
-Points that will otherwise cost a second pass:
-p
+Every known path should print its own canonical; `/gallery/Nowhere` should print none (the
+shell). **Not verified, because it can only be tested on Amplify:** that `404-200` still
+resolves `/about` to `about.html`, and that a collection name with a space and comma maps to
+its file. If either fails, the fallback is an explicit `200` rule per path ahead of the SPA
+rule. Then rerun the Rich Results Test, and check a link preview, for example by pasting a
+URL into a Slack DM to yourself.
 
-- The `urlset` needs `xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"`.
-- The image host is CloudFront, not the site origin. The script has no access to
-  `VITE_CLOUDFRONT_URL` at build unless it reads `.env` — decide whether to hardcode the photo
-  host next to the existing `SITE_URL` constant (consistent with how that one is already
-  duplicated by hand) or to load the env file.
-- The caption is the same sentence `describePhoto` builds. That helper is bundled TS and the
-  script is plain Node, which is the same split `SITE_URL` already lives with. Duplicating a
-  three-line template is cheaper than a build step; if it is duplicated, say so in a comment on
-  both sides.
-- Google caps a sitemap at 1,000 images per URL. 597 photos across 11 collections (2026-10-29)
-  is far under it, but the cap is worth a note in the script rather than a surprise later.
+### 4. Image sitemap
 
-Done looks like: `npm run build` prints the same url count, `public/sitemap.xml` validates, and
-every `<image:loc>` resolves to a real object.
+**Live since #102, 2026-10-29.** 597 images across the 11 collection URLs, from
+`scripts/generate-sitemap.mjs`. The photo host is hardcoded as `PHOTO_URL` beside `SITE_URL`,
+the image title duplicates `describePhoto` (commented on both sides), and the build throws past
+1,000 images per URL, the protocol's limit.
 
 ### 5. `ImageObject` JSON-LD
 
@@ -849,3 +550,7 @@ read like a person wrote it.
 - **Chrome will not size a window below about 455 CSS px on this machine**, so a true 360px phone
   width cannot be tested by resizing — 455 is the narrowest real measurement available, and it is
   still below the `sm` breakpoint. Anything that hinges on 360 specifically needs a real phone.
+- **The non-breaking space in the Home subtitle, between `Bozeman,` and `Montana`, is
+  deliberate.** Without it the subtitle orphans "Montana" at 360–390px, the widths most phones
+  use. `text-balance` or `text-pretty` would do nothing on older browsers; the nbsp cannot
+  regress.
