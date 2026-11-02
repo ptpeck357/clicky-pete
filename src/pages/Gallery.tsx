@@ -3,6 +3,7 @@ import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { Link, useParams, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { PhotoGrid, PhotoViewerModal, CollectionsGrid } from '../components/organisms';
 import { Seo, JsonLd, collectionBreadcrumbSchema } from '../components/atoms';
+import { collectionPath } from '../config/site';
 import { usePhotos } from '../hooks/usePhotos';
 import { photoService } from '../services/photoService';
 import { parseSortOrder, sortPhotos } from '../utils/photoOrder';
@@ -358,7 +359,7 @@ export const Gallery: React.FC = () => {
 					<Seo
 						title={`${urlCollection} Photos | Clicky Pete Photography`}
 						description={`${urlCollection} photography by Peter Peck — a collection of landscape, night and portrait work shot on location.`}
-						path={`/gallery/${encodeURIComponent(urlCollection)}`}
+						path={collectionPath(urlCollection)}
 						image={coverPhotoUrl || undefined}
 					/>
 					<JsonLd data={collectionBreadcrumbSchema(urlCollection)} />

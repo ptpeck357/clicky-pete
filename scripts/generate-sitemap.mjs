@@ -69,6 +69,7 @@ const urls = [
 			throw new Error(`${collection} has ${members.length} photos, over Google's ${MAX_IMAGES_PER_URL} per URL`);
 		}
 		return {
+			// collectionPath() in src/config/site.ts, repeated for the reason SITE_URL is.
 			loc: `/gallery/${encodeURIComponent(collection)}`,
 			priority: '0.8',
 			lastmod: latestDate(members),

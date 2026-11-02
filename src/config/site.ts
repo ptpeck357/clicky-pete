@@ -16,6 +16,12 @@ export const SITE_NAME = 'Clicky Pete Photography';
 
 export const PHOTOGRAPHER_NAME = 'Peter Peck';
 
+/**
+ * Path of a collection page. The card links, the canonical, the breadcrumbs and the sitemap
+ * all have to name the same URL; `scripts/generate-sitemap.mjs` repeats this by hand.
+ */
+export const collectionPath = (collection: string): string => `/gallery/${encodeURIComponent(collection)}`;
+
 /** Where sessions are shot. Used in copy, metadata and the structured data alike. */
 export const BUSINESS_CITY = 'Bozeman';
 export const BUSINESS_REGION = 'MT';

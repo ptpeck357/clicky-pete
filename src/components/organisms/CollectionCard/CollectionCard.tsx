@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { collectionPath } from '../../../config/site';
 import type { Photo } from '../../../types/photo';
 
 interface CollectionCardProps {
@@ -33,7 +34,7 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({ name, count, cov
 
 	return (
 		<MotionLink
-			to={`/gallery/${encodeURIComponent(name)}`}
+			to={collectionPath(name)}
 			className="block relative bg-gray-800 rounded-lg overflow-hidden cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
 			onClick={onClick}
 			aria-label={`${name} collection, ${count} photos`}
