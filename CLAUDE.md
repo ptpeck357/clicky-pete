@@ -12,10 +12,10 @@ npm run fix     # eslint --fix + prettier --write
 ```
 
 `npm run ci` must pass before committing. Lint runs with `--max-warnings=10`; there are
-currently 8, all pre-existing: six are `react-hooks/set-state-in-effect` in `usePhotos`,
-`Gallery` (two), `Home`, `AdminPage` and `PhotoEditModal`, one is the `Math.random` shuffle in
+currently 7, all pre-existing: five are `react-hooks/set-state-in-effect` in `usePhotos`,
+`Gallery`, `Home`, `AdminPage` and `PhotoEditModal`, one is the `Math.random` shuffle in
 `Gallery` reported as an impure call during render, and one is a skipped-memoization notice in
-`usePhotos`. A ninth warning means something new was added.
+`usePhotos`. An eighth warning means something new was added.
 
 ## How photos work
 
@@ -184,32 +184,44 @@ Rules that are easy to break:
   what `<Seo>` writes. A new kind of tag in `<Seo>` needs adding to it, or every prerendered
   page will carry two of that tag.
 
-**This only works with two rules in the Amplify console** (Rewrites and redirects; not in the
-repo). Until both are set, every URL gets the shell, as before:
+**It depends on two rules in the Amplify console** (Rewrites and redirects; not in the repo),
+set on 2026-11-01:
 
-1. The SPA rule (the extension allowlist below) changes type from `200` to `404-200`, keeping
-   the same source and target. It then rewrites only requests that have no file, so
-   `about.html` is served for `/about`.
-2. A new rule above it: source `/`, target `/home.html`, type `200`.
+1. The SPA rule (the extension allowlist below) is type `404-200`, not `200`. It rewrites only
+   requests that have no file, so `about.html` is served for `/about`.
+2. Above it: source `/`, target `/home.html`, type `200`.
 
-After changing either rule, **Redeploy this version**: the edge has already cached the shell
-for each URL (see below).
+If either rule is lost, the site falls back to the shell everywhere and still works, but
+crawlers see empty pages again.
+
+A URL with no file (`/gallery/Nowhere`, `/about/` with a trailing slash) gets a 301 to a
+trailing slash and then a **404**, with the shell as the body, so the app still renders
+NotFound. A collection published from the admin has no file until the next build, so a fresh
+load of it 404s in the meantime, although the page renders.
+
+**The rules are app-wide: `dev` and `prod` share them.** Testing a rule change on the dev URL
+changes production at the same moment. Ship the files a rule depends on to `prod` first, then
+change the rule. After saving, confirm the change on the rules list rather than trusting the
+success toast, which can be left over from an earlier save. Then **Redeploy this version**,
+because the edge has cached the previous answer for each URL (see below).
 
 ## Static files, Amplify rewrites and the edge cache
 
-Amplify rewrites every request to `/index.html` so the SPA can route it, and the rule carries an
-allowlist of extensions it leaves alone:
+Amplify rewrites requests that have no file to `/index.html`, so the SPA can route them. The
+rule's regex carries an allowlist of extensions it leaves alone:
 
 ```
 css | gif | ico | jpg | js | png | txt | xml | svg | woff | woff2 | ttf | map | json | webp
 ```
 
-**A real file whose extension is not on that list is shadowed by the SPA shell.** It builds into
-`dist/` correctly, `npm run preview` serves it correctly, and production answers with
-`index.html` and `content-type: text/html` — a 200, so nothing looks broken. `/sitemap.xml` did
-exactly this until `xml` was added; `robots.txt` worked throughout only because `txt` was
-already listed. Anything new — a `.pdf`, a `.webmanifest`, an `.ics` — needs its extension
-adding first, in the Amplify console under Rewrites and redirects. It is not in the repo.
+**Since 2026-11-01 the rule is `404-200`, so a real file is served whatever its extension.**
+The allowlist now only decides what a missing file gets: a missing `/assets/*.js` answers 404
+rather than an HTML page, which is what keeps a stale chunk request from parsing HTML as
+script. Before the change the rule was a plain `200` and shadowed every real file whose
+extension was not listed. Production answered with `index.html` and `content-type: text/html`,
+a 200, so nothing looked broken. `/sitemap.xml` did exactly this until `xml` was added. If the
+rule ever goes back to `200`, that trap comes back with it. Check a new kind of file (a `.pdf`,
+a `.webmanifest`, an `.ics`) with `curl -sI` after its first deploy either way.
 
 **Editing the rule appears to do nothing, and that is the second half of the trap.** CloudFront
 has already cached the wrong response with `s-maxage=31536000`, a year at the edge, and Amplify

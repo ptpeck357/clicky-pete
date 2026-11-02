@@ -1,15 +1,16 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { MotionLink } from '../../atoms';
+import { collectionPath } from '../../../config/site';
 import type { Photo } from '../../../types/photo';
 
 interface CollectionCardProps {
 	name: string;
 	count: number;
 	coverPhoto: Photo;
-	onClick: () => void;
 }
 
-export const CollectionCard: React.FC<CollectionCardProps> = ({ name, count, coverPhoto, onClick }) => {
+export const CollectionCard: React.FC<CollectionCardProps> = ({ name, count, coverPhoto }) => {
 	const getPhotoUrls = () => {
 		const cloudFrontUrl = import.meta.env.VITE_CLOUDFRONT_URL;
 		if (!cloudFrontUrl) {
@@ -29,18 +30,12 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({ name, count, cov
 	const photoUrls = getPhotoUrls();
 
 	return (
-		<motion.div
-			className="relative bg-gray-800 rounded-lg overflow-hidden cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
-			onClick={onClick}
-			role="button"
-			tabIndex={0}
+		<MotionLink
+			to={collectionPath(name)}
+			className="block relative bg-gray-800 rounded-lg overflow-hidden group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+			// The browser's native link drag would cancel the whileTap press mid-scale.
+			draggable={false}
 			aria-label={`${name} collection, ${count} photos`}
-			onKeyDown={(event) => {
-				if (event.key === 'Enter' || event.key === ' ') {
-					event.preventDefault();
-					onClick();
-				}
-			}}
 			whileHover={{ scale: 1.02 }}
 			whileTap={{ scale: 0.98 }}
 			initial={{ opacity: 0, y: 20 }}
@@ -53,6 +48,7 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({ name, count, cov
 					srcSet={photoUrls.srcSet}
 					sizes={photoUrls.sizes}
 					alt={`${name} collection`}
+					draggable={false}
 					className="w-full h-full object-cover"
 					whileHover={{ scale: 1.1 }}
 					transition={{ duration: 0.3 }}
@@ -89,6 +85,6 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({ name, count, cov
 					<h3 className="text-white text-sm sm:text-xl font-bold drop-shadow-lg">{name}</h3>
 				</motion.div>
 			</div>
-		</motion.div>
+		</MotionLink>
 	);
 };

@@ -6,10 +6,6 @@ import { generateCollections } from '../../../services/collectionService';
 import { Spinner } from '../../atoms';
 import type { Collection } from '../../../types/photo';
 
-interface CollectionsGridProps {
-	onCollectionSelect: (collection: string) => void;
-}
-
 const containerVariants = {
 	hidden: { opacity: 0 },
 	visible: {
@@ -21,7 +17,7 @@ const containerVariants = {
 	},
 };
 
-export const CollectionsGrid: React.FC<CollectionsGridProps> = ({ onCollectionSelect }) => {
+export const CollectionsGrid: React.FC = () => {
 	const [collections, setCollections] = useState<Collection[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -117,7 +113,6 @@ export const CollectionsGrid: React.FC<CollectionsGridProps> = ({ onCollectionSe
 					name={collection.name}
 					count={collection.count}
 					coverPhoto={collection.coverPhoto}
-					onClick={() => onCollectionSelect(collection.name)}
 				/>
 			))}
 		</motion.div>

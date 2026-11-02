@@ -2,6 +2,7 @@ import {
 	BUSINESS_CITY,
 	BUSINESS_REGION,
 	BUSINESS_REGION_NAME,
+	collectionPath,
 	DEFAULT_SHARE_IMAGE,
 	PHOTOGRAPHER_NAME,
 	SITE_NAME,
@@ -61,7 +62,7 @@ export const collectionBreadcrumbSchema = (collection: string) => ({
 			'@type': 'ListItem',
 			position: 3,
 			name: collection,
-			item: `${SITE_URL}/gallery/${encodeURIComponent(collection)}`,
+			item: `${SITE_URL}${collectionPath(collection)}`,
 		},
 	],
 });

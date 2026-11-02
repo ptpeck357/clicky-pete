@@ -1,16 +1,31 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { photoService } from '../services/photoService';
 import type { Photo, PhotoFilter } from '../types/photo';
 
+// One shared empty list, so a pending fetch does not hand memoised callers a new array per render.
+const NO_PHOTOS: Photo[] = [];
+
+const keyOf = (filter?: PhotoFilter) =>
+	`${filter?.category ?? ''}|${filter?.collection ?? ''}|${filter?.location ?? ''}`;
+
 export const usePhotos = (filter?: PhotoFilter) => {
-	const [photos, setPhotos] = useState<Photo[]>([]);
+	const filterKey = keyOf(filter);
+	// Photos and errors are stored with the filter they belong to. Until the current filter's
+	// fetch lands, the hook reports loading and no photos, rather than the previous view's —
+	// which otherwise rendered for a frame and fed the random cover pick on a collection page.
+	const [result, setResult] = useState<{ key: string; photos: Photo[] } | null>(null);
+	const [failure, setFailure] = useState<{ key: string; message: string } | null>(null);
 	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
+	// The latest request. Fetches are not cancelled, so one that resolves after a newer request
+	// started is dropped instead of overwriting it.
+	const latestRequestRef = useRef(0);
 
 	const fetchPhotos = useCallback(async () => {
+		const request = ++latestRequestRef.current;
+		const key = keyOf({ category: filter?.category, collection: filter?.collection, location: filter?.location });
 		try {
 			setLoading(true);
-			setError(null);
+			setFailure(null);
 
 			let fetchedPhotos: Photo[];
 
@@ -24,11 +39,13 @@ export const usePhotos = (filter?: PhotoFilter) => {
 				fetchedPhotos = await photoService.getPhotos();
 			}
 
-			setPhotos(fetchedPhotos);
+			if (request !== latestRequestRef.current) return;
+			setResult({ key, photos: fetchedPhotos });
 		} catch (err) {
-			setError(err instanceof Error ? err.message : 'Failed to fetch photos');
+			if (request !== latestRequestRef.current) return;
+			setFailure({ key, message: err instanceof Error ? err.message : 'Failed to fetch photos' });
 		} finally {
-			setLoading(false);
+			if (request === latestRequestRef.current) setLoading(false);
 		}
 	}, [filter?.category, filter?.collection, filter?.location]);
 
@@ -40,5 +57,12 @@ export const usePhotos = (filter?: PhotoFilter) => {
 		fetchPhotos();
 	};
 
-	return { photos, loading, error, refetch };
+	const isCurrent = result?.key === filterKey;
+	const error = failure?.key === filterKey ? failure.message : null;
+	return {
+		photos: isCurrent ? result.photos : NO_PHOTOS,
+		loading: loading || (!isCurrent && !error),
+		error,
+		refetch,
+	};
 };
