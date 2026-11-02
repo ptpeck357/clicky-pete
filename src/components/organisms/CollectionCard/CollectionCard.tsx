@@ -34,7 +34,9 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({ name, count, cov
 	return (
 		<MotionLink
 			to={collectionPath(name)}
-			className="block relative bg-gray-800 rounded-lg overflow-hidden cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+			className="block relative bg-gray-800 rounded-lg overflow-hidden group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+			// The browser's native link drag would cancel the whileTap press mid-scale.
+			draggable={false}
 			aria-label={`${name} collection, ${count} photos`}
 			whileHover={{ scale: 1.02 }}
 			whileTap={{ scale: 0.98 }}
@@ -48,6 +50,7 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({ name, count, cov
 					srcSet={photoUrls.srcSet}
 					sizes={photoUrls.sizes}
 					alt={`${name} collection`}
+					draggable={false}
 					className="w-full h-full object-cover"
 					whileHover={{ scale: 1.1 }}
 					transition={{ duration: 0.3 }}
