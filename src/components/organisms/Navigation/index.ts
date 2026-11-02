@@ -1,1 +1,1 @@
-export { Navigation } from './Navigation';
+export { Navigation } from '@/components/organisms/Navigation/Navigation';

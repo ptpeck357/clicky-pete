@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { MotionLink } from '../../atoms';
+import { MotionLink } from '@/components/atoms';
 
 interface NavigationProps {
 	className?: string;

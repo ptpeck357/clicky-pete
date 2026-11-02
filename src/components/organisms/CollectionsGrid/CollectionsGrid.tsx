@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { CollectionCard } from '../CollectionCard';
-import { photoService } from '../../../services/photoService';
-import { generateCollections } from '../../../services/collectionService';
-import { Spinner } from '../../atoms';
-import type { Collection } from '../../../types/photo';
+import { CollectionCard } from '@/components/organisms/CollectionCard';
+import { photoService } from '@/services/photoService';
+import { generateCollections } from '@/services/collectionService';
+import { Spinner } from '@/components/atoms';
+import type { Collection } from '@/types/photo';
 
 const containerVariants = {
 	hidden: { opacity: 0 },

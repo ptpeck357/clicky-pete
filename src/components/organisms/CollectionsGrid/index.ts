@@ -1,1 +1,1 @@
-export { CollectionsGrid } from './CollectionsGrid';
+export { CollectionsGrid } from '@/components/organisms/CollectionsGrid/CollectionsGrid';

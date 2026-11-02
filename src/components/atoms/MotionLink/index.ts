@@ -1,1 +1,1 @@
-export { MotionLink } from './MotionLink';
+export { MotionLink } from '@/components/atoms/MotionLink/MotionLink';

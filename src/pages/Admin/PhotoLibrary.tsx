@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import type { Photo } from '../../types/photo';
-import { adminService } from '../../services/adminService';
-import type { EditableTags, TagValues } from '../../services/adminService';
-import { PhotoEditModal } from './PhotoEditModal';
-import { Icon, PENCIL_PATH, TRASH_PATH } from './icons';
+import type { Photo } from '@/types/photo';
+import { adminService } from '@/services/adminService';
+import type { EditableTags, TagValues } from '@/services/adminService';
+import { PhotoEditModal } from '@/pages/Admin/PhotoEditModal';
+import { Icon, PENCIL_PATH, TRASH_PATH } from '@/pages/Admin/icons';
 
 interface PhotoLibraryProps {
 	photos: Photo[];

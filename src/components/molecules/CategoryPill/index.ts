@@ -1,1 +1,1 @@
-export { CategoryPill } from './CategoryPill';
+export { CategoryPill } from '@/components/molecules/CategoryPill/CategoryPill';

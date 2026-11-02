@@ -1,14 +1,14 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback, useDeferredValue } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { Link, useParams, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
-import { PhotoGrid, PhotoViewerModal, CollectionsGrid } from '../components/organisms';
-import { Seo, JsonLd, MotionLink, collectionBreadcrumbSchema } from '../components/atoms';
-import { collectionPath } from '../config/site';
-import { usePhotos } from '../hooks/usePhotos';
-import { photoService } from '../services/photoService';
-import { parseSortOrder, sortPhotos } from '../utils/photoOrder';
-import type { SortOrder } from '../utils/photoOrder';
-import type { Photo, PhotoFilter } from '../types/photo';
+import { PhotoGrid, PhotoViewerModal, CollectionsGrid } from '@/components/organisms';
+import { Seo, JsonLd, MotionLink, collectionBreadcrumbSchema } from '@/components/atoms';
+import { collectionPath } from '@/config/site';
+import { usePhotos } from '@/hooks/usePhotos';
+import { photoService } from '@/services/photoService';
+import { parseSortOrder, sortPhotos } from '@/utils/photoOrder';
+import type { SortOrder } from '@/utils/photoOrder';
+import type { Photo, PhotoFilter } from '@/types/photo';
 
 // How many photos a view starts with, before infinite scroll adds more.
 const INITIAL_PHOTOS = 15;

@@ -1,6 +1,6 @@
 import React, { useId } from 'react';
-import type { EditableTags, TagValues } from '../../services/adminService';
-import { Combobox } from './Combobox';
+import type { EditableTags, TagValues } from '@/services/adminService';
+import { Combobox } from '@/pages/Admin/Combobox';
 
 interface PhotoFormProps {
 	tags: EditableTags;

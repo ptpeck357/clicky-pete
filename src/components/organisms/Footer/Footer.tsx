@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { SOCIAL_PROFILES } from '../../../config/site';
+import { SOCIAL_PROFILES } from '@/config/site';
 
 // The hrefs come from config/site so the structured data's `sameAs` and these icons cannot
 // drift apart — a profile listed in one and not the other is a signal Google discards.

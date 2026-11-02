@@ -1,5 +1,5 @@
-import type { Photo } from '../types/photo';
-import { shuffleWith } from './array';
+import type { Photo } from '@/types/photo';
+import { shuffleWith } from '@/utils/array';
 
 export type SortOrder = 'newest' | 'oldest' | 'random';
 

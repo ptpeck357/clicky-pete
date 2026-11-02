@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Seo } from '../components/atoms';
-import { photoService } from '../services/photoService';
-import { describePhoto } from '../utils/photoAlt';
-import type { Photo } from '../types/photo';
+import { Seo } from '@/components/atoms';
+import { photoService } from '@/services/photoService';
+import { describePhoto } from '@/utils/photoAlt';
+import type { Photo } from '@/types/photo';
 
 // `prompts` become the blank lines the message field is pre-filled with, so they only ask
 // what actually varies for that shoot — headcount matters for a family, not for a headshot.

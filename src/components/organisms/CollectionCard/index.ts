@@ -1,1 +1,1 @@
-export { CollectionCard } from './CollectionCard';
+export { CollectionCard } from '@/components/organisms/CollectionCard/CollectionCard';

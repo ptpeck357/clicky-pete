@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import type { Photo } from '../../types/photo';
-import { adminService } from '../../services/adminService';
-import type { EditableTags, TagValues } from '../../services/adminService';
-import { PhotoForm } from './PhotoForm';
+import type { Photo } from '@/types/photo';
+import { adminService } from '@/services/adminService';
+import type { EditableTags, TagValues } from '@/services/adminService';
+import { PhotoForm } from '@/pages/Admin/PhotoForm';
 
 interface PhotoEditModalProps {
 	photo: Photo;

@@ -1,4 +1,4 @@
-export { Button } from './Button';
-export { MotionLink } from './MotionLink';
-export { Spinner } from './Spinner';
-export { Seo, JsonLd, businessSchema, collectionBreadcrumbSchema } from './Seo';
+export { Button } from '@/components/atoms/Button';
+export { MotionLink } from '@/components/atoms/MotionLink';
+export { Spinner } from '@/components/atoms/Spinner';
+export { Seo, JsonLd, businessSchema, collectionBreadcrumbSchema } from '@/components/atoms/Seo';
