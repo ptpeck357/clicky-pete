@@ -26,13 +26,15 @@ that already exists.
 6. **The open code and copy items.** Prerendering is done (#110). Next largest: build-time
    collection links on `/gallery` (see 2026-11-01 below) and the hero preload. The session
    pages wait on family photos and on sign-off of the mockup.
-7. **Merge the #112 `CHANGELOG.md` entry**: branch `docs/changelog-112`, if its PR is still open.
-8. **Rerun the Rich Results Test and check a link preview** now that pages are prerendered,
+7. **Rerun the Rich Results Test and check a link preview** now that pages are prerendered,
    for example by pasting a URL into a Slack DM to yourself.
 
 ### 2026-11-01
 
-**#109, prerendering, is live** via #110 (2026-11-02 UTC), with the Amplify rules changed and
+**The soft 404 is fixed, live via #122:** #121 renders `NotFound` for an unknown collection, and
+redirects a collection URL in other casing (`/gallery/montana`) to its real name. Audit item 4.
+
+**#109, prerendering, is live** via #110 (2026-11-01 Mountain Time), with the Amplify rules changed and
 verified on production. Every route now carries its own metadata in the raw HTML. #111 added
 its `CHANGELOG.md` entry and the CLAUDE.md rules, and shipped via #112. See §3.
 
@@ -72,7 +74,7 @@ findings, most important first:
    session pages in all but copy:** a short intro paragraph on each, in the words people
    search for, gets most of what the planned session pages would, with no new routes. Families
    stays blocked on photos.
-4. **Soft 404 on unknown collections.** `/gallery/Nowhere` renders "Nowhere Photos", 0 photos,
+4. **Done, live via #122.** ~~Soft 404 on unknown collections.~~ `/gallery/Nowhere` renders "Nowhere Photos", 0 photos,
    a self-referencing canonical and no `noindex`. It should render `NotFound`. Unknown
    top-level paths are fine, since NotFound sets `noindex`, though like every route they answer
    HTTP 200.
@@ -93,8 +95,8 @@ Minor: the `SITE_URL` comment in `site.ts` still says the apex 302s (it is a 301
 no `preconnect` to `photos.clickypete.photography`, though every image and `photos.json` come
 from there. That costs one connection setup on first load, and it can be added in `index.html`
 without touching the CSP. `og:image` is a WebP. Facebook and iMessage take it; LinkedIn has been
-unreliable with WebP. It does not matter until prerendering lands, since no preview crawler sees
-the tag today.
+unreliable with WebP. Since prerendering (#110) preview crawlers do see the tag, so this now
+matters; a LinkedIn preview has not been checked.
 
 Checked and fine: one `<title>` per page, descriptions and canonicals on every route, the
 `ProfessionalService` and `BreadcrumbList` JSON-LD, the apex and http 301s to https www, HSTS,
@@ -102,25 +104,25 @@ robots.txt, a 15-URL sitemap where every URL answers 200, alt text on every cont
 
 ### Built
 
-| Piece                   | Where                                        | Notes                                                                                       |
-| ----------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| Site facts in one place | `src/config/site.ts`                         | Origin, name, city, socials, share-image helper. Metadata, JSON-LD and sitemap all read it  |
-| Per-page metadata       | `src/components/atoms/Seo/Seo.tsx`           | Title, description, canonical, Open Graph, Twitter card. React 19 hoists them — no helmet   |
-| Structured data         | `src/components/atoms/Seo/structuredData.ts` | `ProfessionalService` on Home, `BreadcrumbList` on a collection view. `<` escaped (f1a4569) |
-| Applied to every route  | Home, Gallery, About, Contact, NotFound      | 404 renders `noIndex`                                                                       |
-| Descriptive alt text    | `src/utils/photoAlt.ts`                      | Composed from the manifest, replacing several hundred `alt="Landscape"`                     |
-| Lazy thumbnails         | `PhotoCard.tsx`                              | `loading="lazy"` + `decoding="async"`, added alongside the alt change                       |
-| Sitemap at build        | `scripts/generate-sitemap.mjs`               | Runs in `npm run build`; enumerates collections from `photos.json`. Output is gitignored    |
-| robots.txt              | `public/robots.txt`                          | Allow-all plus the sitemap line                                                             |
+| Piece                   | Where                                           | Notes                                                                                       |
+| ----------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Site facts in one place | `src/config/site.ts`                            | Origin, name, city, socials, share-image helper. Metadata, JSON-LD and sitemap all read it  |
+| Per-page metadata       | `src/components/atoms/Seo/Seo.tsx`              | Title, description, canonical, Open Graph, Twitter card. React 19 hoists them — no helmet   |
+| Structured data         | `src/components/atoms/Seo/structuredData.ts`    | `ProfessionalService` on Home, `BreadcrumbList` on a collection view. `<` escaped (f1a4569) |
+| Applied to every route  | Home, Gallery, About, Contact, NotFound         | 404 renders `noIndex`                                                                       |
+| Descriptive alt text    | `src/utils/photoAlt.ts`                         | Composed from the manifest, replacing several hundred `alt="Landscape"`                     |
+| Lazy thumbnails         | `PhotoCard.tsx`                                 | `loading="lazy"` + `decoding="async"`, added alongside the alt change                       |
+| Sitemap at build        | `scripts/generate-sitemap.mjs`                  | Runs in `npm run build`; enumerates collections from `photos.json`. Output is gitignored    |
+| robots.txt              | `public/robots.txt`                             | Allow-all plus the sitemap line                                                             |
+| Prerendering            | `src/entry-server.tsx`, `scripts/prerender.mjs` | Every route as static HTML at build, live via #110. See §3                                  |
+| Image sitemap           | `scripts/generate-sitemap.mjs`                  | An image entry per photo on each collection URL, live via #102. See §4                      |
 
 ### Not built
 
-1. ~~**The HTML shell is still empty**~~ — every route is prerendered, live via #110 on
-   2026-11-02 UTC. What the HTML still lacks is photos, and collection links on `/gallery`.
-2. ~~**No image sitemap**~~ — live since #102, 2026-10-29.
-3. **No `ImageObject` structured data.**
-4. **Gallery headings still say "Collections" and "All Photos".**
-5. **The local half is live but not finished** — the profile is verified with services and
+1. **Photos and `/gallery`'s collection links in the prerendered HTML.** Both load in effects,
+   so neither is in the static pages.
+2. **No `ImageObject` structured data.**
+3. **The local half is live but not finished** — the profile is verified with services and
    hours set (2026-10-29), but has no photos and no reviews. Search Console is verified and the
    sitemap submitted. See §0.
 
@@ -143,15 +145,13 @@ Detail for all three is in §0 of the implementation plan.
       buttons, so no collection page is reachable by a crawlable link. Audit 2026-10-29, item 1.
       Live via #112, 2026-11-01. The prerendered `/gallery`
       still has no collection links; see 2026-11-01.
-- [ ] **Render `NotFound` for an unknown collection.** `/gallery/Nowhere` is an indexable page
-      today. Audit item 4. Since #110 it answers HTTP 404, which Google respects, but the page
-      still renders "Nowhere Photos" with a self canonical. Lower priority than it was.
+- [x] **Render `NotFound` for an unknown collection.** Audit item 4. #121, live via #122 on
+      2026-11-01.
 - [ ] **Slim the homepage hero preload.** Load only the rendition `getHeroImageUrl` picks, and
       only the first photo before the overlay drops. Audit item 5.
 - [ ] **Small fixes:** a `preconnect` to the photo host, and the stale "302" comment in
       `site.ts`. Audit, minor.
-- [x] **Prerendering.** #109, live via #110 on 2026-11-02 UTC, with both Amplify rules set.
-      Rich Results Test and a link-preview check are still to do. See §3.
+- [x] **Prerendering.** #109, live via #110 on 2026-11-01, with both Amplify rules set. See §3.
 - [x] **Image sitemap entries.** Live via #102, 2026-10-29.
 - [ ] **`ImageObject` JSON-LD** where it fits. Lower value than either of the above; it can wait.
 - [x] **A skip-to-content link.** Live via #102, 2026-10-29.
@@ -170,9 +170,6 @@ Detail for all three is in §0 of the implementation plan.
       `/contact` cards, each with its own URL, heading and photos. This is what ranks for those
       separate searches. Plan it on its own; it is a site change, not an SEO tweak. Mockup
       2026-10-29: https://claude.ai/artifact/QFigiW2hzbD2Y4gGZDXG9n. Blocked on family photos.
-- [ ] **"At introductory rates"** still closes About and Gallery, and the contact page no longer
-      says it. Either strip it from those two or put it back on contact — carried over from
-      `plan.md`, unresolved.
 
 ## Implementation plan
 
@@ -254,8 +251,7 @@ Set up 2026-08-25; progress is under "status" below. Still open from the origina
 - **Read Performance → Queries** periodically. That report decides which session type gets a
   page first and which wording is already pulling.
 - **Optional, five minutes:** Bing Webmaster Tools imports a verified Search Console property in
-  one click. Bing does not render JavaScript, so what it indexes is a blunter second readout on
-  the empty-shell problem.
+  one click, for a second readout of how the prerendered pages index.
 
 #### Google Search Console — status
 
@@ -324,7 +320,7 @@ service-area business with its address hidden.
 
 ### 3. Prerendering
 
-**Live since 2026-11-02 UTC** (#109, shipped via #110). Every route is prerendered at build with
+**Live since 2026-11-01** (#109, shipped via #110). Every route is prerendered at build with
 React's own `react-dom/static`, no new dependency: 15 pages, each with its title, description,
 canonical, Open Graph tags, JSON-LD and copy in the raw HTML. Photos are not prerendered. The
 mechanics, the two Amplify rules it needs, what changed with `404-200` and the rule for
@@ -337,7 +333,7 @@ console errors. Unknown URLs now answer a real 404.
 Why it mattered: before it, link previews were blank on every client that does not run
 JavaScript, and Google only saw the canonical on its delayed render pass.
 
-Still to do: rerun the Rich Results Test, and check a link preview.
+Still to do: rerun the Rich Results Test and check a link preview — "Next" item 7.
 
 ### 4. Image sitemap
 
@@ -380,12 +376,8 @@ read like a person wrote it.
   smooth-scroll animations in a hidden tab, and `globals.css` sets `scroll-behavior: smooth`
   globally, so `scrollIntoView()`, `location.hash = …` and any anchor click all silently do
   nothing while the tab is backgrounded — `scrollY` just stays put. An instant `window.scrollTo`
-  still works, which is how to tell the two apart. This cost real time on 2026-08-25: the
-  `/contact` anchor was diagnosed as broken twice before `document.visibilityState === 'hidden'`
-  turned out to be the whole story. Check `document.hasFocus()` before believing a scroll result.
-- **Chrome will not size a window below about 455 CSS px on this machine**, so a true 360px phone
-  width cannot be tested by resizing — 455 is the narrowest real measurement available, and it is
-  still below the `sm` breakpoint. Anything that hinges on 360 specifically needs a real phone.
+  still works, which is how to tell the two apart. Check `document.hasFocus()` before believing a
+  scroll result.
 - **The non-breaking space in the Home subtitle, between `Bozeman,` and `Montana`, is
   deliberate.** Without it the subtitle orphans "Montana" at 360–390px, the widths most phones
   use. `text-balance` or `text-pretty` would do nothing on older browsers; the nbsp cannot
