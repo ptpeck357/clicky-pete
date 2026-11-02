@@ -8,10 +8,10 @@
 
 ### 2026-11-01
 
-`prod` is at #122 (2026-11-01 Mountain Time), with its `CHANGELOG.md` entry merged in #123.
-`dev` is ahead by #123 (docs only) and #124, the light/dark mode toggle, which has not shipped to
-`prod` yet. When it does, add its `CHANGELOG.md` entry and check on production that
-`/theme-init.js` is served as JavaScript, as the dev URL was.
+`prod` is at #126 (2026-11-01 Mountain Time), which shipped #124, the light/dark mode toggle,
+and the #125 docs refresh; its `CHANGELOG.md` entry is the PR after it. Checked on production:
+`/theme-init.js` answers 200 as `text/javascript`, every page references it, the site loads
+dark, the toggle switches both ways, light survives a reload, and there are no console errors.
 
 SEO work is tracked in `SEO.md`; its "Next" list is the current order.
 

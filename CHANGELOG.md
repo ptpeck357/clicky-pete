@@ -6,6 +6,12 @@ entry is a release to the live site. The date is when the `prod` PR merged, in M
 Under each release are the pull requests into `dev` that it shipped, then any commits that went
 onto `dev` directly, without a PR of their own.
 
+## 2026-11-01 — #126
+
+- #125 docs: refresh plan.md, SEO.md and README
+- #124 feat(theme): add a light/dark mode toggle to the navbar
+- #123 docs: changelog for #122
+
 ## 2026-11-01 — #122
 
 - #121 fix(gallery): 404 for unknown collections, redirect miscased ones
