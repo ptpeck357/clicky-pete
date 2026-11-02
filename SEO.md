@@ -26,7 +26,7 @@ that already exists.
 6. **The open code and copy items.** Prerendering is done (#110). Next largest: build-time
    collection links on `/gallery` (see 2026-11-01 below) and the hero preload. The session
    pages wait on family photos and on sign-off of the mockup.
-7. **Merge #108**, ship it to `prod`, and add its `CHANGELOG.md` entry.
+7. **Merge the #112 `CHANGELOG.md` entry**: branch `docs/changelog-112`, if its PR is still open.
 8. **Rerun the Rich Results Test and check a link preview** now that pages are prerendered,
    for example by pasting a URL into a Slack DM to yourself.
 
@@ -34,13 +34,16 @@ that already exists.
 
 **#109, prerendering, is live** via #110 (2026-11-02 UTC), with the Amplify rules changed and
 verified on production. Every route now carries its own metadata in the raw HTML. #111 added
-its `CHANGELOG.md` entry and the CLAUDE.md rules. See §3.
+its `CHANGELOG.md` entry and the CLAUDE.md rules, and shipped via #112. See §3.
 
-**#108, collection cards as links, is open against `dev` and mergeable.** It also carries the
+**#108, collection cards as links, is live**: merged into `dev`, shipped via #112 (2026-11-01
+Mountain Time). It also carried the
 #107 `CHANGELOG.md` entry, `plan.md` and this file, and has `dev` merged in. Two code reviews
 ran on it; the main fix is that a route change no longer shows the previous view's photos or
 category for a moment (`usePhotos` now ties photos and errors to their filter). Details are in
-the PR. Checked in Chrome on the dev server and on the production build.
+the PR. Checked on production after the deploy: 11 `<a href>` collection cards, Back from All
+Photos to a collection shows no stray photos, and `/gallery/Montana` hydrates with no console
+errors.
 
 - **Known:** `/gallery?view=collections` loaded directly logs a recoverable hydration mismatch
   (React #418), because the prerendered `/gallery` is All Photos. Accepted, per CLAUDE.md.
@@ -56,7 +59,7 @@ where this file used to record Four Corners; unresolved. See §0.
 A fresh pass over production with curl and Chrome, after #105. Nothing changed in code. The new
 findings, most important first:
 
-1. **Done in #108, not yet merged.** ~~No crawlable link reaches any collection page.~~ `CollectionCard` is a `div role="button"`
+1. **Done, live via #112.** ~~No crawlable link reaches any collection page.~~ `CollectionCard` is a `div role="button"`
    that calls `navigate()`, and the Collections/All Photos toggle is a button too. Read live:
    `/gallery` has no `<a href>` beyond the four nav links. Google finds the 11 collection URLs
    only through the sitemap, which fits the 9 stuck in "Discovered – currently not indexed".
@@ -136,9 +139,9 @@ Detail for all three is in §0 of the implementation plan.
 
 ### Code — after the branch lands
 
-- [ ] **Make the collection cards real links.** `CollectionCard` and the Collections toggle are
+- [x] **Make the collection cards real links.** `CollectionCard` and the Collections toggle are
       buttons, so no collection page is reachable by a crawlable link. Audit 2026-10-29, item 1.
-      In review as #108 (`fix/collection-card-links`), not merged. The prerendered `/gallery`
+      Live via #112, 2026-11-01. The prerendered `/gallery`
       still has no collection links; see 2026-11-01.
 - [ ] **Render `NotFound` for an unknown collection.** `/gallery/Nowhere` is an indexable page
       today. Audit item 4. Since #110 it answers HTTP 404, which Google respects, but the page
