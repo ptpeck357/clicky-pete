@@ -5,7 +5,7 @@
 - **Photo Gallery**: View and organize photos with dynamic categories
 - **Dynamic Filtering**: Filter photos by category, location, and collection
 - **Date Sorting**: Gallery and collections run newest first, with a date button that flips to oldest and a Random shuffle
-- **Responsive Design**: Works beautifully on desktop, tablet, and mobile
+- **Responsive Design**: Laid out for desktop, tablet, and mobile
 - **CloudFront CDN**: Fast global content delivery with multiple image sizes
 - **Modern UI**: Clean, professional interface with Tailwind CSS and animations
 - **Photo Modal**: Full-screen photo viewing with navigation
@@ -16,6 +16,7 @@
 - **Hero Carousel**: Auto-rotating hero images with dot indicators and parallax scrolling
 - **Infinite Scroll**: Photos load progressively as you scroll down the page
 - **Progressive Loading**: Optimized image loading with srcSet and lazy loading
+- **Prerendered pages**: Every route is rendered to static HTML at build, so crawlers and link previews see each page's metadata and copy without running JavaScript
 - **Search metadata**: Per-page titles, descriptions, canonicals and Open Graph tags, `ProfessionalService` and breadcrumb structured data, and descriptive alt text composed from each photo's tags
 - **Sitemap**: Generated at build time from `photos.json`, including every collection page and an image entry per photo
 - **Keyboard access**: A skip-to-content link, and photos, collections and the photo viewer all operable by keyboard
@@ -29,7 +30,6 @@
 - **React Router** for navigation
 - **Tailwind CSS** for styling
 - **Framer Motion** for animations
-- **Custom hooks** for state management
 
 ### Infrastructure
 - **AWS S3** for photo storage, with images stored in multiple sizes (400px, 800px, 2000px) in WebP format
@@ -51,14 +51,14 @@ npm run dev             # http://localhost:5173
 | Script | Purpose |
 | --- | --- |
 | `npm run dev` | Dev server, and the only place the photo admin exists |
-| `npm run build` | Generate `public/sitemap.xml`, type-check, and build to `dist/` |
+| `npm run build` | Generate `public/sitemap.xml`, type-check, build to `dist/`, then prerender every route as static HTML |
 | `npm run generate:sitemap` | Regenerate the sitemap alone — it is gitignored, so the deployed copy always comes from the build |
 | `npm run preview` | Serve the production build locally |
 | `npm run validate:manifest` | Check `photos.json` — id/filename convention, known tags, duplicate entries |
 | `npm run ci` | Validate the manifest, lint, format check, build, and verify no admin code shipped |
 | `npm run fix` | Auto-fix lint and formatting |
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 clicky-pete/
@@ -90,10 +90,14 @@ clicky-pete/
 │   ├── services/              # API communication
 │   ├── types/                 # TypeScript definitions
 │   ├── utils/                 # Utility functions
-│   └── styles/                # CSS styles
+│   ├── styles/                # CSS styles
+│   └── entry-server.tsx       # Server render entry used by prerendering
 │
 ├── scripts/
-│   └── generate-sitemap.mjs   # Writes public/sitemap.xml from photos.json at build time
+│   ├── generate-sitemap.mjs   # Writes public/sitemap.xml from photos.json at build time
+│   ├── prerender.mjs          # Renders every route into dist/ as static HTML
+│   ├── site-routes.mjs        # The route list, shared by the sitemap and prerendering
+│   └── validate-manifest.mjs  # Checks photos.json (npm run validate:manifest)
 ├── vite-plugin-admin.ts       # Dev-only endpoints backing the admin
 ├── customHttp.yml             # Security headers Amplify serves, including the CSP
 ├── admin.config.example.json  # Template for local AWS targets
