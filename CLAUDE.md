@@ -155,6 +155,46 @@ and neither validates that it does.
 `lambda/contact-form` is not deployed by Amplify. Changes to it need deploying separately, so
 a commit touching the Lambda is not live until that happens.
 
+## Prerendering
+
+`npm run build` ends with `npm run prerender`: a Vite SSR build of `src/entry-server.tsx`, then
+`scripts/prerender.mjs` renders every route with React's own `react-dom/static` and writes it
+into `dist/` as static HTML. A crawler that never runs JavaScript (every link-preview scraper,
+and Google's first pass) gets the title, description, canonical, Open Graph tags, JSON-LD and
+page copy. Photos are not in it, since they load in effects and effects never run at build.
+
+The route list comes from `scripts/site-routes.mjs`, which the sitemap reads too. Files follow
+Amplify's clean URLs: `/about` → `about.html`, `/gallery/Montana` → `gallery/Montana.html`.
+`/` is the exception: it goes to `home.html`, and `index.html` stays the empty shell, because
+`index.html` is the fallback for every URL without a file and a prerendered Home there would
+give those URLs Home's canonical.
+
+Rules that are easy to break:
+
+- **Render has to be a pure function of the path.** `main.tsx` hydrates a prerendered page, so
+  anything that reads `window`, the time, or `Math.random` during render rather than in an
+  effect causes a hydration mismatch. React recovers by re-rendering on the client, but logs an
+  error. A query string the page reads does the same thing (`/gallery/Montana?sort=oldest`),
+  which is known and accepted.
+- **`progressiveChunkSize` in `entry-server.tsx` stays off.** Without it, React outlines large
+  Suspense boundaries: the page arrives hidden after the footer, with an inline script to move
+  it into place, and `script-src 'self'` blocks that script. `prerender.mjs` fails the build if
+  one appears.
+- **`main.tsx` removes the server's head tags before React starts.** The selector there lists
+  what `<Seo>` writes. A new kind of tag in `<Seo>` needs adding to it, or every prerendered
+  page will carry two of that tag.
+
+**This only works with two rules in the Amplify console** (Rewrites and redirects; not in the
+repo). Until both are set, every URL gets the shell, as before:
+
+1. The SPA rule (the extension allowlist below) changes type from `200` to `404-200`, keeping
+   the same source and target. It then rewrites only requests that have no file, so
+   `about.html` is served for `/about`.
+2. A new rule above it: source `/`, target `/home.html`, type `200`.
+
+After changing either rule, **Redeploy this version**: the edge has already cached the shell
+for each URL (see below).
+
 ## Static files, Amplify rewrites and the edge cache
 
 Amplify rewrites every request to `/index.html` so the SPA can route it, and the rule carries an
