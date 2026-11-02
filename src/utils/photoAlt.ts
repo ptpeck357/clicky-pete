@@ -1,4 +1,4 @@
-import type { Photo } from '../types/photo';
+import type { Photo } from '@/types/photo';
 
 /** `Astro|Night` → `Astro and night`. A single category comes back unchanged. */
 const readableCategory = (category: string): string =>

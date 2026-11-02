@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '../../atoms';
+import { Button } from '@/components/atoms';
 
 interface CategoryPillProps {
 	category: string;

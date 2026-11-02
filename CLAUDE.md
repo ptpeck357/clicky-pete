@@ -3,6 +3,10 @@
 Photography portfolio. React 19 + Vite + Tailwind v4, deployed on AWS Amplify. Photos live in
 S3 behind CloudFront; the site reads a single JSON index at runtime.
 
+Amplify deploys two branches: `prod` to https://www.clickypete.photography (the bare domain
+redirects there) and `dev` to https://dev.d13yluvb8bpbjw.amplifyapp.com. A merge into `dev` is
+checkable there before it ships; production only changes when `dev` is merged into `prod`.
+
 ## Commands
 
 ```
@@ -246,6 +250,10 @@ This was checked against production rather than assumed.
 Tabs, single quotes, 120 columns, semicolons — enforced by Prettier on commit via Husky and
 lint-staged. Components are organised atoms/molecules/organisms and use Tailwind
 utilities, not CSS modules.
+
+Imports use `@/` (mapped to `src/` in `vite.config.ts` and `tsconfig.json`) for anything
+outside the current folder, and `./` for a file in the same folder. `../` is a lint error in
+`src`. The rule does not see dynamic `import()`, so those follow the convention by hand.
 
 Commits follow Conventional Commits, checked by commitlint, and are grouped by what the
 changes have in common — several small commits rather than one covering ten unrelated files.

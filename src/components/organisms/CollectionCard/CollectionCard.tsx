@@ -1,8 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { MotionLink } from '../../atoms';
-import { collectionPath } from '../../../config/site';
-import type { Photo } from '../../../types/photo';
+import { MotionLink } from '@/components/atoms';
+import { collectionPath } from '@/config/site';
+import type { Photo } from '@/types/photo';
 
 interface CollectionCardProps {
 	name: string;

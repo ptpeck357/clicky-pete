@@ -1,4 +1,4 @@
-import type { Photo } from '../types/photo';
+import type { Photo } from '@/types/photo';
 
 const CLOUDFRONT_URL = import.meta.env.VITE_CLOUDFRONT_URL || '';
 const PHOTOS_JSON_PATH = '/data/photos.json';

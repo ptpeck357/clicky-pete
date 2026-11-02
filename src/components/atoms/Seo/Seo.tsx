@@ -1,5 +1,5 @@
 import React from 'react';
-import { DEFAULT_SHARE_IMAGE, SITE_NAME, SITE_URL } from '../../../config/site';
+import { DEFAULT_SHARE_IMAGE, SITE_NAME, SITE_URL } from '@/config/site';
 
 interface SeoProps {
 	/** Full <title>, written per page. Not suffixed here — some pages read better without one. */

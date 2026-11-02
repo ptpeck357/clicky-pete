@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Seo } from '../components/atoms';
+import { Seo } from '@/components/atoms';
 
 export const NotFound: React.FC = () => {
 	return (
