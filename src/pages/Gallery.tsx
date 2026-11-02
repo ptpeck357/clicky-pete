@@ -120,10 +120,25 @@ export const Gallery: React.FC = () => {
 	// load left the pills on "No categories available" even after the photos came back.
 	const [retryCount, setRetryCount] = useState(0);
 
+	// The category and the count belong to one view, so they reset when the route changes —
+	// including back/forward, and not when a Cmd-click opens a new tab. Done during render rather
+	// than in an effect: an effect runs after the new route's first render, which would fetch that
+	// route's photos with the previous view's category still applied.
+	const routeKey = `${urlCollection ?? ''}|${showAllPhotos}`;
+	const [prevRouteKey, setPrevRouteKey] = useState(routeKey);
+	if (routeKey !== prevRouteKey) {
+		setPrevRouteKey(routeKey);
+		setLocalFilter({});
+		setPhotosToShow(15);
+	}
+
+	// useDeferredValue hands back the previous value on an urgent render, so a cleared category
+	// would otherwise still be fetched once. Clearing applies at once; only a switch is deferred.
 	const deferredCategory = useDeferredValue(localFilter.category);
+	const fetchCategory = localFilter.category ? deferredCategory : undefined;
 	const fetchFilter = useMemo<PhotoFilter>(
-		() => (deferredCategory ? { ...filter, category: deferredCategory } : filter),
-		[filter, deferredCategory],
+		() => (fetchCategory ? { ...filter, category: fetchCategory } : filter),
+		[filter, fetchCategory],
 	);
 	const { photos, loading, error, refetch } = usePhotos(fetchFilter);
 
@@ -167,11 +182,7 @@ export const Gallery: React.FC = () => {
 	// displayedPhotos always slices the current order from the start, so the count stays
 	// meaningful — while resetting it would shorten the page under a reader who has scrolled
 	// and let the browser clamp them somewhere they did not ask to be.
-	// The category filter is reset here rather than in the links' click handlers, so it also
-	// clears on back/forward, and a Cmd-click that opens a new tab leaves this one alone.
 	useEffect(() => {
-		setPhotosToShow(15);
-		setLocalFilter({});
 		isLoadingMoreRef.current = false;
 	}, [urlCollection, showAllPhotos]);
 
@@ -236,6 +247,15 @@ export const Gallery: React.FC = () => {
 			fetchCategories();
 		}
 	}, [showAllPhotos, retryCount]);
+
+	// The view links carry the reader's sort with them, so switching views and back keeps it.
+	const galleryPath = (view?: 'collections') => {
+		const params = new URLSearchParams();
+		if (view) params.set('view', view);
+		if (sortOrder !== 'newest') params.set('sort', sortOrder);
+		const query = params.toString();
+		return query ? `/gallery?${query}` : '/gallery';
+	};
 
 	const handleRetry = () => {
 		setRetryCount((count) => count + 1);
@@ -396,7 +416,7 @@ export const Gallery: React.FC = () => {
 				{urlCollection && (
 					<div className="mb-4">
 						<MotionLink
-							to="/gallery?view=collections"
+							to={galleryPath('collections')}
 							className="inline-block px-3 py-1.5 text-sm bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 transition-colors"
 							whileHover={{ scale: 1.05 }}
 							whileTap={{ scale: 0.95 }}
@@ -454,12 +474,15 @@ export const Gallery: React.FC = () => {
 					>
 						<div className="flex gap-2">
 							{/* Clicked while already on All Photos, the route does not change, so the
-							    reset effect does not run — this is what still clears a picked category. */}
+							    route reset does not run — this is what still clears a picked category.
+							    With no category picked it leaves the count alone, so a reader who has
+							    scrolled is not cut back to the top of the list. */}
 							<MotionLink
-								to="/gallery"
+								to={galleryPath()}
 								onClick={() => {
+									if (!localFilter.category) return;
 									setLocalFilter({});
-									setPhotosToShow(12);
+									setPhotosToShow(15);
 								}}
 								className={`inline-block px-4 py-2 rounded-full text-sm font-medium transition-colors ${
 									showAllPhotos
@@ -472,7 +495,7 @@ export const Gallery: React.FC = () => {
 								All Photos
 							</MotionLink>
 							<MotionLink
-								to="/gallery?view=collections"
+								to={galleryPath('collections')}
 								className={`inline-block px-4 py-2 rounded-full text-sm font-medium transition-colors ${
 									viewMode === 'collections'
 										? 'bg-blue-600 text-white'
