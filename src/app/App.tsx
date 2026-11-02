@@ -10,7 +10,8 @@ if (GA_MEASUREMENT_ID) {
 	ReactGA.initialize(GA_MEASUREMENT_ID);
 }
 
-function AppContent() {
+/** Everything inside the router. Exported so the prerender can wrap it in a StaticRouter instead. */
+export function AppContent() {
 	const location = useLocation();
 
 	// Keyed on pathname, not the whole location: a query-string change is a filter or a sort
