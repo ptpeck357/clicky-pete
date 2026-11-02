@@ -6,6 +6,11 @@ entry is a release to the live site. The date is when the `prod` PR merged, in M
 Under each release are the pull requests into `dev` that it shipped, then any commits that went
 onto `dev` directly, without a PR of their own.
 
+## 2026-11-01 — #112
+
+- #111 docs: changelog for #110 and the live Amplify rules
+- #108 fix(seo): render collection cards as links
+
 ## 2026-11-01 — #110
 
 - #109 feat: prerender every route to static HTML at build
