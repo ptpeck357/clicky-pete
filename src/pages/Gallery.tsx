@@ -4,6 +4,7 @@ import { Link, useParams, useNavigate, useSearchParams, useLocation } from 'reac
 import { PhotoGrid, PhotoViewerModal, CollectionsGrid } from '@/components/organisms';
 import { Seo, JsonLd, MotionLink, collectionBreadcrumbSchema } from '@/components/atoms';
 import { collectionPath } from '@/config/site';
+import { NotFound } from '@/pages/NotFound';
 import { usePhotos } from '@/hooks/usePhotos';
 import { photoService } from '@/services/photoService';
 import { parseSortOrder, sortPhotos } from '@/utils/photoOrder';
@@ -253,6 +254,34 @@ export const Gallery: React.FC = () => {
 		}
 	}, [showAllPhotos, retryCount]);
 
+	// Collection names match exactly, so a link typed or shared with other casing
+	// (/gallery/montana) finds no photos. Resolve it against the real names and redirect to the
+	// canonical URL; only a name that matches nothing at all is recorded as missing.
+	const [missingCollection, setMissingCollection] = useState<string | null>(null);
+	const collectionCameBackEmpty = Boolean(urlCollection) && !loading && !error && photos.length === 0;
+	useEffect(() => {
+		if (!urlCollection || !collectionCameBackEmpty) return;
+		let cancelled = false;
+		photoService
+			.getCollections()
+			.then((names) => {
+				if (cancelled) return;
+				const wanted = urlCollection.toLowerCase();
+				const match = names.find((name) => name.toLowerCase() === wanted);
+				if (match && match !== urlCollection) {
+					navigate({ pathname: collectionPath(match), search: location.search }, { replace: true });
+				} else {
+					setMissingCollection(urlCollection);
+				}
+			})
+			.catch(() => {
+				if (!cancelled) setMissingCollection(urlCollection);
+			});
+		return () => {
+			cancelled = true;
+		};
+	}, [urlCollection, collectionCameBackEmpty, navigate, location.search]);
+
 	// The view links carry the reader's sort with them, so switching views and back keeps it.
 	const galleryPath = (view?: 'collections') => {
 		const params = new URLSearchParams();
@@ -330,6 +359,13 @@ export const Gallery: React.FC = () => {
 		}
 		setSearchParams(next, { replace: true });
 	};
+
+	// A collection exists only as a tag on its photos, so a name that matches none, in any casing,
+	// is a wrong URL rather than an empty collection. Only decided after the load, so a prerendered
+	// collection page still hydrates against its loading state.
+	if (collectionCameBackEmpty && missingCollection === urlCollection) {
+		return <NotFound />;
+	}
 
 	if (error) {
 		return (

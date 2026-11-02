@@ -6,6 +6,11 @@ entry is a release to the live site. The date is when the `prod` PR merged, in M
 Under each release are the pull requests into `dev` that it shipped, then any commits that went
 onto `dev` directly, without a PR of their own.
 
+## 2026-11-01 — #119
+
+- #118 chore(deps): refresh lockfile to latest in-range versions
+- #117 docs: changelog for #115
+
 ## 2026-11-01 — #115
 
 - #116 docs: record the prod and dev deploy URLs
