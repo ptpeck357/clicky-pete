@@ -5,7 +5,7 @@
  */
 
 /**
- * The site's own origin — not the CloudFront host the photos load from. The apex 302s to
+ * The site's own origin — not the CloudFront host the photos load from. The apex 301s to
  * www, so www is where a visitor actually lands; a canonical pointing at the apex would
  * point at a redirect. If the domain is ever flipped to prefer the apex (an Amplify setting,
  * not a code change), this line is the only thing that moves.
@@ -23,6 +23,13 @@ export const PHOTOGRAPHER_NAME = 'Peter Peck';
  */
 export const collectionPath = (collection: string): string => `/gallery/${encodeURIComponent(collection)}`;
 
+/**
+ * Every collection name, fixed at build time from photos.json (see `define` in vite.config.ts).
+ * For markup that has to exist before the manifest is fetched, such as the prerendered page. At
+ * runtime the live manifest is the authority.
+ */
+export const SITE_COLLECTIONS: readonly string[] = __SITE_COLLECTIONS__;
+
 /** Where sessions are shot. Used in copy, metadata and the structured data alike. */
 export const BUSINESS_CITY = 'Bozeman';
 export const BUSINESS_REGION = 'MT';
@@ -34,6 +41,13 @@ export const SOCIAL_PROFILES = {
 	youtube: 'https://www.youtube.com/@ptpeck357',
 	linkedin: 'https://www.linkedin.com/in/petertpeck/',
 } as const;
+
+/**
+ * The Google Business Profile, by its Maps customer ID. It is kept out of SOCIAL_PROFILES
+ * because the footer renders every entry there as an icon. The Share button's
+ * `share.google/…` link only redirects to a search, so it does not identify the profile.
+ */
+export const GOOGLE_BUSINESS_PROFILE_URL = 'https://www.google.com/maps?cid=15473261678061074820';
 
 /**
  * Absolute URL for a share image. Relative paths are refused by every crawler that renders a

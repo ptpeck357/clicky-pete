@@ -39,6 +39,14 @@ const outputFile = (path) => {
 	return `${decodeURIComponent(path.slice(1))}.html`;
 };
 
+// Vite replaces %VITE_…% in index.html only when the variable is set, and leaves the
+// placeholder in place otherwise. A shell shipped with one would point the preconnect at a
+// relative path on this site, silently.
+const unreplaced = template.match(/%VITE_\w+%/);
+if (unreplaced) {
+	throw new Error(`dist/index.html still contains ${unreplaced[0]}; is it set for this build?`);
+}
+
 for (const path of paths) {
 	const html = await render(path);
 

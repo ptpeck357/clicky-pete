@@ -96,7 +96,8 @@ clicky-pete/
 ├── scripts/
 │   ├── generate-sitemap.mjs   # Writes public/sitemap.xml from photos.json at build time
 │   ├── prerender.mjs          # Renders every route into dist/ as static HTML
-│   ├── site-routes.mjs        # The route list, shared by the sitemap and prerendering
+│   ├── site-routes.mjs        # The route list, shared by the sitemap, prerendering and vite.config.ts
+│   ├── site-routes.d.mts      # Its types, for vite.config.ts under tsc
 │   └── validate-manifest.mjs  # Checks photos.json (npm run validate:manifest)
 ├── vite-plugin-admin.ts       # Dev-only endpoints backing the admin
 ├── customHttp.yml             # Security headers Amplify serves, including the CSP
