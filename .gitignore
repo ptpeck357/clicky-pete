@@ -34,3 +34,7 @@ public/sitemap.xml
 # Local admin (dev-only): machine-specific AWS targets and publish state
 admin.config.json
 .admin-state.json
+
+# Working trackers, kept locally and out of the repo
+SEO.md
+plan.md
