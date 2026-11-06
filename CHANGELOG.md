@@ -6,6 +6,13 @@ entry is a release to the live site. The date is when the `prod` PR merged, in M
 Under each release are the pull requests into `dev` that it shipped, then any commits that went
 onto `dev` directly, without a PR of their own.
 
+## 2026-11-05 — #130
+
+- #131 ci: set VITE_CLOUDFRONT_URL and run on PRs into dev
+- #129 SEO small fixes: preconnect, profile link, hero preload, gallery links
+- #128 docs: queue the small SEO fixes and other quick items
+- #127 docs: changelog for #126
+
 ## 2026-11-01 — #126
 
 - #125 docs: refresh plan.md, SEO.md and README
