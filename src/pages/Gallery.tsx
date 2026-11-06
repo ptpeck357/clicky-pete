@@ -3,7 +3,7 @@ import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { Link, useParams, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { PhotoGrid, PhotoViewerModal, CollectionsGrid } from '@/components/organisms';
 import { Seo, JsonLd, MotionLink, collectionBreadcrumbSchema } from '@/components/atoms';
-import { collectionPath } from '@/config/site';
+import { collectionPath, SITE_COLLECTIONS } from '@/config/site';
 import { NotFound } from '@/pages/NotFound';
 import { usePhotos } from '@/hooks/usePhotos';
 import { photoService } from '@/services/photoService';
@@ -543,6 +543,30 @@ export const Gallery: React.FC = () => {
 							</MotionLink>
 						</div>
 					</motion.div>
+				)}
+
+				{/* The collection cards load in an effect, so without JavaScript /gallery would link to
+				    none of them. This list comes from the build instead. React writes <noscript> into
+				    the prerendered HTML and leaves its contents alone when it hydrates, so a browser
+				    running the app never shows it, and a crawler that runs no JavaScript reads plain
+				    links. */}
+				{!urlCollection && (
+					<noscript>
+						<nav aria-label="Collections" className="mb-6">
+							<ul className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
+								{SITE_COLLECTIONS.map((name) => (
+									<li key={name}>
+										<a
+											href={collectionPath(name)}
+											className="text-blue-400 hover:underline light:text-blue-600"
+										>
+											{name}
+										</a>
+									</li>
+								))}
+							</ul>
+						</nav>
+					</noscript>
 				)}
 
 				<AnimatePresence mode="wait">

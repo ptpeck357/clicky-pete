@@ -11,6 +11,12 @@
 		<link rel="manifest" href="/manifest.json" />
 		<meta name="theme-color" content="#4165af" />
 
+		<!-- photos.json and every image come from this host, and nothing can start until the
+		     manifest arrives. The fetch is a CORS request and the <img> loads are not, and a browser
+		     keeps those on separate connections, so each needs its own preconnect. -->
+		<link rel="preconnect" href="%VITE_CLOUDFRONT_URL%" crossorigin />
+		<link rel="preconnect" href="%VITE_CLOUDFRONT_URL%" />
+
 		<script src="/theme-init.js"></script>
 
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />

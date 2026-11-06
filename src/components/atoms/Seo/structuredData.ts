@@ -4,6 +4,7 @@ import {
 	BUSINESS_REGION_NAME,
 	collectionPath,
 	DEFAULT_SHARE_IMAGE,
+	GOOGLE_BUSINESS_PROFILE_URL,
 	PHOTOGRAPHER_NAME,
 	SITE_NAME,
 	SITE_URL,
@@ -41,7 +42,8 @@ export const businessSchema = {
 		jobTitle: 'Photographer',
 		sameAs: Object.values(SOCIAL_PROFILES),
 	},
-	sameAs: Object.values(SOCIAL_PROFILES),
+	// The Business Profile is the business's, not the founder's, so only this sameAs carries it.
+	sameAs: [...Object.values(SOCIAL_PROFILES), GOOGLE_BUSINESS_PROFILE_URL],
 	makesOffer: ['Portrait session', 'Graduation session', 'Family session', 'Engagement session'].map((name) => ({
 		'@type': 'Offer',
 		itemOffered: { '@type': 'Service', name, serviceType: 'Photography' },

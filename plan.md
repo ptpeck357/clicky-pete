@@ -8,10 +8,10 @@
 
 ### 2026-11-01
 
-`prod` is at #122 (2026-11-01 Mountain Time), with its `CHANGELOG.md` entry merged in #123.
-`dev` is ahead by #123 (docs only) and #124, the light/dark mode toggle, which has not shipped to
-`prod` yet. When it does, add its `CHANGELOG.md` entry and check on production that
-`/theme-init.js` is served as JavaScript, as the dev URL was.
+`prod` is at #126 (2026-11-01 Mountain Time), which shipped #124, the light/dark mode toggle,
+and the #125 docs refresh; its `CHANGELOG.md` entry is the PR after it. Checked on production:
+`/theme-init.js` answers 200 as `text/javascript`, every page references it, the site loads
+dark, the toggle switches both ways, light survives a reload, and there are no console errors.
 
 SEO work is tracked in `SEO.md`; its "Next" list is the current order.
 
@@ -57,6 +57,14 @@ These are manual checks that nothing in the repo records as done.
       sharp is installed; the check is downloading each 2000px object, measuring it, and
       comparing against the manifest. It is the one manifest claim `npm run validate:manifest`
       cannot check, because it needs the pixels.
+- [ ] **Slim the homepage hero preload.** `Home.tsx` preloads the 800px and 2000px renditions
+      of all 5 hero photos, about 2.6 MB, before the overlay drops, though phones show only the
+      800s. Load only the rendition `getHeroImageUrl` picks, and only the first photo before
+      showing. Detail in `SEO.md`, audit item 5.
+- [ ] **Trim CLAUDE.md.** Its Branching section mostly repeats the global CLAUDE.md; keep the
+      repo-specific parts (branches cut from `dev`, `main` renamed) and "After merging a PR".
+      Cut the 599-versus-597 manifest story and the plain-`200` rewrite history to a sentence
+      each. Needs Peter's sign-off, since every session reads those rules.
 
 **If the site looks wrong**, the first question is whether the repo copy of
 `src/data/photos.json` matches the live one — see "Verify before committing" in CLAUDE.md.
