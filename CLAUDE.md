@@ -167,7 +167,10 @@ into `dist/` as static HTML. A crawler that never runs JavaScript (every link-pr
 and Google's first pass) gets the title, description, canonical, Open Graph tags, JSON-LD and
 page copy. Photos are not in it, since they load in effects and effects never run at build.
 
-The route list comes from `scripts/site-routes.mjs`, which the sitemap reads too. Files follow
+The route list comes from `scripts/site-routes.mjs`, which the sitemap reads too, and so does
+`vite.config.ts`: it hands the collection names to the app as `__SITE_COLLECTIONS__` (read it
+through `SITE_COLLECTIONS` in `config/site.ts`), for markup that has to exist before the manifest
+is fetched, such as the `<noscript>` collection links on `/gallery`. Files follow
 Amplify's clean URLs: `/about` → `about.html`, `/gallery/Montana` → `gallery/Montana.html`.
 `/` is the exception: it goes to `home.html`, and `index.html` stays the empty shell, because
 `index.html` is the fallback for every URL without a file and a prerendered Home there would
@@ -201,7 +204,8 @@ crawlers see empty pages again.
 A URL with no file (`/gallery/Nowhere`, `/about/` with a trailing slash) gets a 301 to a
 trailing slash and then a **404**, with the shell as the body, so the app still renders
 NotFound. A collection published from the admin has no file until the next build, so a fresh
-load of it 404s in the meantime, although the page renders.
+load of it 404s in the meantime, although the page renders. It is missing from the `/gallery`
+`<noscript>` links until then too.
 
 **The rules are app-wide: `dev` and `prod` share them.** Testing a rule change on the dev URL
 changes production at the same moment. Ship the files a rule depends on to `prod` first, then
