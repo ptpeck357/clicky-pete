@@ -26,6 +26,14 @@ const textVariants = {
 	visible: { opacity: 1, y: 0 },
 };
 
+// The rendition the hero displays at this viewport. The preload asks for the same one, so the
+// photo it waits for is the photo that appears.
+const getHeroImageUrl = (photo: Photo, cloudFrontUrl: string) => {
+	const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1920;
+	const size = viewportWidth <= 1024 ? '800' : '2000';
+	return `${cloudFrontUrl}/photos/${size}/${photo.file}`;
+};
+
 export const Home: React.FC = () => {
 	const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -104,10 +112,10 @@ export const Home: React.FC = () => {
 			return;
 		}
 
-		const heroImageUrls = heroPhotos.flatMap((photo) => [
-			`${cloudFrontUrl}/photos/800/${photo.file}`,
-			`${cloudFrontUrl}/photos/2000/${photo.file}`,
-		]);
+		// Only the first photo holds the overlay, since it is the one on screen when the overlay
+		// drops. The rest load through their own <img> tags meanwhile, and the carousel only starts
+		// once the overlay is gone, which gives the second photo 2.5s.
+		const firstHeroImageUrl = getHeroImageUrl(heroPhotos[0], cloudFrontUrl);
 
 		const timeoutId = setTimeout(() => {
 			if (!hasCompleted) {
@@ -118,7 +126,7 @@ export const Home: React.FC = () => {
 		}, LOADING_TIMEOUT_MS);
 
 		// preloadImages swallows per-image failures and always resolves
-		preloadImages(heroImageUrls).then(() => {
+		preloadImages([firstHeroImageUrl]).then(() => {
 			if (!hasCompleted) {
 				hasCompleted = true;
 				clearTimeout(timeoutId);
@@ -132,30 +140,15 @@ export const Home: React.FC = () => {
 		};
 	}, [heroPhotos, photosFetched]);
 
-	const getHeroImageUrl = (photo: Photo, cloudFrontUrl: string) => {
-		const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1920;
-		let size: string;
-
-		if (viewportWidth <= 640) {
-			size = '800';
-		} else if (viewportWidth <= 1024) {
-			size = '800';
-		} else {
-			size = '2000';
-		}
-
-		return `${cloudFrontUrl}/photos/${size}/${photo.file}`;
-	};
-
 	useEffect(() => {
-		if (heroPhotos.length <= 1) return;
+		if (!heroImagesLoaded || heroPhotos.length <= 1) return;
 
 		const interval = setInterval(() => {
 			setCurrentHeroIndex((prev) => (prev + 1) % heroPhotos.length);
 		}, 2500);
 
 		return () => clearInterval(interval);
-	}, [heroPhotos.length]);
+	}, [heroImagesLoaded, heroPhotos.length]);
 
 	useEffect(() => {
 		if (!heroImagesLoaded) return;
