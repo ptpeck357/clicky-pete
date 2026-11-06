@@ -5,7 +5,7 @@
  */
 
 /**
- * The site's own origin — not the CloudFront host the photos load from. The apex 302s to
+ * The site's own origin — not the CloudFront host the photos load from. The apex 301s to
  * www, so www is where a visitor actually lands; a canonical pointing at the apex would
  * point at a redirect. If the domain is ever flipped to prefer the apex (an Amplify setting,
  * not a code change), this line is the only thing that moves.
