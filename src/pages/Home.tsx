@@ -5,7 +5,6 @@ import { PhotoViewerModal, PhotoGrid } from '@/components/organisms';
 import { Seo, JsonLd, businessSchema } from '@/components/atoms';
 import { photoService } from '@/services/photoService';
 import { shuffleArray } from '@/utils/array';
-import { preloadImages } from '@/utils/imageOptimization';
 import { describePhoto } from '@/utils/photoAlt';
 import type { Photo } from '@/types/photo';
 
@@ -26,12 +25,24 @@ const textVariants = {
 	visible: { opacity: 1, y: 0 },
 };
 
-// The rendition the hero displays at this viewport. The preload asks for the same one, so the
-// photo it waits for is the photo that appears.
-const getHeroImageUrl = (photo: Photo, cloudFrontUrl: string) => {
-	const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1920;
-	const size = viewportWidth <= 1024 ? '800' : '2000';
-	return `${cloudFrontUrl}/photos/${size}/${photo.file}`;
+type HeroSize = '800' | '2000';
+
+// Picked by viewport width alone, not pixel density: a 3x phone would otherwise download the
+// 2000px rendition of every slide. Read in an effect, never during render (see Prerendering
+// in CLAUDE.md).
+const pickHeroSize = (): HeroSize => (window.innerWidth <= 1024 ? '800' : '2000');
+
+const getHeroImageUrl = (photo: Photo, cloudFrontUrl: string, size: HeroSize) =>
+	`${cloudFrontUrl}/photos/${size}/${photo.file}`;
+
+// The next slide whose photo has finished loading, so the carousel never fades in a blank or
+// half-drawn one. Stays put when no other slide is ready yet.
+const nextLoadedHeroIndex = (photos: Photo[], loadedIds: ReadonlySet<string>, from: number) => {
+	for (let step = 1; step < photos.length; step++) {
+		const index = (from + step) % photos.length;
+		if (loadedIds.has(photos[index].id)) return index;
+	}
+	return from;
 };
 
 export const Home: React.FC = () => {
@@ -39,6 +50,8 @@ export const Home: React.FC = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [featuredPhotos, setFeaturedPhotos] = useState<Photo[]>([]);
 	const [heroPhotos, setHeroPhotos] = useState<Photo[]>([]);
+	const [heroSize, setHeroSize] = useState<HeroSize>('2000');
+	const loadedHeroIdsRef = useRef(new Set<string>());
 
 	const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
 	const [heroImagesLoaded, setHeroImagesLoaded] = useState(false);
@@ -84,6 +97,7 @@ export const Home: React.FC = () => {
 				setFeaturedPhotos(shuffledFeatured);
 
 				const heroToUse = hero.length > 0 ? hero : shuffledFeatured.slice(0, 3);
+				setHeroSize(pickHeroSize());
 				setHeroPhotos(heroToUse);
 			} catch (error) {
 				console.error('Failed to load photos:', error);
@@ -95,60 +109,60 @@ export const Home: React.FC = () => {
 		loadPhotos();
 	}, []);
 
+	// The overlay drops when the first slide's own <img> loads or fails (see its onLoad), so the
+	// photo it waits for is the one that appears, fetched once. This effect only covers the
+	// cases where no such load will come.
 	useEffect(() => {
+		if (heroImagesLoaded) return;
+
 		if (heroPhotos.length === 0) {
-			// nothing to preload once the fetch is done: drop the overlay rather than spin forever
+			// nothing to wait for once the fetch is done: drop the overlay rather than spin forever
 			if (photosFetched) setHeroImagesLoaded(true);
 			return;
 		}
 
-		const LOADING_TIMEOUT_MS = 15000;
-		let hasCompleted = false;
-
-		const cloudFrontUrl = import.meta.env.VITE_CLOUDFRONT_URL;
-		if (!cloudFrontUrl) {
+		if (!import.meta.env.VITE_CLOUDFRONT_URL) {
 			console.error('CloudFront URL not configured');
 			setHeroImagesLoaded(true);
 			return;
 		}
 
-		// Only the first photo holds the overlay, since it is the one on screen when the overlay
-		// drops. The rest load through their own <img> tags meanwhile, and the carousel only starts
-		// once the overlay is gone, which gives the second photo 2.5s.
-		const firstHeroImageUrl = getHeroImageUrl(heroPhotos[0], cloudFrontUrl);
-
+		const LOADING_TIMEOUT_MS = 15000;
 		const timeoutId = setTimeout(() => {
-			if (!hasCompleted) {
-				console.warn('Hero images loading timed out, proceeding anyway');
-				hasCompleted = true;
-				setHeroImagesLoaded(true);
-			}
+			console.warn('Hero images loading timed out, proceeding anyway');
+			setHeroImagesLoaded(true);
 		}, LOADING_TIMEOUT_MS);
 
-		// preloadImages swallows per-image failures and always resolves
-		preloadImages([firstHeroImageUrl]).then(() => {
-			if (!hasCompleted) {
-				hasCompleted = true;
-				clearTimeout(timeoutId);
-				setHeroImagesLoaded(true);
-			}
-		});
+		return () => clearTimeout(timeoutId);
+	}, [heroPhotos, photosFetched, heroImagesLoaded]);
 
-		return () => {
-			hasCompleted = true;
-			clearTimeout(timeoutId);
-		};
-	}, [heroPhotos, photosFetched]);
-
+	// Re-created whenever the slide changes, so a dot click restarts the 2.5s rather than being
+	// replaced by the next tick a moment later. A tick that finds no other slide loaded leaves the
+	// index alone, and the interval tries again.
 	useEffect(() => {
 		if (!heroImagesLoaded || heroPhotos.length <= 1) return;
 
 		const interval = setInterval(() => {
-			setCurrentHeroIndex((prev) => (prev + 1) % heroPhotos.length);
+			setCurrentHeroIndex((prev) => nextLoadedHeroIndex(heroPhotos, loadedHeroIdsRef.current, prev));
 		}, 2500);
 
 		return () => clearInterval(interval);
-	}, [heroImagesLoaded, heroPhotos.length]);
+	}, [heroImagesLoaded, heroPhotos, currentHeroIndex]);
+
+	const handleHeroImageLoad = (photo: Photo, index: number) => {
+		loadedHeroIdsRef.current.add(photo.id);
+		if (index === 0) setHeroImagesLoaded(true);
+	};
+
+	// A failed first photo still drops the overlay; the carousel moves on to a slide that loaded.
+	const handleHeroImageError = (index: number) => {
+		if (index === 0) setHeroImagesLoaded(true);
+	};
+
+	// A dot for a photo still downloading does nothing yet, rather than fading in a blank slide.
+	const goToHeroSlide = (index: number) => {
+		if (loadedHeroIdsRef.current.has(heroPhotos[index].id)) setCurrentHeroIndex(index);
+	};
 
 	useEffect(() => {
 		if (!heroImagesLoaded) return;
@@ -226,8 +240,11 @@ export const Home: React.FC = () => {
 								return null;
 							}
 
-							const imageUrl = getHeroImageUrl(photo, cloudFrontUrl);
+							const imageUrl = getHeroImageUrl(photo, cloudFrontUrl, heroSize);
 							const isVisible = index === currentHeroIndex && heroImagesLoaded;
+							// Every slide's <img> starts downloading at once. The first is the one
+							// the overlay waits for, so it goes ahead of the rest.
+							const fetchPriority = index === 0 ? 'high' : 'low';
 
 							return (
 								<div
@@ -241,11 +258,15 @@ export const Home: React.FC = () => {
 										src={imageUrl}
 										alt=""
 										aria-hidden="true"
+										fetchPriority={fetchPriority}
 										className="absolute inset-0 w-full h-full object-cover blur-2xl scale-110 sm:hidden"
 									/>
 									<img
 										src={imageUrl}
 										alt={describePhoto(photo)}
+										fetchPriority={fetchPriority}
+										onLoad={() => handleHeroImageLoad(photo, index)}
+										onError={() => handleHeroImageError(index)}
 										className="relative w-full h-full object-contain sm:object-cover"
 									/>
 								</div>
@@ -310,7 +331,7 @@ export const Home: React.FC = () => {
 							{heroPhotos.map((_, index) => (
 								<button
 									key={index}
-									onClick={() => setCurrentHeroIndex(index)}
+									onClick={() => goToHeroSlide(index)}
 									className={`w-2 h-2 rounded-full transition-all duration-300 ${
 										index === currentHeroIndex ? 'bg-white w-6' : 'bg-white/50 hover:bg-white/75'
 									}`}
@@ -322,7 +343,7 @@ export const Home: React.FC = () => {
 							{heroPhotos.map((_, index) => (
 								<button
 									key={index}
-									onClick={() => setCurrentHeroIndex(index)}
+									onClick={() => goToHeroSlide(index)}
 									className={`w-2 h-2 rounded-full transition-all duration-300 ${
 										index === currentHeroIndex ? 'bg-white w-6' : 'bg-white/50 hover:bg-white/75'
 									}`}
