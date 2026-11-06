@@ -36,6 +36,13 @@ export const SOCIAL_PROFILES = {
 } as const;
 
 /**
+ * The Google Business Profile, by its Maps customer ID. It is kept out of SOCIAL_PROFILES
+ * because the footer renders every entry there as an icon. The Share button's
+ * `share.google/…` link only redirects to a search, so it does not identify the profile.
+ */
+export const GOOGLE_BUSINESS_PROFILE_URL = 'https://www.google.com/maps?cid=15473261678061074820';
+
+/**
  * Absolute URL for a share image. Relative paths are refused by every crawler that renders a
  * link preview, and the photos are not served from this origin.
  */
