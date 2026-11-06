@@ -39,18 +39,6 @@ const outputFile = (path) => {
 	return `${decodeURIComponent(path.slice(1))}.html`;
 };
 
-const escapeHtml = (text) =>
-	text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-
-// The collection cards load in an effect, so the prerendered /gallery links to none of them and
-// a crawler that runs no JavaScript only finds them through the sitemap. This list fills that
-// gap. It sits in <noscript>, outside #root, so a browser running the app never shows it and
-// hydration never sees it. An HTML parser with scripting off, which is what such a crawler uses,
-// reads it as ordinary links.
-const collectionLinks = `<noscript><nav aria-label="Collections"><ul>${collections
-	.map((name) => `<li><a href="${collectionPath(name)}">${escapeHtml(name)}</a></li>`)
-	.join('')}</ul></nav></noscript>`;
-
 for (const path of paths) {
 	const html = await render(path);
 
@@ -77,10 +65,7 @@ for (const path of paths) {
 		// Function replacements, because a string one reads "$&" and friends as patterns and the
 		// page copy has dollar signs in it.
 		.replace('</head>', () => `${head}</head>`)
-		.replace(
-			'<div id="root"></div>',
-			() => `<div id="root">${body}</div>${path === '/gallery' ? collectionLinks : ''}`,
-		);
+		.replace('<div id="root"></div>', () => `<div id="root">${body}</div>`);
 
 	const file = join(DIST, outputFile(path));
 	mkdirSync(dirname(file), { recursive: true });

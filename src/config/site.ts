@@ -23,6 +23,13 @@ export const PHOTOGRAPHER_NAME = 'Peter Peck';
  */
 export const collectionPath = (collection: string): string => `/gallery/${encodeURIComponent(collection)}`;
 
+/**
+ * Every collection name, fixed at build time from photos.json (see `define` in vite.config.ts).
+ * For markup that has to exist before the manifest is fetched, such as the prerendered page. At
+ * runtime the live manifest is the authority.
+ */
+export const SITE_COLLECTIONS: readonly string[] = __SITE_COLLECTIONS__;
+
 /** Where sessions are shot. Used in copy, metadata and the structured data alike. */
 export const BUSINESS_CITY = 'Bozeman';
 export const BUSINESS_REGION = 'MT';
